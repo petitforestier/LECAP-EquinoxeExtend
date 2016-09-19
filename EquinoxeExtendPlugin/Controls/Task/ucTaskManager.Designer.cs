@@ -49,6 +49,8 @@
             this.cboMainTaskType = new System.Windows.Forms.ComboBox();
             this.lblMainTaskType = new System.Windows.Forms.Label();
             this.cmdCriteriaSearch = new System.Windows.Forms.Button();
+            this.lblDeveloppeur = new System.Windows.Forms.Label();
+            this.cboDevelopper = new System.Windows.Forms.ComboBox();
             this.fraMainTaskSearch = new System.Windows.Forms.GroupBox();
             this.tlpMainTaskSearch = new System.Windows.Forms.TableLayoutPanel();
             this.lblMainTaskId = new System.Windows.Forms.Label();
@@ -58,8 +60,6 @@
             this.ucMainTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucMainTaskEdit();
             this.ucSubTaskManager = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskManager();
             this.ucSubTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskEdit();
-            this.lblDeveloppeur = new System.Windows.Forms.Label();
-            this.cboDevelopper = new System.Windows.Forms.ComboBox();
             this.tlpMain.SuspendLayout();
             this.fraMainTasks.SuspendLayout();
             this.tlpMainTask.SuspendLayout();
@@ -344,6 +344,28 @@
             this.cmdCriteriaSearch.UseVisualStyleBackColor = true;
             this.cmdCriteriaSearch.Click += new System.EventHandler(this.cmdSearch_Click);
             // 
+            // lblDeveloppeur
+            // 
+            this.lblDeveloppeur.AutoSize = true;
+            this.lblDeveloppeur.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDeveloppeur.Location = new System.Drawing.Point(533, 30);
+            this.lblDeveloppeur.Name = "lblDeveloppeur";
+            this.lblDeveloppeur.Size = new System.Drawing.Size(69, 29);
+            this.lblDeveloppeur.TabIndex = 12;
+            this.lblDeveloppeur.Text = "Développeur";
+            this.lblDeveloppeur.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cboDevelopper
+            // 
+            this.cboDevelopper.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboDevelopper.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDevelopper.FormattingEnabled = true;
+            this.cboDevelopper.Location = new System.Drawing.Point(608, 33);
+            this.cboDevelopper.Name = "cboDevelopper";
+            this.cboDevelopper.Size = new System.Drawing.Size(185, 21);
+            this.cboDevelopper.TabIndex = 13;
+            this.cboDevelopper.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cboDevelopper_KeyDown);
+            // 
             // fraMainTaskSearch
             // 
             this.fraMainTaskSearch.Controls.Add(this.tlpMainTaskSearch);
@@ -380,7 +402,7 @@
             this.lblMainTaskId.Name = "lblMainTaskId";
             this.lblMainTaskId.Size = new System.Drawing.Size(57, 30);
             this.lblMainTaskId.TabIndex = 0;
-            this.lblMainTaskId.Text = "Tâche Id";
+            this.lblMainTaskId.Text = "N° Tâche";
             this.lblMainTaskId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // cmdMainTaskSearch
@@ -436,28 +458,6 @@
             this.ucSubTaskEdit.Name = "ucSubTaskEdit";
             this.ucSubTaskEdit.Size = new System.Drawing.Size(352, 250);
             this.ucSubTaskEdit.TabIndex = 4;
-            // 
-            // lblDeveloppeur
-            // 
-            this.lblDeveloppeur.AutoSize = true;
-            this.lblDeveloppeur.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblDeveloppeur.Location = new System.Drawing.Point(533, 30);
-            this.lblDeveloppeur.Name = "lblDeveloppeur";
-            this.lblDeveloppeur.Size = new System.Drawing.Size(69, 29);
-            this.lblDeveloppeur.TabIndex = 12;
-            this.lblDeveloppeur.Text = "Développeur";
-            this.lblDeveloppeur.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // cboDevelopper
-            // 
-            this.cboDevelopper.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cboDevelopper.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboDevelopper.FormattingEnabled = true;
-            this.cboDevelopper.Location = new System.Drawing.Point(608, 33);
-            this.cboDevelopper.Name = "cboDevelopper";
-            this.cboDevelopper.Size = new System.Drawing.Size(185, 21);
-            this.cboDevelopper.TabIndex = 13;
-            this.cboDevelopper.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cboDevelopper_KeyDown);
             // 
             // ucTaskManager
             // 

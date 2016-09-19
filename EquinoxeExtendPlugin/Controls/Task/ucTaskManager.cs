@@ -267,7 +267,11 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboProject.DroppedDown = false;
                         cboProject.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
                 }
             }
             catch (Exception ex)
@@ -284,7 +288,11 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboProductLine.DroppedDown = false;
                         cboProductLine.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
                 }
             }
             catch (Exception ex)
@@ -301,7 +309,11 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboMainTaskType.DroppedDown = false;
                         cboMainTaskType.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
                 }
             }
             catch (Exception ex)
@@ -355,7 +367,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboDevelopper.DroppedDown = false;
                         cboDevelopper.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
+                        
                 }
             }
             catch (Exception ex)
