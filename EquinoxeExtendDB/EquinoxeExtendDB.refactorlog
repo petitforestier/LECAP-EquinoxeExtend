@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Operations Version="1.0" xmlns="http://schemas.microsoft.com/sqlserver/dac/Serialization/2012/02">
+  <Operation Name="Rename Refactor" Key="eb3b1e71-a2c0-4799-ad2b-f825b5cd3058" ChangeDateTime="01/07/2016 14:50:13">
+    <Property Name="ElementName" Value="[S_Specification].[T_E_Specification].[ConfiguratorVersion]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Specification].[T_E_Specification]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ProjectVersion]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="c1016822-4a6e-403a-b0e5-253903511ed1" ChangeDateTime="01/07/2016 14:50:25">
+    <Property Name="ElementName" Value="[S_Specification].[T_E_Specification].[ConfiguratorName]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Specification].[T_E_Specification]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ProjectName]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="b1c4d2a6-6b03-48a2-b997-1783901011be" ChangeDateTime="02/22/2016 15:13:51">
+    <Property Name="ElementName" Value="[S_Record].[T_E_Specification].[ProjectVersion]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Record].[T_E_Specification]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ProjectVersionMinor]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf5aeba1-d46f-4f3f-9aa2-1cb313e437b3" ChangeDateTime="02/22/2016 15:46:01">
+    <Property Name="ElementName" Value="[S_Record].[T_E_Specification].[ProjectVersionMinor]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Record].[T_E_Specification]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[ProjectVersion]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="6681ede0-717d-4c4f-bc40-b2863a7fe29d" ChangeDateTime="09/06/2016 12:35:39">
+    <Property Name="ElementName" Value="[S_Release].[T_E_Package].[Status]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Release].[T_E_Package]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StatusRef]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="3b595008-1abe-45f0-9629-84b60e9b5fb3" ChangeDateTime="09/06/2016 12:35:56">
+    <Property Name="ElementName" Value="[S_Release].[T_E_MainTask].[Status]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Release].[T_E_MainTask]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StatusRef]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="bf11d280-cc5f-4eb5-a18b-10e41642f61f" ChangeDateTime="09/06/2016 12:53:54">
+    <Property Name="ElementName" Value="[S_Release].[T_E_ProjectTask].[StartDateTime]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Release].[T_E_ProjectTask]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StartDate]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="e2b683f6-c1ce-4bfd-8d48-1a72c1dd53bf" ChangeDateTime="09/08/2016 10:02:13">
+    <Property Name="ElementName" Value="[S_Release].[T_E_ProjectTask]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[S_Release]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[T_E_SubTask]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="27038f80-5e81-4162-b21c-03c80cf817c9" ChangeDateTime="09/08/2016 10:02:32">
+    <Property Name="ElementName" Value="[S_Release].[T_E_SubTask].[ProjectTaskId]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Release].[T_E_SubTask]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[SubTaskId]" />
+  </Operation>
+</Operations>

@@ -1,0 +1,8 @@
+﻿CREATE TABLE [S_Log].[T_E_Log]
+(
+	[LogId]		BIGINT			NOT NULL PRIMARY KEY CLUSTERED IDENTITY (1, 1),
+	[Type]		INT				NOT NULL CHECK ([Type]>=1 AND [Type] <=3),
+	[Title]		NVARCHAR(250)	NOT NULL,
+	[Message]	NVARCHAR(2000)	NOT NULL,
+	[Date]		Datetime2		NOT NULL
+)

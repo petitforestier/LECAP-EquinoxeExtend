@@ -1,0 +1,299 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{19023021-E629-470E-86D1-3148349F2256}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EquinoxeExtendPlugin</RootNamespace>
+    <AssemblyName>EquinoxeExtendPlugin</AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DriveWorks.Applications, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Applications.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DriveWorks.Engine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Engine.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DriveWorks.Scripting.API, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Scripting.API.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="DriveWorks.SolidWorks, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.SolidWorks.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Titan.Rules, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\Titan.Rules.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Command.cs" />
+    <Compile Include="Controls\ControlVersion\ucControlVersion.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ControlVersion\ucControlVersion.Designer.cs">
+      <DependentUpon>ucControlVersion.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.Designer.cs">
+      <DependentUpon>ucCheckTaskOnStartup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ReleaseManagement\ucRelease.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\ReleaseManagement\ucRelease.Designer.cs">
+      <DependentUpon>ucRelease.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucImportTaskFromPDC.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucImportTaskFromPDC.Designer.cs">
+      <DependentUpon>ucImportTaskFromPDC.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucMainTaskEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucMainTaskEdit.Designer.cs">
+      <DependentUpon>ucMainTaskEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucMainTaskManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucMainTaskManager.Designer.cs">
+      <DependentUpon>ucMainTaskManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Package\ucPackageManagement.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Package\ucPackageManagement.Designer.cs">
+      <DependentUpon>ucPackageManagement.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucSubTaskEdit.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucSubTaskEdit.Designer.cs">
+      <DependentUpon>ucSubTaskEdit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucTaskManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucTaskManager.Designer.cs">
+      <DependentUpon>ucTaskManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Task\ucSubTaskManager.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\Task\ucSubTaskManager.Designer.cs">
+      <DependentUpon>ucSubTaskManager.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\WhereUsed\ucWhereUsed.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\WhereUsed\ucWhereUsed.Designer.cs">
+      <DependentUpon>ucWhereUsed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Task.cs" />
+    <Compile Include="Tools\EventArgs.cs" />
+    <Compile Include="UDF.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DriveWorks.Helper\DriveWorks.Helper.csproj">
+      <Project>{a310cc19-68e0-4553-8c35-cfaa42f3323a}</Project>
+      <Name>DriveWorks.Helper</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EquinoxeExtend.Shared.Enum\EquinoxeExtend.Shared.Enum.csproj">
+      <Project>{7747c8bf-0211-4a51-bab1-4836a7a36f2c}</Project>
+      <Name>EquinoxeExtend.Shared.Enum</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EquinoxeExtend.Shared.Object\EquinoxeExtend.Shared.Object.csproj">
+      <Project>{f0c9e438-4a29-4c9f-a58a-52273f3f7e19}</Project>
+      <Name>EquinoxeExtend.Shared.Object</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Log.Front\Service.Log.Front.csproj">
+      <Project>{cff12927-f80c-4e6e-8d99-12fbf2aa9dfa}</Project>
+      <Name>Service.Log.Front</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Pool.Front\Service.Pool.Front.csproj">
+      <Project>{e604a3ba-3dd3-4a01-a1c1-d80cae6bb484}</Project>
+      <Name>Service.Pool.Front</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Release.Front\Service.Release.Front.csproj">
+      <Project>{5d876934-4939-4e10-b4e8-d3f006a04f77}</Project>
+      <Name>Service.Release.Front</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.Specification.Front\Service.Specification.Front.csproj">
+      <Project>{6c14f67f-d563-4fd4-a2bd-eaba4022f4b8}</Project>
+      <Name>Service.Specification.Front</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Controls\ControlVersion\ucControlVersion.resx">
+      <DependentUpon>ucControlVersion.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.resx">
+      <DependentUpon>ucCheckTaskOnStartup.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\ReleaseManagement\ucRelease.resx">
+      <DependentUpon>ucRelease.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucImportTaskFromPDC.resx">
+      <DependentUpon>ucImportTaskFromPDC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucMainTaskEdit.resx">
+      <DependentUpon>ucMainTaskEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucMainTaskManager.resx">
+      <DependentUpon>ucMainTaskManager.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Package\ucPackageManagement.resx">
+      <DependentUpon>ucPackageManagement.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucSubTaskEdit.resx">
+      <DependentUpon>ucSubTaskEdit.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucTaskManager.resx">
+      <DependentUpon>ucTaskManager.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\Task\ucSubTaskManager.resx">
+      <DependentUpon>ucSubTaskManager.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Controls\WhereUsed\ucWhereUsed.resx">
+      <DependentUpon>ucWhereUsed.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\save-as-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\add icone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\delete icone.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\accept.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Gear-icon24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\thumb-up-icon24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Button-Help-icon24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\hourglass-icon24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\down-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\up-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file-search-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Excel-icon24.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Science-Test-Tube-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Science-Test-Tube-icon 32.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\undo-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\import-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Button-Refresh-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1473197106_lock.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1473197084_lock-open.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

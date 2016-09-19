@@ -1,0 +1,5 @@
+﻿CREATE TABLE [S_Product].[T_E_ProductLine]
+(
+	[ProductLineId]			BIGINT			NOT NULL	PRIMARY KEY CLUSTERED IDENTITY (1, 1),
+	[Name]					NVARCHAR(50)	NOT NULL	UNIQUE, 
+)

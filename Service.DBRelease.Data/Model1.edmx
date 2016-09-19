@@ -1,0 +1,468 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="ReleaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="T_E_Deployement">
+          <Key>
+            <PropertyRef Name="DeployementId" />
+          </Key>
+          <Property Name="DeployementId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="PackageId" Type="bigint" Nullable="false" />
+          <Property Name="DeployementDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="EnvironmentDestinationRef" Type="smallint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="T_E_ExternalProject">
+          <Key>
+            <PropertyRef Name="ExternalProjectId" />
+          </Key>
+          <Property Name="ExternalProjectId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProjectNumber" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="ProjectName" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="Description" Type="nvarchar(max)" />
+          <Property Name="Pilote" Type="nvarchar" MaxLength="100" Nullable="false" />
+          <Property Name="DateObjectiveEnd" Type="datetime2" Precision="7" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="StatusRef" Type="smallint" Nullable="false" />
+          <Property Name="TypeRef" Type="smallint" Nullable="false" />
+          <Property Name="IsProcessed" Type="bit" Nullable="false" />
+          <Property Name="BEImpacted" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="T_E_MainTask">
+          <Key>
+            <PropertyRef Name="MainTaskId" />
+          </Key>
+          <Property Name="MainTaskId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="nvarchar" MaxLength="300" Nullable="false" />
+          <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+          <Property Name="Comments" Type="nvarchar" MaxLength="1000" />
+          <Property Name="StatusRef" Type="smallint" Nullable="false" />
+          <Property Name="TaskTypeRef" Type="smallint" Nullable="false" />
+          <Property Name="ObjectifCloseDate" Type="datetime2" Precision="7" />
+          <Property Name="CreationUserGUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="RequestUserGUID" Type="uniqueidentifier" Nullable="false" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="PackageId" Type="bigint" />
+          <Property Name="StartDate" Type="datetime2" Precision="7" />
+          <Property Name="CreationDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="OpenedDate" Type="datetime2" Precision="7" />
+          <Property Name="CompletedDate" Type="datetime2" Precision="7" />
+          <Property Name="CanceledDate" Type="datetime2" Precision="7" />
+          <Property Name="ExternalProjectId" Type="bigint" />
+        </EntityType>
+        <EntityType Name="T_E_Package">
+          <Key>
+            <PropertyRef Name="PackageId" />
+          </Key>
+          <Property Name="PackageId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ReleaseNumber" Type="int" />
+          <Property Name="StatusRef" Type="smallint" Nullable="false" />
+          <Property Name="IsLocked" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="T_E_ProductLineTask">
+          <Key>
+            <PropertyRef Name="ProductLineTaskId" />
+          </Key>
+          <Property Name="ProductLineTaskId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ProductLineId" Type="bigint" Nullable="false" />
+          <Property Name="MainTaskId" Type="bigint" Nullable="false" />
+        </EntityType>
+        <EntityType Name="T_E_SubTask">
+          <Key>
+            <PropertyRef Name="SubTaskId" />
+          </Key>
+          <Property Name="SubTaskId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MainTaskId" Type="bigint" Nullable="false" />
+          <Property Name="Designation" Type="nvarchar" MaxLength="150" />
+          <Property Name="ProjectGUID" Type="uniqueidentifier" />
+          <Property Name="Progression" Type="int" Nullable="false" />
+          <Property Name="Duration" Type="int" />
+          <Property Name="Start" Type="int" />
+          <Property Name="DevelopperGUID" Type="uniqueidentifier" />
+          <Property Name="Comments" Type="nvarchar(max)" />
+        </EntityType>
+        <Association Name="FK_T_E_Deployement_PackageId">
+          <End Role="T_E_Package" Type="Self.T_E_Package" Multiplicity="1" />
+          <End Role="T_E_Deployement" Type="Self.T_E_Deployement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_Package">
+              <PropertyRef Name="PackageId" />
+            </Principal>
+            <Dependent Role="T_E_Deployement">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_MainTask_ExternalProjectId">
+          <End Role="T_E_ExternalProject" Type="Self.T_E_ExternalProject" Multiplicity="0..1" />
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_ExternalProject">
+              <PropertyRef Name="ExternalProjectId" />
+            </Principal>
+            <Dependent Role="T_E_MainTask">
+              <PropertyRef Name="ExternalProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_MainTask_PackageId">
+          <End Role="T_E_Package" Type="Self.T_E_Package" Multiplicity="0..1" />
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_Package">
+              <PropertyRef Name="PackageId" />
+            </Principal>
+            <Dependent Role="T_E_MainTask">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_ProductLineTask_MainTaskId">
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="1" />
+          <End Role="T_E_ProductLineTask" Type="Self.T_E_ProductLineTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_MainTask">
+              <PropertyRef Name="MainTaskId" />
+            </Principal>
+            <Dependent Role="T_E_ProductLineTask">
+              <PropertyRef Name="MainTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_ProjectTask_MainTaskId">
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="1" />
+          <End Role="T_E_SubTask" Type="Self.T_E_SubTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_MainTask">
+              <PropertyRef Name="MainTaskId" />
+            </Principal>
+            <Dependent Role="T_E_SubTask">
+              <PropertyRef Name="MainTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ReleaseModelStoreContainer">
+          <EntitySet Name="T_E_Deployement" EntityType="Self.T_E_Deployement" Schema="S_Release" store:Type="Tables" />
+          <EntitySet Name="T_E_ExternalProject" EntityType="Self.T_E_ExternalProject" Schema="S_Release" store:Type="Tables" />
+          <EntitySet Name="T_E_MainTask" EntityType="Self.T_E_MainTask" Schema="S_Release" store:Type="Tables" />
+          <EntitySet Name="T_E_Package" EntityType="Self.T_E_Package" Schema="S_Release" store:Type="Tables" />
+          <EntitySet Name="T_E_ProductLineTask" EntityType="Self.T_E_ProductLineTask" Schema="S_Release" store:Type="Tables" />
+          <EntitySet Name="T_E_SubTask" EntityType="Self.T_E_SubTask" Schema="S_Release" store:Type="Tables" />
+          <AssociationSet Name="FK_T_E_Deployement_PackageId" Association="Self.FK_T_E_Deployement_PackageId">
+            <End Role="T_E_Package" EntitySet="T_E_Package" />
+            <End Role="T_E_Deployement" EntitySet="T_E_Deployement" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_MainTask_ExternalProjectId" Association="Self.FK_T_E_MainTask_ExternalProjectId">
+            <End Role="T_E_ExternalProject" EntitySet="T_E_ExternalProject" />
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_MainTask_PackageId" Association="Self.FK_T_E_MainTask_PackageId">
+            <End Role="T_E_Package" EntitySet="T_E_Package" />
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_ProductLineTask_MainTaskId" Association="Self.FK_T_E_ProductLineTask_MainTaskId">
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+            <End Role="T_E_ProductLineTask" EntitySet="T_E_ProductLineTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_ProjectTask_MainTaskId" Association="Self.FK_T_E_ProjectTask_MainTaskId">
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+            <End Role="T_E_SubTask" EntitySet="T_E_SubTask" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="ReleaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="T_E_Deployement">
+          <Key>
+            <PropertyRef Name="DeployementId" />
+          </Key>
+          <Property Name="DeployementId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PackageId" Type="Int64" Nullable="false" />
+          <Property Name="DeployementDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="EnvironmentDestinationRef" Type="Int16" Nullable="false" />
+          <NavigationProperty Name="T_E_Package" Relationship="Self.FK_T_E_Deployement_PackageId" FromRole="T_E_Deployement" ToRole="T_E_Package" />
+        </EntityType>
+        <EntityType Name="T_E_ExternalProject">
+          <Key>
+            <PropertyRef Name="ExternalProjectId" />
+          </Key>
+          <Property Name="ExternalProjectId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProjectNumber" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="ProjectName" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Pilote" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="DateObjectiveEnd" Type="DateTime" Precision="7" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="StatusRef" Type="Int16" Nullable="false" />
+          <Property Name="TypeRef" Type="Int16" Nullable="false" />
+          <Property Name="IsProcessed" Type="Boolean" Nullable="false" />
+          <Property Name="BEImpacted" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="T_E_MainTask" Relationship="Self.FK_T_E_MainTask_ExternalProjectId" FromRole="T_E_ExternalProject" ToRole="T_E_MainTask" />
+        </EntityType>
+        <EntityType Name="T_E_MainTask">
+          <Key>
+            <PropertyRef Name="MainTaskId" />
+          </Key>
+          <Property Name="MainTaskId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="300" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="Comments" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="StatusRef" Type="Int16" Nullable="false" />
+          <Property Name="TaskTypeRef" Type="Int16" Nullable="false" />
+          <Property Name="ObjectifCloseDate" Type="DateTime" Precision="7" />
+          <Property Name="CreationUserGUID" Type="Guid" Nullable="false" />
+          <Property Name="RequestUserGUID" Type="Guid" Nullable="false" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="PackageId" Type="Int64" />
+          <Property Name="StartDate" Type="DateTime" Precision="7" />
+          <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="OpenedDate" Type="DateTime" Precision="7" />
+          <Property Name="CompletedDate" Type="DateTime" Precision="7" />
+          <Property Name="CanceledDate" Type="DateTime" Precision="7" />
+          <Property Name="ExternalProjectId" Type="Int64" />
+          <NavigationProperty Name="T_E_ExternalProject" Relationship="Self.FK_T_E_MainTask_ExternalProjectId" FromRole="T_E_MainTask" ToRole="T_E_ExternalProject" />
+          <NavigationProperty Name="T_E_Package" Relationship="Self.FK_T_E_MainTask_PackageId" FromRole="T_E_MainTask" ToRole="T_E_Package" />
+          <NavigationProperty Name="T_E_ProductLineTask" Relationship="Self.FK_T_E_ProductLineTask_MainTaskId" FromRole="T_E_MainTask" ToRole="T_E_ProductLineTask" />
+          <NavigationProperty Name="T_E_SubTask" Relationship="Self.FK_T_E_ProjectTask_MainTaskId" FromRole="T_E_MainTask" ToRole="T_E_SubTask" />
+        </EntityType>
+        <EntityType Name="T_E_Package">
+          <Key>
+            <PropertyRef Name="PackageId" />
+          </Key>
+          <Property Name="PackageId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ReleaseNumber" Type="Int32" />
+          <Property Name="StatusRef" Type="Int16" Nullable="false" />
+          <Property Name="IsLocked" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="T_E_Deployement" Relationship="Self.FK_T_E_Deployement_PackageId" FromRole="T_E_Package" ToRole="T_E_Deployement" />
+          <NavigationProperty Name="T_E_MainTask" Relationship="Self.FK_T_E_MainTask_PackageId" FromRole="T_E_Package" ToRole="T_E_MainTask" />
+        </EntityType>
+        <EntityType Name="T_E_ProductLineTask">
+          <Key>
+            <PropertyRef Name="ProductLineTaskId" />
+          </Key>
+          <Property Name="ProductLineTaskId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ProductLineId" Type="Int64" Nullable="false" />
+          <Property Name="MainTaskId" Type="Int64" Nullable="false" />
+          <NavigationProperty Name="T_E_MainTask" Relationship="Self.FK_T_E_ProductLineTask_MainTaskId" FromRole="T_E_ProductLineTask" ToRole="T_E_MainTask" />
+        </EntityType>
+        <EntityType Name="T_E_SubTask">
+          <Key>
+            <PropertyRef Name="SubTaskId" />
+          </Key>
+          <Property Name="SubTaskId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MainTaskId" Type="Int64" Nullable="false" />
+          <Property Name="Designation" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="ProjectGUID" Type="Guid" />
+          <Property Name="Progression" Type="Int32" Nullable="false" />
+          <Property Name="Duration" Type="Int32" />
+          <Property Name="Start" Type="Int32" />
+          <Property Name="DevelopperGUID" Type="Guid" />
+          <Property Name="Comments" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <NavigationProperty Name="T_E_MainTask" Relationship="Self.FK_T_E_ProjectTask_MainTaskId" FromRole="T_E_SubTask" ToRole="T_E_MainTask" />
+        </EntityType>
+        <Association Name="FK_T_E_Deployement_PackageId">
+          <End Role="T_E_Package" Type="Self.T_E_Package" Multiplicity="1" />
+          <End Role="T_E_Deployement" Type="Self.T_E_Deployement" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_Package">
+              <PropertyRef Name="PackageId" />
+            </Principal>
+            <Dependent Role="T_E_Deployement">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_MainTask_ExternalProjectId">
+          <End Role="T_E_ExternalProject" Type="Self.T_E_ExternalProject" Multiplicity="0..1" />
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_ExternalProject">
+              <PropertyRef Name="ExternalProjectId" />
+            </Principal>
+            <Dependent Role="T_E_MainTask">
+              <PropertyRef Name="ExternalProjectId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_MainTask_PackageId">
+          <End Role="T_E_Package" Type="Self.T_E_Package" Multiplicity="0..1" />
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_Package">
+              <PropertyRef Name="PackageId" />
+            </Principal>
+            <Dependent Role="T_E_MainTask">
+              <PropertyRef Name="PackageId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_ProductLineTask_MainTaskId">
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="1" />
+          <End Role="T_E_ProductLineTask" Type="Self.T_E_ProductLineTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_MainTask">
+              <PropertyRef Name="MainTaskId" />
+            </Principal>
+            <Dependent Role="T_E_ProductLineTask">
+              <PropertyRef Name="MainTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_T_E_ProjectTask_MainTaskId">
+          <End Role="T_E_MainTask" Type="Self.T_E_MainTask" Multiplicity="1" />
+          <End Role="T_E_SubTask" Type="Self.T_E_SubTask" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="T_E_MainTask">
+              <PropertyRef Name="MainTaskId" />
+            </Principal>
+            <Dependent Role="T_E_SubTask">
+              <PropertyRef Name="MainTaskId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="ReleaseDBContext" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="T_E_Deployement" EntityType="Self.T_E_Deployement" />
+          <EntitySet Name="T_E_ExternalProject" EntityType="Self.T_E_ExternalProject" />
+          <EntitySet Name="T_E_MainTask" EntityType="Self.T_E_MainTask" />
+          <EntitySet Name="T_E_Package" EntityType="Self.T_E_Package" />
+          <EntitySet Name="T_E_ProductLineTask" EntityType="Self.T_E_ProductLineTask" />
+          <EntitySet Name="T_E_SubTask" EntityType="Self.T_E_SubTask" />
+          <AssociationSet Name="FK_T_E_Deployement_PackageId" Association="Self.FK_T_E_Deployement_PackageId">
+            <End Role="T_E_Package" EntitySet="T_E_Package" />
+            <End Role="T_E_Deployement" EntitySet="T_E_Deployement" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_MainTask_ExternalProjectId" Association="Self.FK_T_E_MainTask_ExternalProjectId">
+            <End Role="T_E_ExternalProject" EntitySet="T_E_ExternalProject" />
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_MainTask_PackageId" Association="Self.FK_T_E_MainTask_PackageId">
+            <End Role="T_E_Package" EntitySet="T_E_Package" />
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_ProductLineTask_MainTaskId" Association="Self.FK_T_E_ProductLineTask_MainTaskId">
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+            <End Role="T_E_ProductLineTask" EntitySet="T_E_ProductLineTask" />
+          </AssociationSet>
+          <AssociationSet Name="FK_T_E_ProjectTask_MainTaskId" Association="Self.FK_T_E_ProjectTask_MainTaskId">
+            <End Role="T_E_MainTask" EntitySet="T_E_MainTask" />
+            <End Role="T_E_SubTask" EntitySet="T_E_SubTask" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="ReleaseModelStoreContainer" CdmEntityContainer="ReleaseDBContext">
+          <EntitySetMapping Name="T_E_Deployement">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_Deployement">
+              <MappingFragment StoreEntitySet="T_E_Deployement">
+                <ScalarProperty Name="DeployementId" ColumnName="DeployementId" />
+                <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+                <ScalarProperty Name="DeployementDate" ColumnName="DeployementDate" />
+                <ScalarProperty Name="EnvironmentDestinationRef" ColumnName="EnvironmentDestinationRef" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_E_ExternalProject">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_ExternalProject">
+              <MappingFragment StoreEntitySet="T_E_ExternalProject">
+                <ScalarProperty Name="ExternalProjectId" ColumnName="ExternalProjectId" />
+                <ScalarProperty Name="ProjectNumber" ColumnName="ProjectNumber" />
+                <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Pilote" ColumnName="Pilote" />
+                <ScalarProperty Name="DateObjectiveEnd" ColumnName="DateObjectiveEnd" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="StatusRef" ColumnName="StatusRef" />
+                <ScalarProperty Name="TypeRef" ColumnName="TypeRef" />
+                <ScalarProperty Name="IsProcessed" ColumnName="IsProcessed" />
+                <ScalarProperty Name="BEImpacted" ColumnName="BEImpacted" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_E_MainTask">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_MainTask">
+              <MappingFragment StoreEntitySet="T_E_MainTask">
+                <ScalarProperty Name="MainTaskId" ColumnName="MainTaskId" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+                <ScalarProperty Name="StatusRef" ColumnName="StatusRef" />
+                <ScalarProperty Name="TaskTypeRef" ColumnName="TaskTypeRef" />
+                <ScalarProperty Name="ObjectifCloseDate" ColumnName="ObjectifCloseDate" />
+                <ScalarProperty Name="CreationUserGUID" ColumnName="CreationUserGUID" />
+                <ScalarProperty Name="RequestUserGUID" ColumnName="RequestUserGUID" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+                <ScalarProperty Name="StartDate" ColumnName="StartDate" />
+                <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="OpenedDate" ColumnName="OpenedDate" />
+                <ScalarProperty Name="CompletedDate" ColumnName="CompletedDate" />
+                <ScalarProperty Name="CanceledDate" ColumnName="CanceledDate" />
+                <ScalarProperty Name="ExternalProjectId" ColumnName="ExternalProjectId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_E_Package">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_Package">
+              <MappingFragment StoreEntitySet="T_E_Package">
+                <ScalarProperty Name="PackageId" ColumnName="PackageId" />
+                <ScalarProperty Name="ReleaseNumber" ColumnName="ReleaseNumber" />
+                <ScalarProperty Name="StatusRef" ColumnName="StatusRef" />
+                <ScalarProperty Name="IsLocked" ColumnName="IsLocked" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_E_ProductLineTask">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_ProductLineTask">
+              <MappingFragment StoreEntitySet="T_E_ProductLineTask">
+                <ScalarProperty Name="ProductLineTaskId" ColumnName="ProductLineTaskId" />
+                <ScalarProperty Name="ProductLineId" ColumnName="ProductLineId" />
+                <ScalarProperty Name="MainTaskId" ColumnName="MainTaskId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="T_E_SubTask">
+            <EntityTypeMapping TypeName="ReleaseModel.T_E_SubTask">
+              <MappingFragment StoreEntitySet="T_E_SubTask">
+                <ScalarProperty Name="SubTaskId" ColumnName="SubTaskId" />
+                <ScalarProperty Name="MainTaskId" ColumnName="MainTaskId" />
+                <ScalarProperty Name="Designation" ColumnName="Designation" />
+                <ScalarProperty Name="ProjectGUID" ColumnName="ProjectGUID" />
+                <ScalarProperty Name="Progression" ColumnName="Progression" />
+                <ScalarProperty Name="Duration" ColumnName="Duration" />
+                <ScalarProperty Name="Start" ColumnName="Start" />
+                <ScalarProperty Name="DevelopperGUID" ColumnName="DevelopperGUID" />
+                <ScalarProperty Name="Comments" ColumnName="Comments" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Aucun" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

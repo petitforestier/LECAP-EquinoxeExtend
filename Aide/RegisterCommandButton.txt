@@ -1,0 +1,19 @@
+private void RegisterCommandButton()
+{
+	IViewManager viewManager = mApplication.ServiceManager.GetServer<IViewManager>();
+
+	if(viewManager == null)
+		return;
+
+	var variablesView = viewManager.GetViewByName(AdministratorViewNames.Variables, true);
+	var command = variablesView.ViewEnvironment.CommandManager.RegisterCommand("MyLovelyCommand", StateFilter.Empty, "My Lovely Command", null);
+	var buttonGroup = variablesView.ViewEnvironment.CommandBarManager.AddGroup("My Lovely UI Group");
+	var buttonUi = buttonGroup.AddCommandButton(command.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
+
+	command.Invoking += Command_Invoking;
+}
+
+private void Command_Invoking(object sender, CommandInvokeEventArgs e)
+{
+	MessageBox.Show("let your imagination run wild!");
+}

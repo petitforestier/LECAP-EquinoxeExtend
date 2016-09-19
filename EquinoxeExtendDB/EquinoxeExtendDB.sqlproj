@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Name>SpecificationManagementDB</Name>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>4.1</ProjectVersion>
+    <ProjectGuid>{77bddc0a-dbce-4e39-86b4-f40be38791ca}</ProjectGuid>
+    <DSP>Microsoft.Data.Tools.Schema.Sql.Sql100DatabaseSchemaProvider</DSP>
+    <OutputType>Database</OutputType>
+    <RootPath>
+    </RootPath>
+    <RootNamespace>SpecificationManagementDB</RootNamespace>
+    <AssemblyName>SpecificationManagementDB</AssemblyName>
+    <ModelCollation>1033,CI</ModelCollation>
+    <DefaultFileStructure>BySchemaAndSchemaType</DefaultFileStructure>
+    <DeployToDatabase>True</DeployToDatabase>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetLanguage>CS</TargetLanguage>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <SqlServerVerification>False</SqlServerVerification>
+    <IncludeCompositeObjects>True</IncludeCompositeObjects>
+    <TargetDatabaseSet>True</TargetDatabaseSet>
+    <DefaultCollation>SQL_Latin1_General_CP1_CI_AI</DefaultCollation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineDebug>false</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <BuildScriptName>$(MSBuildProjectName).sql</BuildScriptName>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">11.0</VisualStudioVersion>
+    <!-- Default to the v11.0 targets path if the targets file for the current VS version is not found -->
+    <SSDTExists Condition="Exists('$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets')">True</SSDTExists>
+    <VisualStudioVersion Condition="'$(SSDTExists)' == ''">11.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Condition="'$(SQLDBExtensionsRefPath)' != ''" Project="$(SQLDBExtensionsRefPath)\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <Import Condition="'$(SQLDBExtensionsRefPath)' == ''" Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\v$(VisualStudioVersion)\SSDT\Microsoft.Data.Tools.Schema.SqlTasks.targets" />
+  <ItemGroup>
+    <Folder Include="Properties" />
+    <Folder Include="Tables" />
+    <Folder Include="Tables\S_Record" />
+    <Folder Include="Schema" />
+    <Folder Include="Tables\S_Pool" />
+    <Folder Include="Tables\S_Log" />
+    <Folder Include="Snapshots" />
+    <Folder Include="Tables\S_Release" />
+    <Folder Include="Tables\S_Product" />
+    <Folder Include="Snapshots\Deployed" />
+    <Folder Include="Tables\S_Pool\Procédure" />
+    <Folder Include="Script" />
+    <Folder Include="Script\Deployed" />
+  </ItemGroup>
+  <ItemGroup>
+    <Build Include="Schema\Schema.sql" />
+    <Build Include="Tables\S_Record\T_E_Specification.sql" />
+    <Build Include="Tables\S_Pool\T_E_Pool.sql" />
+    <Build Include="Tables\S_Log\T_E_Log.sql" />
+    <Build Include="Tables\S_Release\T_E_MainTask.sql" />
+    <Build Include="Tables\S_Release\T_E_SubTask.sql" />
+    <Build Include="Tables\S_Release\T_E_Package.sql" />
+    <Build Include="Tables\S_Release\T_E_Deployement.sql" />
+    <Build Include="Tables\S_Product\T_E_ProductLine.sql" />
+    <Build Include="Tables\S_Release\T_E_ProductLineTask.sql" />
+    <Build Include="Tables\S_Pool\Procédure\P_D_CreatePoolIfNotExists.sql" />
+    <Build Include="Tables\S_Pool\Procédure\P_D_StepPool.sql" />
+    <Build Include="Tables\S_Release\T_E_ExternalProject.sql" />
+    <None Include="Script\Deployed\Scriptv010.sql" />
+    <None Include="Script\Deployed\Scriptv011.sql" />
+    <None Include="Script\Deployed\Scriptv013.sql" />
+    <None Include="Script\Deployed\Scriptv014.sql" />
+    <None Include="Script\Deployed\Scriptv015.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Equinoxe_SandBox_Extend.publish.xml" />
+    <None Include="Snapshots\Deployed\v002.dacpac" />
+    <None Include="Snapshots\Deployed\v003.dacpac" />
+    <None Include="Snapshots\Deployed\v004.dacpac" />
+    <None Include="Snapshots\Deployed\v006.dacpac" />
+    <None Include="Snapshots\Deployed\v007.dacpac" />
+    <None Include="Snapshots\Deployed\v008.dacpac" />
+    <None Include="Snapshots\Deployed\v009.dacpac" />
+    <None Include="Snapshots\Deployed\v010.dacpac" />
+    <None Include="Snapshots\Deployed\v011.dacpac" />
+    <None Include="Snapshots\Deployed\v012.dacpac" />
+    <None Include="Snapshots\Deployed\v013.dacpac" />
+    <None Include="Snapshots\Deployed\v014.dacpac" />
+    <None Include="Snapshots\Deployed\v015.dacpac" />
+    <None Include="Snapshots\Deployed\v016.dacpac" />
+  </ItemGroup>
+  <ItemGroup>
+    <RefactorLog Include="EquinoxeExtendDB.refactorlog" />
+  </ItemGroup>
+</Project>

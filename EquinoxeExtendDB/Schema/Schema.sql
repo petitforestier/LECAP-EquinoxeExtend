@@ -1,0 +1,19 @@
+﻿CREATE SCHEMA [S_Record]
+GO
+
+CREATE SCHEMA [S_Pool]
+GO
+
+CREATE SCHEMA [S_Log]
+GO
+
+CREATE SCHEMA [S_Release]
+GO
+
+CREATE SCHEMA [S_Product]
+GO
+
+
+
+
+
