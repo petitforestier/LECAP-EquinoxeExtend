@@ -62,6 +62,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\Library.Entity\Library.Entity.csproj">
+      <Project>{1c8a59ef-7cc7-4d33-aa28-4c32d4329e17}</Project>
+      <Name>Library.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+      <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
+      <Name>Library.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DriveWorks.Helper\DriveWorks.Helper.csproj">
       <Project>{a310cc19-68e0-4553-8c35-cfaa42f3323a}</Project>
       <Name>DriveWorks.Helper</Name>

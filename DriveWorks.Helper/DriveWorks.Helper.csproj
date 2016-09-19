@@ -77,6 +77,10 @@
     <Compile Include="SearchRuleProcess.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+      <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
+      <Name>Library.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EquinoxeExtend.Shared.Enum\EquinoxeExtend.Shared.Enum.csproj">
       <Project>{7747c8bf-0211-4a51-bab1-4836a7a36f2c}</Project>
       <Name>EquinoxeExtend.Shared.Enum</Name>

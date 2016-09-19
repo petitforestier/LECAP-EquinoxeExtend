@@ -44,6 +44,14 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\Library.Entity\Library.Entity.csproj">
+      <Project>{1c8a59ef-7cc7-4d33-aa28-4c32d4329e17}</Project>
+      <Name>Library.Entity</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+      <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
+      <Name>Library.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EquinoxeExtend.Shared.Enum\EquinoxeExtend.Shared.Enum.csproj">
       <Project>{7747c8bf-0211-4a51-bab1-4836a7a36f2c}</Project>
       <Name>EquinoxeExtend.Shared.Enum</Name>

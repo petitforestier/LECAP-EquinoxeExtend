@@ -145,6 +145,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Library\Library.Control\Library.Control.csproj">
+      <Project>{26813b7a-de40-455e-9bd3-544e976f3ace}</Project>
+      <Name>Library.Control</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Library.Excel\Library.Excel.csproj">
+      <Project>{7bfa9e65-4118-4cc8-89a0-e11401c49c37}</Project>
+      <Name>Library.Excel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+      <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
+      <Name>Library.Tools</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DriveWorks.Helper\DriveWorks.Helper.csproj">
       <Project>{a310cc19-68e0-4553-8c35-cfaa42f3323a}</Project>
       <Name>DriveWorks.Helper</Name>
