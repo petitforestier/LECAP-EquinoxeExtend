@@ -60,12 +60,20 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 cboProject.DataSource = _Group.Projects.GetProjects().ToList().Enum().OrderBy(x => x.Name).ToList();
                 cboProject.SelectedIndex = -1;
 
-                //Gamme
-                cboProductLine.DisplayMember = PropertyObserver.GetPropertyName<ProductLine>(x => x.Name);
-                cboProductLine.ValueMember = PropertyObserver.GetPropertyName<ProductLine>(x => x.ProductLineId);
                 using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                {
+                    //Gamme
+                    cboProductLine.DisplayMember = PropertyObserver.GetPropertyName<ProductLine>(x => x.Name);
+                    cboProductLine.ValueMember = PropertyObserver.GetPropertyName<ProductLine>(x => x.ProductLineId);
                     cboProductLine.DataSource = releaseService.GetProductLineList().Enum().OrderBy(x => x.Name).Enum().ToList();
-                cboProductLine.SelectedIndex = -1;
+                    cboProductLine.SelectedIndex = -1;
+
+                    //Package
+                    cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdString);
+                    cboPackage.ValueMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageId);
+                    cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All);
+                    cboPackage.SelectedIndex = -1;
+                }
 
                 //Type
                 cboMainTaskType = cboMainTaskType.FillByDictionary(new MainTaskTypeEnum().ToDictionary("FR"));
@@ -76,7 +84,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 cboDevelopper.ValueMember = PropertyObserver.GetPropertyName<DriveWorks.Security.UserDetails>(x => x.Id);
                 cboDevelopper.DataSource = _Group.GetUserAllowedCaptureList();
                 cboDevelopper.SelectedIndex = -1;
-
+              
                 this.ucSubTaskManager.Initialize(_Group);
                 this.ucSubTaskManager.CreateProjectTask += CreateSubTask;
                 this.ucSubTaskManager.UpdateProjectTask += UpdateSubTask;
@@ -128,8 +136,9 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
             long? productLineId = (cboProductLine.SelectedIndex != -1) ? (long?)cboProductLine.SelectedValue : null;
             MainTaskTypeEnum? type = (cboMainTaskType.SelectedIndex != -1) ? (MainTaskTypeEnum?)cboMainTaskType.SelectedValue : null;
             Guid? developperId = (cboDevelopper.SelectedIndex != -1) ? (Guid?)cboDevelopper.SelectedValue : null;
+            long? packageId = (cboPackage.SelectedIndex != -1) ? (long?)cboPackage.SelectedValue : null;
 
-            this.ucMainTaskManager.LoadControl((MainTaskStatusSearchEnum)cboMainTaskStatusSearch.SelectedValue, (MainTaskOrderByEnum)cboOrderBy.SelectedValue, projectId, productLineId, type, developperId);
+            this.ucMainTaskManager.LoadControl((MainTaskStatusSearchEnum)cboMainTaskStatusSearch.SelectedValue, (MainTaskOrderByEnum)cboOrderBy.SelectedValue, projectId, productLineId, type, developperId, packageId);
         }
 
         private void LoadMainTask()
@@ -382,5 +391,26 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         }
 
         #endregion
+
+        private void cboPackage_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboPackage.DroppedDown = false;
+                        cboPackage.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
     }
 }

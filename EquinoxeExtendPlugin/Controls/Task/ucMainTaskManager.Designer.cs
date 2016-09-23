@@ -42,9 +42,9 @@
             this.cmdUpPriority = new System.Windows.Forms.ToolStripButton();
             this.cmdDownPriority = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdAcceptRequestMainTask = new System.Windows.Forms.ToolStripButton();
             this.cmdCancelTask = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.cmdAcceptRequestMainTask = new System.Windows.Forms.ToolStripButton();
             this.dgvMain = new System.Windows.Forms.DataGridView();
             this.tlpMain.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -200,6 +200,17 @@
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 30);
             // 
+            // cmdAcceptRequestMainTask
+            // 
+            this.cmdAcceptRequestMainTask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdAcceptRequestMainTask.Image = global::EquinoxeExtendPlugin.Properties.Resources.accept;
+            this.cmdAcceptRequestMainTask.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdAcceptRequestMainTask.Name = "cmdAcceptRequestMainTask";
+            this.cmdAcceptRequestMainTask.Size = new System.Drawing.Size(33, 27);
+            this.cmdAcceptRequestMainTask.Text = "Accepter la demande et la mettre en attente";
+            this.cmdAcceptRequestMainTask.ToolTipText = "Valider la demande de tâche et la mettre en attente";
+            this.cmdAcceptRequestMainTask.Click += new System.EventHandler(this.cmdValidateMainTask_Click);
+            // 
             // cmdCancelTask
             // 
             this.cmdCancelTask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -214,17 +225,6 @@
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
-            // 
-            // cmdAcceptRequestMainTask
-            // 
-            this.cmdAcceptRequestMainTask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdAcceptRequestMainTask.Image = global::EquinoxeExtendPlugin.Properties.Resources.accept;
-            this.cmdAcceptRequestMainTask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdAcceptRequestMainTask.Name = "cmdAcceptRequestMainTask";
-            this.cmdAcceptRequestMainTask.Size = new System.Drawing.Size(33, 27);
-            this.cmdAcceptRequestMainTask.Text = "Accepter la demande et la mettre en attente";
-            this.cmdAcceptRequestMainTask.ToolTipText = "Valider la demande de tâche et la mettre en attente";
-            this.cmdAcceptRequestMainTask.Click += new System.EventHandler(this.cmdValidateMainTask_Click);
             // 
             // dgvMain
             // 

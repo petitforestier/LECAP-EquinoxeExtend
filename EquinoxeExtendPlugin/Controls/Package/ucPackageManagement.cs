@@ -44,6 +44,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 cboPackageSearch = cboPackageSearch.FillByDictionary(new PackageStatusSearchEnum().ToDictionary("FR"));
                 cboPackageSearch.SelectedValue = PackageStatusSearchEnum.NotCompleted;
 
+                //Main task
                 dgvMainTask.MultiSelect = false;
                 dgvMainTask.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvMainTask.ReadOnly = true;
@@ -53,8 +54,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvMainTask.AllowUserToResizeRows = false;
                 dgvMainTask.AllowUserToResizeColumns = true;
                 dgvMainTask.AllowUserToOrderColumns = false;
-                dgvMainTask.DataSource = bdsMainTask;
 
+                bdsMainTask.DataSource = new List<MainTaskView>();
+                dgvMainTask.DataSource = bdsMainTask;
+                dgvMainTask.FormatColumns<MainTaskView>("FR");
+
+                //Package
                 dgvPackage.MultiSelect = false;
                 dgvPackage.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvPackage.ReadOnly = true;
@@ -64,19 +69,27 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvPackage.AllowUserToResizeRows = false;
                 dgvPackage.AllowUserToResizeColumns = true;
                 dgvPackage.AllowUserToOrderColumns = false;
-                dgvPackage.DataSource = bdsPackage;              
 
-                dgvProjectTask.MultiSelect = false;
-                dgvProjectTask.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-                dgvProjectTask.ReadOnly = true;
-                dgvProjectTask.RowTemplate.Height = 35;
-                dgvProjectTask.AllowUserToAddRows = false;
-                dgvProjectTask.RowHeadersVisible = false;
-                dgvProjectTask.AllowUserToResizeRows = false;
-                dgvProjectTask.AllowUserToResizeColumns = true;
-                dgvProjectTask.AllowUserToOrderColumns = false;
-                dgvProjectTask.DataSource = bdsProjectTask;
+                bdsPackage.DataSource = new List<PackageView>();
+                dgvPackage.DataSource = bdsPackage;
+                dgvPackage.FormatColumns<PackageView>("FR");
 
+                //SubTask
+                dgvSubTask.MultiSelect = false;
+                dgvSubTask.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+                dgvSubTask.ReadOnly = true;
+                dgvSubTask.RowTemplate.Height = 35;
+                dgvSubTask.AllowUserToAddRows = false;
+                dgvSubTask.RowHeadersVisible = false;
+                dgvSubTask.AllowUserToResizeRows = false;
+                dgvSubTask.AllowUserToResizeColumns = true;
+                dgvSubTask.AllowUserToOrderColumns = false;
+
+                bdsSubTask.DataSource = new List<SubTaskView>();
+                dgvSubTask.DataSource = bdsSubTask;
+                dgvSubTask.FormatColumns<SubTaskView>("FR");
+
+                //Deployement
                 dgvDeployement.MultiSelect = false;
                 dgvDeployement.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
                 dgvDeployement.ReadOnly = true;
@@ -86,16 +99,14 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvDeployement.AllowUserToResizeRows = false;
                 dgvDeployement.AllowUserToResizeColumns = true;
                 dgvDeployement.AllowUserToOrderColumns = false;
+
+                bdsDeployement.DataSource = new List<DeployementView>();
                 dgvDeployement.DataSource = bdsDeployement;
+                dgvDeployement.FormatColumns<DeployementView>("FR");
 
                 LoadPackageDataGridView();
             }
         }
-
-        private BindingSource bdsPackage = new BindingSource();
-        private BindingSource bdsMainTask = new BindingSource();
-        private BindingSource bdsProjectTask = new BindingSource();
-        private BindingSource bdsDeployement = new BindingSource();
 
         #endregion
 
@@ -252,7 +263,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 else
                     throw new Exception(iObj.Status.ToStringWithEnumName());
 
-
                 newView.Name = iObj.Name;
 
                 //Progression
@@ -266,14 +276,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
             #endregion
         }
 
-        protected class ProjectTaskView
+        protected class SubTaskView
         {
-            //[Visible]
-            //[Name("FR", "N° sous tâche")]
-            //[WidthColumn(90)]
-            //[ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
-            //public string ProjectTask { get; set; }
-
             #region Public PROPERTIES
 
             [Visible]
@@ -294,12 +298,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
             #region Public METHODS
 
-            public static ProjectTaskView ConvertTo(SubTask iObj, Group iGroup)
+            public static SubTaskView ConvertTo(SubTask iObj, Group iGroup)
             {
                 if (iObj == null)
                     return null;
 
-                var newView = new ProjectTaskView();
+                var newView = new SubTaskView();
                 newView.Object = iObj;
 
                 //ProjectGUID
@@ -314,9 +318,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 else
                     newView.Action = iObj.Designation;
 
-
                 //Progression
-                var imageWidth = (int)typeof(ProjectTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<ProjectTaskView>(x => x.Progression));
+                var imageWidth = (int)typeof(SubTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<SubTaskView>(x => x.Progression));
                 newView.Progression = Library.Control.Datagridview.ImageHelper.GetProgressionBarImage(iObj.Progression, DATAGRIDVIEWROWHEIGTH, imageWidth, true);
 
                 return newView;
@@ -370,6 +373,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
         #region Private FIELDS
 
         private const int DATAGRIDVIEWROWHEIGTH = 35;
+        private BindingSource bdsPackage = new BindingSource();
+        private BindingSource bdsMainTask = new BindingSource();
+        private BindingSource bdsSubTask = new BindingSource();
+        private BindingSource bdsDeployement = new BindingSource();
         private IApplication _Application;
         private BoolLock _IsLoading = new BoolLock();
         private Group _Group;
@@ -400,7 +407,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboPackageSearch.SelectedValue);
                 bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
-                dgvPackage.FormatColumns<PackageView>("FR");
             }
             LoadMainTaskProjectTaskDatagridview();
         }
@@ -413,6 +419,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     LoadMainTaskProjectTaskDatagridview();
+                    dgvPackage.Select();
                 }
             }
             catch (Exception ex)
@@ -427,8 +434,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             if (seletedPackage != null)
             {
                 bdsMainTask.DataSource = seletedPackage.MainTasks.Enum().Select(x => MainTaskView.ConvertTo(x)).Enum().ToList();
-                dgvMainTask.FormatColumns<MainTaskView>("FR");
-
                 var projectTaskGroup = seletedPackage.SubTasks.Enum().GroupBy(x => x.ProjectGUID);
 
                 var projectList = new List<SubTask>();
@@ -439,15 +444,14 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     newProjectTask.ProjectGUID = groupItem.First().ProjectGUID;
                     projectList.Add(newProjectTask);
                 }
-                bdsProjectTask.DataSource = projectList.Select(x => ProjectTaskView.ConvertTo(x, _Group)).Enum().ToList();
-                dgvProjectTask.FormatColumns<ProjectTaskView>("FR");
+                bdsSubTask.DataSource = projectList.Select(x => SubTaskView.ConvertTo(x, _Group)).Enum().ToList();
                 bdsDeployement.DataSource = seletedPackage.Deployements.Enum().Select(x => DeployementView.ConvertTo(x)).Enum().ToList();
-                dgvDeployement.FormatColumns<DeployementView>("FR");
+                dgvDeployement.Focus();
             }
             else
             {
-                bdsMainTask.DataSource = null;
-                bdsProjectTask.DataSource = null;
+                bdsMainTask.Clear ()  ;
+                bdsSubTask.Clear();
             }
         }
 
@@ -471,7 +475,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         if (thePackage.IsLocked != selectedPackage.IsLocked)
                             throw new Exception("L'état de verrouillage du package à changé depuis le chargement. Veuillez recharger les packages");
 
-                        if (thePackage.Status != PackageStatusEnum.Developpement 
+                        if (thePackage.Status != PackageStatusEnum.Developpement
                             && thePackage.Status != PackageStatusEnum.Waiting)
                             throw new Exception("Le package doit être en 'Developpement' ou en 'Attente' pour pouvoir modifier le verrouillage");
 
@@ -587,8 +591,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                     //Admin obligatoire
                     ThrowExceptionIfCurrentUserIsNotAdmin();
-
-                    
 
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
@@ -819,7 +821,5 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
-
-
     }
 }

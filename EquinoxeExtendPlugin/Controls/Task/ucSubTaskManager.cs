@@ -1,7 +1,9 @@
 ﻿using DriveWorks;
 using DriveWorks.Helper;
+using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
+using Library.Control.Extensions;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using Library.Tools.Misc;
@@ -13,7 +15,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using EquinoxeExtend.Shared.Enum;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -74,11 +75,15 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvSubTasks.ReadOnly = true;
                 dgvSubTasks.RowTemplate.Height = DATAGRIDVIEWROWHEIGHT;
                 dgvSubTasks.AllowUserToAddRows = false;
-                dgvSubTasks.DataSource = _SubTaskBindingSource;
+
                 dgvSubTasks.RowHeadersVisible = false;
                 dgvSubTasks.AllowUserToResizeRows = false;
                 dgvSubTasks.AllowUserToResizeColumns = true;
                 dgvSubTasks.AllowUserToOrderColumns = false;
+
+                _SubTaskBindingSource.DataSource = new List<SubTaskView>();
+                dgvSubTasks.DataSource = _SubTaskBindingSource;
+                dgvSubTasks.FormatColumns<SubTaskView>("FR");
             }
         }
 
@@ -122,13 +127,13 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         protected class SubTaskView
         {
-            #region Public PROPERTIES
-
             //[Visible]
             //[Name("FR", "N° sous tâche")]
             //[WidthColumn(90)]
             //[ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             //public string ProjectTask { get; set; }
+
+            #region Public PROPERTIES
 
             [Visible]
             [Name("FR", "Action")]
@@ -220,7 +225,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 var list = subTaskList.Enum().OrderByDescending(x => x.MainTaskId).Select(x => SubTaskView.ConvertTo(x, _Group)).ToList();
                 _SubTaskBindingSource.DataSource = list;
-                dgvSubTasks.FormatColumns<SubTaskView>("FR");
                 dgvSubTasks.Refresh();
             }
             else
@@ -235,7 +239,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (iSelectedSubTaskId != null)
                 {
                     dgvSubTasks.Refresh();
-                    dgvSubTasks.SelectRowByPropertyValue<SubTaskView>(x=>x.Object.SubTaskId.ToString(), iSelectedSubTaskId.ToString());
+                    dgvSubTasks.SelectRowByPropertyValue<SubTaskView>(x => x.Object.SubTaskId.ToString(), iSelectedSubTaskId.ToString());
                 }
 
                 var selectedTransaction = GetSelectedSubTask();
@@ -258,6 +262,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     SubTaskSelectionChanged(GetSelectedSubTask());
+                    dgvSubTasks.Select();
                 }
             }
             catch (Exception ex)
@@ -339,6 +344,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             cmdEditProjectTask_Click(sender, e);
         }
+
 
         #endregion
     }

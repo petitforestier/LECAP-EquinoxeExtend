@@ -53,7 +53,7 @@
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
             this.tlpRight = new System.Windows.Forms.TableLayoutPanel();
             this.fraProjectTask = new System.Windows.Forms.GroupBox();
-            this.dgvProjectTask = new System.Windows.Forms.DataGridView();
+            this.dgvSubTask = new System.Windows.Forms.DataGridView();
             this.fraDeployement = new System.Windows.Forms.GroupBox();
             this.dgvDeployement = new System.Windows.Forms.DataGridView();
             this.tlpMain.SuspendLayout();
@@ -72,7 +72,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvMainTask)).BeginInit();
             this.tlpRight.SuspendLayout();
             this.fraProjectTask.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dgvProjectTask)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSubTask)).BeginInit();
             this.fraDeployement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDeployement)).BeginInit();
             this.SuspendLayout();
@@ -342,7 +342,7 @@
             // 
             // fraProjectTask
             // 
-            this.fraProjectTask.Controls.Add(this.dgvProjectTask);
+            this.fraProjectTask.Controls.Add(this.dgvSubTask);
             this.fraProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTask.Location = new System.Drawing.Point(3, 258);
             this.fraProjectTask.Name = "fraProjectTask";
@@ -351,14 +351,14 @@
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâches";
             // 
-            // dgvProjectTask
+            // dgvSubTask
             // 
-            this.dgvProjectTask.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dgvProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvProjectTask.Location = new System.Drawing.Point(3, 16);
-            this.dgvProjectTask.Name = "dgvProjectTask";
-            this.dgvProjectTask.Size = new System.Drawing.Size(396, 231);
-            this.dgvProjectTask.TabIndex = 6;
+            this.dgvSubTask.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgvSubTask.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dgvSubTask.Location = new System.Drawing.Point(3, 16);
+            this.dgvSubTask.Name = "dgvSubTask";
+            this.dgvSubTask.Size = new System.Drawing.Size(396, 231);
+            this.dgvSubTask.TabIndex = 6;
             // 
             // fraDeployement
             // 
@@ -405,7 +405,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvMainTask)).EndInit();
             this.tlpRight.ResumeLayout(false);
             this.fraProjectTask.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dgvProjectTask)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dgvSubTask)).EndInit();
             this.fraDeployement.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDeployement)).EndInit();
             this.ResumeLayout(false);
@@ -425,7 +425,7 @@
         private System.Windows.Forms.Button cmdPackageSearch;
         private System.Windows.Forms.DataGridView dgvPackage;
         private System.Windows.Forms.DataGridView dgvMainTask;
-        private System.Windows.Forms.DataGridView dgvProjectTask;
+        private System.Windows.Forms.DataGridView dgvSubTask;
         private System.Windows.Forms.DataGridView dgvDeployement;
         private System.Windows.Forms.GroupBox fraProjectTask;
         private System.Windows.Forms.GroupBox fraDeployement;

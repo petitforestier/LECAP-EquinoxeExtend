@@ -308,7 +308,7 @@ namespace Service.Release.Front
             return DBReleaseDataService.GetQuery<T_E_MainTask>(null).Where(x => x.PackageId == iPackageId).Enum().Select(x => x.Convert()).Enum().ToList();
         }
 
-        public Tuple<List<MainTask>, int> GetMainTaskList(MainTaskStatusSearchEnum iMainTasksSearchEnum, MainTaskOrderByEnum iOrderBy, Guid? iProjectGUID, long? iProductLineId, MainTaskTypeEnum? iMainTaskType,Guid? iDevelopperGuid, int iSkip, int iTake, GranularityEnum iGranularity)
+        public Tuple<List<MainTask>, int> GetMainTaskList(MainTaskStatusSearchEnum iMainTasksSearchEnum, MainTaskOrderByEnum iOrderBy, Guid? iProjectGUID, long? iProductLineId, MainTaskTypeEnum? iMainTaskType,Guid? iDevelopperGuid,long? iPackageId, int iSkip, int iTake, GranularityEnum iGranularity)
         {
             if (iTake < 1) throw new Exception("Le nombre à prendre est invalide");
 
@@ -356,6 +356,12 @@ namespace Service.Release.Front
             if(iDevelopperGuid != null)
             {
                 theQuery = theQuery.Where(x => x.T_E_SubTask.Any(y=>y.DevelopperGUID == iDevelopperGuid));              
+            }
+
+            //Package
+            if (iPackageId != null)
+            {
+                theQuery = theQuery.Where(x => x.PackageId == iPackageId);
             }
 
             var totalCount = theQuery.Count();

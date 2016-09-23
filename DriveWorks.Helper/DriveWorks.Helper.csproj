@@ -30,21 +30,22 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DriveWorks.Applications, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+    <Reference Include="DriveWorks.Applications, Version=14.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Applications.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Applications.dll</HintPath>
     </Reference>
-    <Reference Include="DriveWorks.Engine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+    <Reference Include="DriveWorks.Engine, Version=14.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Engine.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Engine.dll</HintPath>
     </Reference>
-    <Reference Include="DriveWorks.Scripting.API, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+    <Reference Include="DriveWorks.Scripting.API, Version=14.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Scripting.API.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\DriveWorks.Scripting.API.dll</HintPath>
     </Reference>
-    <Reference Include="DriveWorks.SolidWorks, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+    <Reference Include="SolidWorks.interop.sldworks, Version=22.3.0.56, Culture=neutral, PublicKeyToken=7c4797c3e4eeac03, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.SolidWorks.dll</HintPath>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\SolidWorks.interop.sldworks.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -55,9 +56,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Titan.Rules, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
+    <Reference Include="Titan.Rules, Version=14.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\Titan.Rules.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\DriveWorks\14.0\SDK\Titan.Rules.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

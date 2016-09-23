@@ -58,6 +58,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvProject.AllowUserToResizeRows = false;
                 dgvProject.AllowUserToResizeColumns = true;
                 dgvProject.AllowUserToOrderColumns = false;
+
+                dgvProject.DataSource = _ExternalProjetBindingSource;
+                _ExternalProjetBindingSource.DataSource = new List<ExternalProjectView>();
+                dgvProject.FormatColumns<ExternalProjectView>("FR");
             }
         }
 
@@ -164,6 +168,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
         private Group _Group;
         private BoolLock _IsLoading = new BoolLock();
 
+        private BindingSource _ExternalProjetBindingSource = new BindingSource();
+
         #endregion
 
         #region Private METHODS
@@ -200,9 +206,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 var statusSearch = (ExternalProjectStatusSearchEnum)cboExternalProjectSearch.SelectedValue;
                 var list = releaseService.GetExternalProjectList(statusSearch).Enum().Select(x => ExternalProjectView.ConvertTo(x)).Enum().ToList();
-                dgvProject.DataSource = list;
-                dgvProject.FormatColumns<ExternalProjectView>("FR");
-
+                _ExternalProjetBindingSource.DataSource = list;
                 lblMessage.Text = "{0} projet(s)".FormatString(list.Count());
             }
         }
@@ -268,7 +272,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             mainTaskForm.ShowDialog();
 
                             if (ucMainTaskEditControl.DialogResult == DialogResult.OK)
-                            {     
+                            {
                                 //traite le projet pour ne plus qu'il soit visible
                                 using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                                     releaseService.ProcessedExternalProject(selectedExternalProject);
