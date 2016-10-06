@@ -55,8 +55,10 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
         #region Public METHODS
 
-        public void RunCheckup()
+        public bool RunCheckup()
         {
+            DialogResult = DialogResult.No;
+
             using (var releaseService = new Service.Release.Front.ReleaseService(_Project.Group.GetEnvironment().GetExtendConnectionString()))
             {
                 var openedTask = releaseService.GetOpenedMainTasks(Library.Tools.Enums.GranularityEnum.Full);
@@ -65,12 +67,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 if (concerneTaskList.Any())
                 {
                     _MainBindingSource.DataSource = concerneTaskList.Enum().Select(x => MainTaskView.ConvertTo(x)).Enum().ToList();
+                    return true;
                 }
                 else
                 {
                     MessageBox.Show("Ce projet n'est dans aucune tâche. Une sous-tâche est nécessaire. L'ouverture du projet est annulé");
-                    DialogResult = DialogResult.No;
-                    Close(null, null);
+                    return false;
                 }
             }
         }

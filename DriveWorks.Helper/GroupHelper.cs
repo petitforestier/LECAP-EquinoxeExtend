@@ -144,11 +144,8 @@ namespace DriveWorks.Helper
             //Bouclage sur les projets à autoriser
             foreach (var item in iAllowedProjectList.Enum())
             {
-                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission))
-                    throw new Exception("Erreur lors de l'ajout du droit d'édition");
-
-                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission))
-                    throw new Exception("Erreur lors de l'ajout du droit de run");
+                iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission);
+                iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission);
             }
         }
 

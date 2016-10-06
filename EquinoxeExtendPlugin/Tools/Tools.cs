@@ -21,6 +21,9 @@ namespace EquinoxeExtendPlugin.Tools
                 var devSubTasks = releaseService.GetDevSubTasks();
 
                 var devProjects = devSubTasks.Enum().Where(x => x.ProjectGUID != null).Enum().Select(x => (Guid)x.ProjectGUID).Enum().ToList();
+                
+                //Supprime les doublons
+                devProjects = devProjects.Enum().GroupBy(x => x).Enum().Select(x => x.First()).Enum().ToList();
 
                 //Applique les droits seulement sur ces projets ouverts
                 iGroup.SetExclusitivelyPermissionToTeam(iGroup.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), devProjects);

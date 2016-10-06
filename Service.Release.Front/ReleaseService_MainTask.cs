@@ -80,7 +80,7 @@ namespace Service.Release.Front
                 throw new Exception("Le statut actuel de la tâche ne permet pas de modification");
 
             //Suppression du package
-            if (originalMainTask.Package != null && iMainTask.Package == null)
+            if (originalMainTask.PackageId != null && iMainTask.PackageId == null)
             {
                 //Package lock
                 if (originalMainTask.Package.IsLocked)

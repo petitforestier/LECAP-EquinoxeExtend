@@ -151,7 +151,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
         protected void DisplayEditMode()
         {
             cmdAddMainTask.Enabled = false;
-            cmdUpdateMainTask.Enabled = false;
             ucNavigator.Enabled = false;
             dgvMain.Enabled = false;
         }
@@ -159,9 +158,62 @@ namespace EquinoxeExtendPlugin.Controls.Task
         protected void DisplaySelectionMode()
         {
             cmdAddMainTask.Enabled = true;
-            cmdUpdateMainTask.Enabled = true;
             ucNavigator.Enabled = true;
             dgvMain.Enabled = true;
+        }
+
+        protected void CommandEnableManagement()
+        {
+            var theMainTask = GetSelectedMainTask();
+
+            if (theMainTask == null)
+            {
+                cmdUpdateMainTask.Enabled = false;
+                cmdCancelTask.Enabled = false;
+                cmdUpPriority.Enabled = false;
+                cmdDownPriority.Enabled = false;
+                cmdAcceptRequestMainTask.Enabled = false;
+            }
+            else
+            {
+                //UpdateMainTask
+                if (theMainTask.Status == MainTaskStatusEnum.Dev 
+                    || theMainTask.Status == MainTaskStatusEnum.Requested
+                    || theMainTask.Status == MainTaskStatusEnum.Waiting)
+                    cmdUpdateMainTask.Enabled = true;
+                else
+                    cmdUpdateMainTask.Enabled = false;
+
+                //cmdCancelTask
+                if (theMainTask.Status == MainTaskStatusEnum.Dev
+                    || theMainTask.Status == MainTaskStatusEnum.Requested
+                    || theMainTask.Status == MainTaskStatusEnum.Waiting)
+                    cmdCancelTask.Enabled = true;
+                else
+                    cmdCancelTask.Enabled = false;
+
+                //cmdUpPriority cmdDownPriority
+                if (theMainTask.Status == MainTaskStatusEnum.Dev
+                     || theMainTask.Status == MainTaskStatusEnum.Requested
+                     || theMainTask.Status == MainTaskStatusEnum.Staging
+                     || theMainTask.Status == MainTaskStatusEnum.Waiting)
+                {
+                    cmdUpPriority.Enabled = true;
+                    cmdDownPriority.Enabled = true;
+                }      
+                else
+                {
+                    cmdUpPriority.Enabled = true;
+                    cmdDownPriority.Enabled = true;
+                }
+
+                //cmdAcceptRequestMainTask
+                if (theMainTask.Status == MainTaskStatusEnum.Requested)
+                    cmdAcceptRequestMainTask.Enabled = true;
+                else
+                    cmdAcceptRequestMainTask.Enabled = false;
+            }
+
         }
 
         #endregion
@@ -427,6 +479,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 NothingSelected(null, null);
             }
+            CommandEnableManagement();
         }
 
         private void ucNavigator_LoadRequested(object sender, System.EventArgs e)
@@ -493,6 +546,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     MainTaskSelectionChange();
+                    CommandEnableManagement();
                     dgvMain.Select();
                 }
             }

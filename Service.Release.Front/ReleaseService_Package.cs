@@ -345,6 +345,7 @@ namespace Service.Release.Front
                 throw new Exception("Ce changement de statut n'est pas permis");
             else if (iPackage.Status == PackageStatusEnum.Staging
                 && iNewPackageStatus != PackageStatusEnum.Production
+                && iNewPackageStatus != PackageStatusEnum.Developpement
                  && iNewPackageStatus != PackageStatusEnum.Canceled)
                 throw new Exception("Ce changement de statut n'est pas permis");
 
@@ -359,7 +360,7 @@ namespace Service.Release.Front
             }
             else if (iNewPackageStatus == PackageStatusEnum.Staging)
             {
-                throw new NotSupportedException("Pour l'instant");
+                //Rien à faire
             }
             else if (iNewPackageStatus == PackageStatusEnum.Production)
             {

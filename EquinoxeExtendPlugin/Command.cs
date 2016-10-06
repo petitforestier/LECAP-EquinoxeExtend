@@ -67,9 +67,8 @@ namespace EquinoxeExtendPlugin
                             checkTaskOnStartupForm.StartPosition = FormStartPosition.CenterParent;
                             checkTaskOnStartupForm.Width = 500;
                             checkTaskOnStartupForm.Height = 500;
-                            ucCheckTaskOnStartupControl.RunCheckup();
-
-                            checkTaskOnStartupForm.ShowDialog();
+                            if(ucCheckTaskOnStartupControl.RunCheckup())
+                                checkTaskOnStartupForm.ShowDialog();
 
                             if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.Yes)
                                 projectService.CloseProject();

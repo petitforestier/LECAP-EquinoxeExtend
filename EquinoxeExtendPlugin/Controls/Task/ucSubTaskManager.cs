@@ -109,16 +109,36 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         protected void DisplayEditMode()
         {
-            cmdAddSubTask.Enabled = false;
-            cmdDeleteSubTask.Enabled = false;
+            //cmdAddSubTask.Enabled = false;
+            //cmdDeleteSubTask.Enabled = false;
             dgvSubTasks.Enabled = false;
         }
 
         protected void DisplaySelectionMode()
         {
-            cmdAddSubTask.Enabled = true;
-            cmdDeleteSubTask.Enabled = true;
+            //cmdAddSubTask.Enabled = true;
+            //cmdDeleteSubTask.Enabled = true;
             dgvSubTasks.Enabled = true;
+        }
+
+        protected void CommandEnableManagement()
+        {
+            var theSubTask = GetSelectedSubTask();
+
+            if (theSubTask == null)
+            {
+                cmdAddSubTask.Enabled = false;
+                cmdEditSubTask.Enabled = false;
+                cmdDeleteSubTask.Enabled = false;
+            }
+            else
+            {
+                cmdAddSubTask.Enabled = true;
+                cmdEditSubTask.Enabled = true;
+                if(theSubTask.Progression ==0)
+                    cmdDeleteSubTask.Enabled = true;
+            }
+
         }
 
         #endregion
@@ -127,11 +147,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         protected class SubTaskView
         {
-            //[Visible]
-            //[Name("FR", "N° sous tâche")]
-            //[WidthColumn(90)]
-            //[ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
-            //public string ProjectTask { get; set; }
 
             #region Public PROPERTIES
 
@@ -252,6 +267,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 NothingSelected(null, null);
             }
+            CommandEnableManagement();
         }
 
         private void dgvProjectTasks_SelectionChanged(object sender, System.EventArgs e)
@@ -262,6 +278,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     SubTaskSelectionChanged(GetSelectedSubTask());
+                    CommandEnableManagement();
                     dgvSubTasks.Select();
                 }
             }
@@ -347,7 +364,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             cmdEditProjectTask_Click(sender, e);
         }
-
 
         #endregion
     }
