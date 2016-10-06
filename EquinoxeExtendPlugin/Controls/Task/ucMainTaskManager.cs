@@ -16,7 +16,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Library.Control.Extensions;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -74,7 +73,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
-        public void LoadControl(MainTaskStatusSearchEnum iMainTaskStatusSearch, MainTaskOrderByEnum iMainTaskOrderBy,Guid? iProjectId, long? iProductLineId, MainTaskTypeEnum? iMainTaskType, Guid? iDevelopperId, long? iPackageId)
+        public void LoadControl(MainTaskStatusSearchEnum iMainTaskStatusSearch, MainTaskOrderByEnum iMainTaskOrderBy, Guid? iProjectId, long? iProductLineId, MainTaskTypeEnum? iMainTaskType, Guid? iDevelopperId, long? iPackageId)
         {
             if (_IsLoading.Value) return;
             using (var locker = new BoolLocker(ref _IsLoading))
@@ -126,7 +125,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 _MainTaskBindingSource.DataSource = new List<MainTaskView>();
                 dgvMain.DataSource = _MainTaskBindingSource;
                 dgvMain.FormatColumns<MainTaskView>("FR");
-
             }
         }
 
@@ -164,6 +162,16 @@ namespace EquinoxeExtendPlugin.Controls.Task
             cmdUpdateMainTask.Enabled = true;
             ucNavigator.Enabled = true;
             dgvMain.Enabled = true;
+        }
+
+        #endregion
+
+        #region Private ENUMS
+
+        private enum LoadingType
+        {
+            Criteria,
+            MainTaskId,
         }
 
         #endregion
@@ -263,10 +271,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     newView.Status = Properties.Resources.Button_Help_icon24;
                 else if (iObj.Status == MainTaskStatusEnum.Completed)
                     newView.Status = Properties.Resources.accept;
-                else if (iObj.Status == MainTaskStatusEnum.InProgress)
+                else if (iObj.Status == MainTaskStatusEnum.Dev)
                     newView.Status = Properties.Resources.Gear_icon24;
                 else if (iObj.Status == MainTaskStatusEnum.Waiting)
                     newView.Status = Properties.Resources.hourglass_icon24;
+                else if (iObj.Status == MainTaskStatusEnum.Staging)
+                    newView.Status = Properties.Resources.Science_Test_Tube_icon_24;
                 else
                     throw new NotSupportedException(iObj.Status.ToStringWithEnumName());
 
@@ -285,7 +295,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //Duration
                 int durationSum = iObj.SubTasks.IsNotNullAndNotEmpty() ? (int)iObj.SubTasks.Enum().Sum(x => x.Duration) : 0;
-                int doneDuration = iObj.SubTasks.IsNotNullAndNotEmpty() ? (int)(Math.Truncate(iObj.SubTasks.Enum().Sum(x => decimal.Multiply(Convert.ToDecimal(x.Duration), decimal.Divide(x.Progression,100))))) : 0;
+                int doneDuration = iObj.SubTasks.IsNotNullAndNotEmpty() ? (int)(Math.Truncate(iObj.SubTasks.Enum().Sum(x => decimal.Multiply(Convert.ToDecimal(x.Duration), decimal.Divide(x.Progression, 100))))) : 0;
                 if (durationSum != 0 || doneDuration != 0)
                     newView.Duration = doneDuration + "/" + durationSum;
                 else
@@ -308,7 +318,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (iObj.ProductLines.IsNotNullAndNotEmpty())
                     newView.ProductLine = iObj.ProductLines.Select(x => x.Name).Concat("--");
 
-                if(iObj.ExternalProject != null)
+                if (iObj.ExternalProject != null)
                     newView.ProjectNumber = iObj.ExternalProject.ProjectNumber;
 
                 return newView;
@@ -339,18 +349,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private BindingSource _MainTaskBindingSource = new BindingSource();
 
-        private enum LoadingType
-        {
-            Criteria,
-            MainTaskId,
-        }
-
         #endregion
 
         #region Private METHODS
 
-        private void InternalReLoadControl(long? iSelectedMainTaskId=null)
-        {                 
+        private void InternalReLoadControl(long? iSelectedMainTaskId = null)
+        {
             LoadDataGridViewMainTask(false, iSelectedMainTaskId);
             DisplaySelectionMode();
             MainTaskSelectionChange();
@@ -367,11 +371,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (iShowFirstPage)
                     ucNavigator.PageNumber = 1;
 
-                Tuple<List<MainTask>,int> maintaskTuple;
+                Tuple<List<MainTask>, int> maintaskTuple;
 
                 if (_LoadingType == LoadingType.Criteria)
                 {
-                    maintaskTuple = releaseService.GetMainTaskList(_MainTaskStatusSearchEnum, _MainTaskOrderBy, _ProjectId, _ProductLineId, _MainTaskType,_DevelopperId,_PackageId, skip, ucNavigator.Take, GranularityEnum.Full);
+                    maintaskTuple = releaseService.GetMainTaskList(_MainTaskStatusSearchEnum, _MainTaskOrderBy, _ProjectId, _ProductLineId, _MainTaskType, _DevelopperId, _PackageId, skip, ucNavigator.Take, GranularityEnum.Full);
                 }
                 else if (_LoadingType == LoadingType.MainTaskId)
                 {
@@ -382,8 +386,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         maintaskTuple = new Tuple<List<MainTask>, int>(null, 0);
                 }
                 else
-                    throw new NotSupportedException(_LoadingType.ToStringWithEnumName());                                     
-                   
+                    throw new NotSupportedException(_LoadingType.ToStringWithEnumName());
+
                 ucNavigator.Count = (maintaskTuple != null) ? maintaskTuple.Item2 : 0;
                 var mainTaskList = (maintaskTuple != null) ? maintaskTuple.Item1 : null;
 
@@ -526,8 +530,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         return;
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
-                       releaseService.AcceptMainTaskRequest(selectedMainTask.MainTaskId);
-                       InternalReLoadControl();
+                        releaseService.AcceptMainTaskRequest(selectedMainTask.MainTaskId);
+                        InternalReLoadControl();
                     }
                 }
             }
@@ -552,14 +556,15 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                     if (MessageBox.Show("Etes-vous sûr de vouloir annuler cette tâche ?", "Annulation tâche", MessageBoxButtons.YesNo) != DialogResult.Yes)
                         return;
-                    
+
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
                         releaseService.CancelMainTask(selectedMainTask.MainTaskId);
                         InternalReLoadControl();
-
-                        //todo droits
                     }
+
+                    //Applications des droits sur dev
+                    Tools.Tools.ReleaseProjectsRights(_Group);
                 }
             }
             catch (Exception ex)
@@ -583,7 +588,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
-
                         if (selectedMainTask.Priority == null)
                             if (MessageBox.Show("Etes-vous sûr de vouloir placer cette tâche en priorité 1 et de décaler tous les autres ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
                                 return;
@@ -671,14 +675,5 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
-
-        //private void dgvMain_KeyDown(object sender, KeyEventArgs e)
-        //{
-        //    if (e.KeyCode.Equals(Keys.Up))
-        //        dgvMain.MoveUp();
-        //    else if (e.KeyCode.Equals(Keys.Down))
-        //        dgvMain.MoveDown();
-        //    e.Handled = true;
-        //}
     }
 }

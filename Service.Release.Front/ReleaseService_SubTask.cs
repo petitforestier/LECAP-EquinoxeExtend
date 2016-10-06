@@ -20,10 +20,10 @@ namespace Service.Release.Front
 
             //Validation des conditions
             var mainTask = GetMainTaskById(iSubTask.MainTaskId, Library.Tools.Enums.GranularityEnum.Nude);
-            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.InProgress && iSubTask.Progression != 0)
+            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Dev && iSubTask.Progression != 0)
                 throw new Exception("L'avancement d'une sous tâche requiert que la tâche soit en cours");
 
-            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.InProgress &&
+            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Dev &&
                mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Waiting)
                 throw new Exception("L'ajout d'une sous tâche n'est pas possible pour ce status de tâche");
 
@@ -51,7 +51,7 @@ namespace Service.Release.Front
 
             //Validation des conditions
             var mainTask = GetMainTaskById(iSubTask.MainTaskId, Library.Tools.Enums.GranularityEnum.Nude);
-            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.InProgress && iSubTask.Progression != 0)
+            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Dev && iSubTask.Progression != 0)
                 throw new Exception("L'avancement d'un sous tâche requiert que la tâche soit en cours");
 
             var entity = new T_E_SubTask();
@@ -67,7 +67,7 @@ namespace Service.Release.Front
             //Validation des conditions
             var mainTask = GetMainTaskById(iSubTask.MainTaskId, Library.Tools.Enums.GranularityEnum.Nude);
 
-            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.InProgress &&
+            if (mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Dev &&
                mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Requested &&
                 mainTask.Status != EquinoxeExtend.Shared.Enum.MainTaskStatusEnum.Waiting)
                 throw new Exception("L'ajout d'une sous tâche n'est pas possible pour ce status de tâche");
@@ -79,12 +79,6 @@ namespace Service.Release.Front
         {
             return DBReleaseDataService.GetList<T_E_SubTask>(x => x.MainTaskId == iMainTask).Enum().Select(x => x.Convert()).Enum().ToList();
         }
-
-        public List<SubTask> GetOpenedTask()
-        {
-            return DBReleaseDataService.GetList<T_E_SubTask>(x => x.T_E_MainTask.StatusRef == (short)MainTaskStatusEnum.InProgress).Enum().Select(x=> x.Convert()).Enum().ToList();
-        }
-
 
         #endregion
     }

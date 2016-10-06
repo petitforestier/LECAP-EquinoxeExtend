@@ -52,32 +52,29 @@ namespace EquinoxeExtendPlugin
                     this.RegisterProjectCommandButton();
 
                     //Affichage des tâches ouvertes sur ce projet
-                    //var groupService = _Application.ServiceManager.GetService<IGroupService>();
-                    //var activeGroupe = groupService.ActiveGroup;
+                    var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                    var activeGroupe = groupService.ActiveGroup;
 
-                    //if (activeGroupe.CurrentUser.LoginName != "Admin")
-                    //{
-                    //    var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                    //    var activeProject = projectService.ActiveProject;
+                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                    var activeProject = projectService.ActiveProject;
 
-                    //    if (groupService.ActiveGroup.Name == EnvironmentEnum.Developpement.GetName("FR"))
-                    //    {
-                    //        var ucCheckTaskOnStartupControl = new ucCheckTaskOnStartup(activeProject);
-                    //        using (var checkTaskOnStartupForm = new frmUserControl(ucCheckTaskOnStartupControl, "Vérification des tâches", false, false))
-                    //        {
-                    //            ucCheckTaskOnStartupControl.Close += (s, d) => checkTaskOnStartupForm.Close();
-                    //            checkTaskOnStartupForm.StartPosition = FormStartPosition.CenterParent;
-                    //            checkTaskOnStartupForm.Width = 500;
-                    //            checkTaskOnStartupForm.Height = 500;
-                    //            ucCheckTaskOnStartupControl.RunCheckup();
+                    if (groupService.ActiveGroup.Name == EnvironmentEnum.Developpement.GetName("FR"))
+                    {
+                        var ucCheckTaskOnStartupControl = new ucCheckTaskOnStartup(activeProject);
+                        using (var checkTaskOnStartupForm = new frmUserControl(ucCheckTaskOnStartupControl, "Vérification des tâches", false, false))
+                        {
+                            ucCheckTaskOnStartupControl.Close += (s, d) => checkTaskOnStartupForm.Close();
+                            checkTaskOnStartupForm.StartPosition = FormStartPosition.CenterParent;
+                            checkTaskOnStartupForm.Width = 500;
+                            checkTaskOnStartupForm.Height = 500;
+                            ucCheckTaskOnStartupControl.RunCheckup();
 
-                    //            if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.No)
-                    //                checkTaskOnStartupForm.ShowDialog();
-                    //            else
-                    //                projectService.CloseProject();
-                    //        }
-                    //    }
-                    //}
+                            checkTaskOnStartupForm.ShowDialog();
+
+                            if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.Yes)
+                                projectService.CloseProject();
+                        }
+                    }
                 }
                 else if (_Application.State.Contains(StandardStates.GroupLoaded))
                 {
@@ -113,7 +110,6 @@ namespace EquinoxeExtendPlugin
                     var releaseButtonUi = groupTablesEnvironmentUIGroup.AddCommandButton(releaseCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
                     releaseCommand.Invoking += Release_Invoking;
                 }
-
             }
             catch (Exception ex)
             {

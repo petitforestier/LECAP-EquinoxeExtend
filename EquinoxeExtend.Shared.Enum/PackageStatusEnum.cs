@@ -14,7 +14,7 @@ namespace EquinoxeExtend.Shared.Enum
         [Name("FR", "Dev")]
         Developpement = 20,
         [Name("FR","PréProd")]
-        Test = 30,
+        Staging = 30,
         [Name("FR", "Prod")]
         Production = 40,
         [Name("FR", "Annulé")]

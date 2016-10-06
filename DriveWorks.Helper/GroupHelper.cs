@@ -96,27 +96,61 @@ namespace DriveWorks.Helper
             return theMasterProject.Id.ToString();
         }
 
-        //todo remettre les droits une fois le système bien en place
-        ///// <summary>
-        ///// Supprime tous les droits de la team et réaffecte les droits à la liste des projects en argument
-        ///// </summary>
-        ///// <param name="iGroup"></param>
-        ///// <param name="iTeam"></param>
-        ///// <param name="iAllowedProjectList"></param>
-        //public static void SetExclusitivelyPermissionToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iAllowedProjectList)
-        //{
-        //    iGroup.Security.ClearProjectPermissionsForTeam(iTeam.Id);
+        /// <summary>
+        /// Affecte les droits à la liste des projects en argument
+        /// </summary>
+        /// <param name="iGroup"></param>
+        /// <param name="iTeam"></param>
+        /// <param name="iAllowedProjectList"></param>
+        public static void AddPermissionToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iAllowedProjectList)
+        {
+            //Bouclage sur les projets à autoriser
+            foreach (var item in iAllowedProjectList.Enum())
+            {
+                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission))
+                    throw new Exception("Erreur lors de l'ajout du droit d'édition");
 
-        //    //Bouclage sur les projets à autoriser
-        //    foreach (var item in iAllowedProjectList.Enum())
-        //    {
-        //        if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission))
-        //            throw new Exception("Erreur lors de l'ajout du droit d'édition");
+                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission))
+                    throw new Exception("Erreur lors de l'ajout du droit de run");
+            }
+        }
 
-        //        if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission))
-        //            throw new Exception("Erreur lors de l'ajout du droit de run");
-        //    }
-        //}
+        /// <summary>
+        /// Supprime les droits de la team sur la liste de projets
+        /// </summary>
+        /// <param name="iGroup"></param>
+        /// <param name="iTeam"></param>
+        /// <param name="iForbidenProjectList"></param>
+        public static void RemoveProjectPermissionsToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iForbidenProjectList)
+        {
+            //Bouclage sur les projets à enlever les droits
+            foreach (var projectItem in iForbidenProjectList.Enum())
+            {
+                iGroup.Security.TryRemoveProjectPermissionFromTeam(iTeam.Id, projectItem, StandardProjectPermissions.EditPermission);
+                iGroup.Security.TryRemoveProjectPermissionFromTeam(iTeam.Id, projectItem, StandardProjectPermissions.SpecifyPermission);
+            }
+        }
+
+        /// <summary>
+        /// Supprime tous les droits de la team et réaffecte les droits à la liste des projects en argument
+        /// </summary>
+        /// <param name="iGroup"></param>
+        /// <param name="iTeam"></param>
+        /// <param name="iAllowedProjectList"></param>
+        public static void SetExclusitivelyPermissionToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iAllowedProjectList)
+        {
+            iGroup.Security.ClearProjectPermissionsForTeam(iTeam.Id);
+
+            //Bouclage sur les projets à autoriser
+            foreach (var item in iAllowedProjectList.Enum())
+            {
+                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission))
+                    throw new Exception("Erreur lors de l'ajout du droit d'édition");
+
+                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission))
+                    throw new Exception("Erreur lors de l'ajout du droit de run");
+            }
+        }
 
         public static List<ProjectDetails> GetOpenedProjectList (this Group iGroup)
         {
@@ -156,7 +190,6 @@ namespace DriveWorks.Helper
                 return null;
             }
         }
-
 
         #endregion
 

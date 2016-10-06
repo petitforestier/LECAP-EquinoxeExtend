@@ -213,6 +213,16 @@ namespace EquinoxeExtendPlugin.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Science_Test_Tube_icon_24 {
+            get {
+                object obj = ResourceManager.GetObject("Science_Test_Tube_icon_24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Science_Test_Tube_icon_32 {
             get {
                 object obj = ResourceManager.GetObject("Science_Test_Tube_icon_32", resourceCulture);

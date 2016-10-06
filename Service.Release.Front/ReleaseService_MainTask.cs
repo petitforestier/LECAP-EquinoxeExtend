@@ -26,7 +26,7 @@ namespace Service.Release.Front
                 throw new Exception("Une tâche de type projet requiert un numéro de projet");
 
             if (iMainTask.Status != MainTaskStatusEnum.Requested
-                && iMainTask.Status != MainTaskStatusEnum.Waiting)
+                && iMainTask.Status != MainTaskStatusEnum.Waiting )
                 throw new Exception("Le statut ne permet pas la création de la tâche");
 
             if (iMainTask.Status == MainTaskStatusEnum.Requested && iMainTask.PackageId != null)
@@ -74,38 +74,44 @@ namespace Service.Release.Front
             if (originalMainTask.Status != iMainTask.Status)
                 throw new Exception("Pour un changement de status, cette fonction n'est pas supportée");
 
-            if (originalMainTask.Status != MainTaskStatusEnum.InProgress &&
+            if (originalMainTask.Status != MainTaskStatusEnum.Dev &&
                 originalMainTask.Status != MainTaskStatusEnum.Requested &&
                 originalMainTask.Status != MainTaskStatusEnum.Waiting)
                 throw new Exception("Le statut actuel de la tâche ne permet pas de modification");
 
-            //Validation package
-            if (originalMainTask.Package != null && iMainTask.Package == null &&
-                originalMainTask.Status != MainTaskStatusEnum.Waiting &&
-                originalMainTask.Status != MainTaskStatusEnum.Requested)
-                throw new Exception("Le package n'est pas supprimable avec le statut actuel de la tâche");
-
-            //Validation des superpositions de package
-            if (originalMainTask.PackageId != iMainTask.PackageId && iMainTask.PackageId != null)
+            //Suppression du package
+            if (originalMainTask.Package != null && iMainTask.Package == null)
             {
-                iMainTask.SubTasks = originalMainTask.SubTasks;
-                if (!IsMainTaskCanJoinThisPackage(iMainTask.MainTaskId, (long)iMainTask.PackageId))
-                    throw new Exception("Cette tâche ne peut pas être attachée à ce package");
-                //if (IsProjectTaskAlreadyInProgress(iMainTask))
-                //throw new Exception("Le changement de package n'est pas possible, superpostion des projets en cours");
-            }
+                //Package lock
+                if (originalMainTask.Package.IsLocked)
+                    throw new Exception("La tâche ne peut pas sortir d'un package verrouillé");
 
-            if (originalMainTask.PackageId == null && iMainTask.PackageId != null)
+                //Tâche entammée
+                if(originalMainTask.Status == MainTaskStatusEnum.Dev)
+                {
+                    if (originalMainTask.SubTasks.Any(x => x.Progression != 0))
+                        throw new Exception("Le Package ne peut pas être retiré de la tâche avec un avancement différent de 0");
+                    else
+                        iMainTask.Status = MainTaskStatusEnum.Waiting;
+                }
+                else if (originalMainTask.Status != MainTaskStatusEnum.Waiting && originalMainTask.Status != MainTaskStatusEnum.Requested)
+                {
+                    throw new Exception("Le statut de la tâche ne permet pas de sortir du package");
+                }
+                                    
+            }
+            //Affectation de package
+            else if (originalMainTask.PackageId == null && iMainTask.PackageId != null)
             {
                 var affectedPackage = GetPackageById((long)iMainTask.PackageId, GranularityEnum.Nude);
                 if (affectedPackage.Status == PackageStatusEnum.Developpement)
                 {
-                    iMainTask.Status = MainTaskStatusEnum.InProgress;
+                    iMainTask.Status = MainTaskStatusEnum.Dev;
                     iMainTask.OpenedDate = DateTime.Now;
                 }
                 else if (affectedPackage.Status == PackageStatusEnum.Canceled ||
                     affectedPackage.Status == PackageStatusEnum.Production ||
-                    affectedPackage.Status == PackageStatusEnum.Test)
+                    affectedPackage.Status == PackageStatusEnum.Staging)
                 {
                     throw new Exception("Il n'est pas possible d'affecter une tâche au package avec ce status");
                 }
@@ -115,6 +121,13 @@ namespace Service.Release.Front
                 }
                 else
                     throw new Exception(affectedPackage.Status.ToStringWithEnumName());
+            }
+            //Changement de package
+            else if (originalMainTask.PackageId != iMainTask.PackageId && iMainTask.PackageId != null)
+            {
+                iMainTask.SubTasks = originalMainTask.SubTasks;
+                if (!IsMainTaskCanJoinThisPackage(iMainTask.MainTaskId, (long)iMainTask.PackageId))
+                    throw new Exception("Cette tâche ne peut pas être attachée à ce package");
             }
 
             using (var ts = new TransactionScope())
@@ -171,9 +184,24 @@ namespace Service.Release.Front
                 throw new Exception("La tâche est déjà annulée");
 
             if (originalTask.SubTasks.Exists(x => x.Progression != 0))
-                throw new Exception("La contient des sous-tâches avec un avancement différent de 0. Il n'est pas possible de l'annuler");
+                throw new Exception("La tâche contient des sous-tâches avec un avancement différent de 0. Il n'est pas possible de l'annuler");
 
             UpdateMainTaskStatus(originalTask, MainTaskStatusEnum.Canceled);
+        }
+
+        public void MoveMainTaskToStaging(long iMainTaskId)
+        {
+            if (iMainTaskId < 1) throw new Exception("L'id de la tâche est invalide");
+
+            var originalTask = GetMainTaskById(iMainTaskId, GranularityEnum.Full);
+
+            if (originalTask.Status == MainTaskStatusEnum.Staging)
+                throw new Exception("La tâche est déjà en test");
+
+            if (originalTask.SubTasks.Exists(x => x.Progression != 100))
+                throw new Exception("La tâche contient des sous-tâches avec un avancement différent de 100. Il n'est pas possible de passer en test");
+
+            UpdateMainTaskStatus(originalTask, MainTaskStatusEnum.Staging);
         }
 
         public void MoveUpMainTaskPriority(MainTask iMainTask)
@@ -323,7 +351,7 @@ namespace Service.Release.Front
                 else if (iMainTasksSearchEnum == MainTaskStatusSearchEnum.Completed)
                     theQuery = theQuery.Where(x => x.StatusRef == (short)MainTaskStatusEnum.Completed);
                 else if (iMainTasksSearchEnum == MainTaskStatusSearchEnum.InProgress)
-                    theQuery = theQuery.Where(x => x.StatusRef == (short)MainTaskStatusEnum.InProgress);
+                    theQuery = theQuery.Where(x => x.StatusRef == (short)MainTaskStatusEnum.Dev || x.StatusRef == (short)MainTaskStatusEnum.Staging);
                 else if (iMainTasksSearchEnum == MainTaskStatusSearchEnum.Request)
                     theQuery = theQuery.Where(x => x.StatusRef == (short)MainTaskStatusEnum.Requested);
                 else if (iMainTasksSearchEnum == MainTaskStatusSearchEnum.Waiting)
@@ -397,27 +425,36 @@ namespace Service.Release.Front
             return null;
         }
 
-        public List<SubTask> GetOpenedSubTask()
+        public List<SubTask> GetOpenedSubTasks()
         {
             var projectTasksList = new List<SubTask>();
 
-            foreach (var mainTask in GetOpenedMainTask().Enum())
+            foreach (var mainTask in GetOpenedMainTasks(GranularityEnum.Full).Enum())
                 projectTasksList.AddRange(GetMainTaskById(mainTask.MainTaskId, GranularityEnum.Full).SubTasks.Enum());
 
-            //Récupération des projets GUID
-            var result = new List<SubTask>();
-
-            foreach (var projectTaskItem in projectTasksList.Enum())
-            {
-                if (!result.Any(x => x.ProjectGUID == projectTaskItem.ProjectGUID))
-                    result.Add(projectTaskItem);
-            }
-            return result;
+            return projectTasksList;
         }
 
-        public List<MainTask> GetOpenedMainTask()
+        public List<SubTask> GetDevSubTasks()
         {
-            return DBReleaseDataService.GetQuery<T_E_MainTask>(null).Where(x => x.StatusRef == (short)MainTaskStatusEnum.InProgress).Enum().Select(x => x.Convert()).Enum().ToList();
+            var projectTasksList = new List<SubTask>();
+
+            foreach (var mainTask in GetDevMainTasks(GranularityEnum.Full).Enum())
+                projectTasksList.AddRange(GetMainTaskById(mainTask.MainTaskId, GranularityEnum.Full).SubTasks.Enum());
+
+            return projectTasksList;
+        }
+
+        public List<MainTask> GetOpenedMainTasks(GranularityEnum iGranularity)
+        {
+            var query = DBReleaseDataService.GetQuery<T_E_MainTask>(null).Where(x => x.StatusRef == (short)MainTaskStatusEnum.Dev || x.StatusRef == (short)MainTaskStatusEnum.Staging).Enum().ToList();
+            return query.Select(x => GetMainTaskById(x.MainTaskId,iGranularity)).Enum().ToList();
+        }
+
+        public List<MainTask> GetDevMainTasks(GranularityEnum iGranularity)
+        {
+            var query = DBReleaseDataService.GetQuery<T_E_MainTask>(null).Where(x => x.StatusRef == (short)MainTaskStatusEnum.Dev).Enum().ToList();
+            return query.Select(x => GetMainTaskById(x.MainTaskId, iGranularity)).Enum().ToList();
         }
 
         #endregion
@@ -438,12 +475,12 @@ namespace Service.Release.Front
                 throw new Exception("Le changement de status n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Waiting
-                && iNewStatus != MainTaskStatusEnum.InProgress && iNewStatus != MainTaskStatusEnum.Canceled)
+                && iNewStatus != MainTaskStatusEnum.Dev && iNewStatus != MainTaskStatusEnum.Canceled)
             {
                 throw new Exception("Le changement de status n'est pas permis");
             }
-            else if (originalMainTask.Status == MainTaskStatusEnum.InProgress
-               && iNewStatus != MainTaskStatusEnum.InProgress && iNewStatus != MainTaskStatusEnum.Canceled)
+            else if (originalMainTask.Status == MainTaskStatusEnum.Dev
+               && iNewStatus != MainTaskStatusEnum.Staging && iNewStatus != MainTaskStatusEnum.Completed && iNewStatus != MainTaskStatusEnum.Canceled)
             {
                 throw new Exception("Le changement de status n'est pas permis");
             }
@@ -463,7 +500,7 @@ namespace Service.Release.Front
                 throw new Exception("Ce status n'est pas possible en modification");
             }
             //En cours
-            else if (iNewStatus == MainTaskStatusEnum.InProgress)
+            else if (iNewStatus == MainTaskStatusEnum.Dev)
             {
                 //package obligatoire
                 if (originalMainTask.PackageId == null)
@@ -493,9 +530,21 @@ namespace Service.Release.Front
                 if (sumProgression != 100)
                     throw new Exception("Toutes les tâches doivent être terminées à 100%");
             }
+            //Test
+            else if (iNewStatus == MainTaskStatusEnum.Staging)
+            {
+                //Sous tâche obligatoire
+                if (!originalMainTask.SubTasks.Any())
+                    throw new Exception("La tâche ne peut pas être testé sans sous tâches");
+
+                //Progression de toutes les sous-tâches doivent être à 100%
+                var sumProgression = decimal.Divide(originalMainTask.SubTasks.Enum().Sum(x => x.Progression), originalMainTask.SubTasks.Count);
+                if (sumProgression != 100)
+                    throw new Exception("Toutes les tâches doivent être terminées à 100%");
+            }
 
             //Modification
-            if (iNewStatus == MainTaskStatusEnum.InProgress)
+            if (iNewStatus == MainTaskStatusEnum.Dev)
             {
                 originalMainTask.OpenedDate = DateTime.Now;
             }

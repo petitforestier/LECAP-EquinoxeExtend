@@ -119,6 +119,7 @@
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmdAddMainTask,
             this.cmdUpdateMainTask,
+            this.cmdCancelTask,
             this.toolStripSeparator4,
             this.cmdImportFromProjectExcelFile,
             this.toolStripSeparator1,
@@ -126,7 +127,6 @@
             this.cmdDownPriority,
             this.toolStripSeparator2,
             this.cmdAcceptRequestMainTask,
-            this.cmdCancelTask,
             this.toolStripSeparator3});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";

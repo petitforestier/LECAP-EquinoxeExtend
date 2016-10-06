@@ -1,5 +1,6 @@
 ﻿using DriveWorks;
 using DriveWorks.Helper;
+using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
 using Library.Control.UserControls;
@@ -13,7 +14,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using EquinoxeExtend.Shared.Enum;
 
 namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 {
@@ -22,14 +22,19 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         #region Public EVENTS
 
         public event EventHandler Close;
+
+        #endregion
+
+        #region Public PROPERTIES
+
         public DialogResult DialogResult { get; private set; }
-        private Project _Project;
+
         #endregion
 
         #region Public CONSTRUCTORS
 
         public ucCheckTaskOnStartup(Project iProject)
-        {           
+        {
             InitializeComponent();
 
             _Project = iProject;
@@ -41,6 +46,9 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
             dgvMain.RowHeadersVisible = false;
             dgvMain.AllowUserToResizeRows = false;
             dgvMain.AllowUserToOrderColumns = false;
+            _MainBindingSource.DataSource = new List<MainTaskView>();
+            dgvMain.DataSource = _MainBindingSource;
+            dgvMain.FormatColumns<MainTaskView>("FR");
         }
 
         #endregion
@@ -51,13 +59,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         {
             using (var releaseService = new Service.Release.Front.ReleaseService(_Project.Group.GetEnvironment().GetExtendConnectionString()))
             {
-                var openedTask = releaseService.GetOpenedMainTask();
+                var openedTask = releaseService.GetOpenedMainTasks(Library.Tools.Enums.GranularityEnum.Full);
                 var concerneTaskList = openedTask.Enum().Where(x => x.SubTasks.Enum().Any(y => y.ProjectGUID == _Project.Id)).Enum().ToList();
 
                 if (concerneTaskList.Any())
                 {
-                    dgvMain.DataSource = concerneTaskList;
-                    dgvMain.FormatColumns<MainTaskView>("FR");
+                    _MainBindingSource.DataSource = concerneTaskList.Enum().Select(x => MainTaskView.ConvertTo(x)).Enum().ToList();
                 }
                 else
                 {
@@ -75,6 +82,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         protected class MainTaskView
         {
             #region Public PROPERTIES
+
+            [Visible]
+            [Name("FR", "N° Tâche")]
+            [WidthColumn(75)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string MainTaskId { get; set; }
 
             [Visible]
             [Name("FR", "Tâches")]
@@ -96,12 +109,20 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 var newView = new MainTaskView();
                 newView.Object = iObj;
                 newView.TaskName = iObj.Name;
+                newView.MainTaskId = iObj.MainTaskIdString;
 
                 return newView;
             }
 
             #endregion
         }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private Project _Project;
+        private BindingSource _MainBindingSource = new BindingSource();
 
         #endregion
 
@@ -113,12 +134,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
             Close(null, null);
         }
 
-        #endregion
-
         private void cmdNo_Click(object sender, System.EventArgs e)
         {
             DialogResult = DialogResult.No;
             Close(null, null);
         }
+
+        #endregion
     }
 }

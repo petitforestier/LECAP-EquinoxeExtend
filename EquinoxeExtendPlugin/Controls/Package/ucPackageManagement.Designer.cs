@@ -40,8 +40,9 @@
             this.tlpPackage = new System.Windows.Forms.TableLayoutPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.cmdAddPackage = new System.Windows.Forms.ToolStripButton();
+            this.cmdDeletePackage = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
-            this.cmdOpenPackage = new System.Windows.Forms.ToolStripButton();
+            this.cmdDeployToDev = new System.Windows.Forms.ToolStripButton();
             this.cmdDeployToStaging = new System.Windows.Forms.ToolStripButton();
             this.cmdDeployToProduction = new System.Windows.Forms.ToolStripButton();
             this.cmdRestoreFromBackup = new System.Windows.Forms.ToolStripButton();
@@ -204,8 +205,9 @@
             this.toolStrip1.ImageScalingSize = new System.Drawing.Size(29, 29);
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.cmdAddPackage,
+            this.cmdDeletePackage,
             this.toolStripSeparator1,
-            this.cmdOpenPackage,
+            this.cmdDeployToDev,
             this.cmdDeployToStaging,
             this.cmdDeployToProduction,
             this.cmdRestoreFromBackup,
@@ -228,20 +230,31 @@
             this.cmdAddPackage.Text = "Créer un package";
             this.cmdAddPackage.Click += new System.EventHandler(this.cmdAddPackage_Click);
             // 
+            // cmdDeletePackage
+            // 
+            this.cmdDeletePackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
+            this.cmdDeletePackage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeletePackage.Name = "cmdDeletePackage";
+            this.cmdDeletePackage.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeletePackage.Text = "toolStripButton1";
+            this.cmdDeletePackage.ToolTipText = "Supprimer un package";
+            this.cmdDeletePackage.Click += new System.EventHandler(this.cmdDeletePackage_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 30);
             // 
-            // cmdOpenPackage
+            // cmdDeployToDev
             // 
-            this.cmdOpenPackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdOpenPackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.Gear_icon24;
-            this.cmdOpenPackage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdOpenPackage.Name = "cmdOpenPackage";
-            this.cmdOpenPackage.Size = new System.Drawing.Size(33, 27);
-            this.cmdOpenPackage.Text = "Ouvrir Package";
-            this.cmdOpenPackage.Click += new System.EventHandler(this.cmdOpenRelease_Click);
+            this.cmdDeployToDev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeployToDev.Image = global::EquinoxeExtendPlugin.Properties.Resources.Gear_icon24;
+            this.cmdDeployToDev.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeployToDev.Name = "cmdDeployToDev";
+            this.cmdDeployToDev.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeployToDev.Text = "(Ré) Ouvrir Package";
+            this.cmdDeployToDev.Click += new System.EventHandler(this.cmdDeployToDev_Click);
             // 
             // cmdDeployToStaging
             // 
@@ -439,7 +452,8 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
         private System.Windows.Forms.ToolStripButton cmdRestoreFromBackup;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
-        private System.Windows.Forms.ToolStripButton cmdOpenPackage;
+        private System.Windows.Forms.ToolStripButton cmdDeployToDev;
         private System.Windows.Forms.ToolStripButton cmdLockUnlock;
+        private System.Windows.Forms.ToolStripButton cmdDeletePackage;
     }
 }

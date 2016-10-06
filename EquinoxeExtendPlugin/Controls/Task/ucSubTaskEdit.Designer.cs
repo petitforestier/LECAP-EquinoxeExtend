@@ -135,6 +135,7 @@
             this.numProgression.TabIndex = 7;
             this.numProgression.ThousandsSeparator = true;
             this.numProgression.ValueType = Library.Control.UserControls.ucNumericUpDown.NumericUpDownTypeEnum.IntegerPositiveOnly;
+            this.numProgression.KeyDown += new System.Windows.Forms.KeyEventHandler(this.numProgression_KeyDown);
             // 
             // lblDuration
             // 
@@ -160,6 +161,7 @@
             this.numDuration.TabIndex = 3;
             this.numDuration.ThousandsSeparator = true;
             this.numDuration.ValueType = Library.Control.UserControls.ucNumericUpDown.NumericUpDownTypeEnum.IntegerPositiveOnly;
+            this.numDuration.KeyDown += new System.Windows.Forms.KeyEventHandler(this.numDuration_KeyDown);
             // 
             // lblComments
             // 

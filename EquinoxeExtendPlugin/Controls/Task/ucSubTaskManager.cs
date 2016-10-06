@@ -308,6 +308,9 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         //suppression project task
                         releaseService.DeleteProjectTask(selectedProjectTask);
                     }
+
+                    //Applications des droits sur dev
+                    Tools.Tools.ReleaseProjectsRights(_Group);
                 }
 
                 //Doit être à l'extérieur du boollocker pour permettre le reload.

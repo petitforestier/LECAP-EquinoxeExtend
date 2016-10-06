@@ -15,8 +15,10 @@ namespace EquinoxeExtend.Shared.Enum
         Requested=10,
         [Name("FR", "En attente")]
         Waiting=20,
-        [Name("FR", "En cours")]
-        InProgress=30,
+        [Name("FR", "En dev")]
+        Dev=30,
+        [Name("FR", "En test")]
+        Staging = 35,
         [Name("FR", "Terminée")]
         Completed=40,
     };

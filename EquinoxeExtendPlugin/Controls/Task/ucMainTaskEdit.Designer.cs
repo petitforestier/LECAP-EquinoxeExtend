@@ -94,7 +94,7 @@
             this.tlpMain.ColumnCount = 3;
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.81356F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.18644F));
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 55F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 58F));
             this.tlpMain.Controls.Add(this.cboRequestUser, 1, 9);
             this.tlpMain.Controls.Add(this.lblMainTaskId, 0, 0);
             this.tlpMain.Controls.Add(this.txtMainTaskId, 1, 0);
@@ -140,9 +140,9 @@
             this.cboRequestUser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboRequestUser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboRequestUser.FormattingEnabled = true;
-            this.cboRequestUser.Location = new System.Drawing.Point(83, 228);
+            this.cboRequestUser.Location = new System.Drawing.Point(82, 228);
             this.cboRequestUser.Name = "cboRequestUser";
-            this.cboRequestUser.Size = new System.Drawing.Size(192, 21);
+            this.cboRequestUser.Size = new System.Drawing.Size(190, 21);
             this.cboRequestUser.TabIndex = 15;
             // 
             // lblMainTaskId
@@ -151,7 +151,7 @@
             this.lblMainTaskId.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblMainTaskId.Location = new System.Drawing.Point(3, 0);
             this.lblMainTaskId.Name = "lblMainTaskId";
-            this.lblMainTaskId.Size = new System.Drawing.Size(74, 25);
+            this.lblMainTaskId.Size = new System.Drawing.Size(73, 25);
             this.lblMainTaskId.TabIndex = 0;
             this.lblMainTaskId.Text = "Tâche Id";
             this.lblMainTaskId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -159,19 +159,19 @@
             // txtMainTaskId
             // 
             this.txtMainTaskId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMainTaskId.Location = new System.Drawing.Point(83, 3);
+            this.txtMainTaskId.Location = new System.Drawing.Point(82, 3);
             this.txtMainTaskId.Name = "txtMainTaskId";
             this.txtMainTaskId.ReadOnly = true;
-            this.txtMainTaskId.Size = new System.Drawing.Size(192, 20);
+            this.txtMainTaskId.Size = new System.Drawing.Size(190, 20);
             this.txtMainTaskId.TabIndex = 1;
             // 
             // txtName
             // 
             this.txtName.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtName.Location = new System.Drawing.Point(83, 53);
+            this.txtName.Location = new System.Drawing.Point(82, 53);
             this.txtName.MaxLength = 300;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(192, 20);
+            this.txtName.Size = new System.Drawing.Size(190, 20);
             this.txtName.TabIndex = 2;
             // 
             // lblName
@@ -180,7 +180,7 @@
             this.lblName.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblName.Location = new System.Drawing.Point(3, 50);
             this.lblName.Name = "lblName";
-            this.lblName.Size = new System.Drawing.Size(74, 25);
+            this.lblName.Size = new System.Drawing.Size(73, 25);
             this.lblName.TabIndex = 3;
             this.lblName.Text = "Nom";
             this.lblName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -191,7 +191,7 @@
             this.lblTaskType.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblTaskType.Location = new System.Drawing.Point(3, 75);
             this.lblTaskType.Name = "lblTaskType";
-            this.lblTaskType.Size = new System.Drawing.Size(74, 25);
+            this.lblTaskType.Size = new System.Drawing.Size(73, 25);
             this.lblTaskType.TabIndex = 4;
             this.lblTaskType.Text = "Type";
             this.lblTaskType.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -201,9 +201,9 @@
             this.cboTaskType.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboTaskType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboTaskType.FormattingEnabled = true;
-            this.cboTaskType.Location = new System.Drawing.Point(83, 78);
+            this.cboTaskType.Location = new System.Drawing.Point(82, 78);
             this.cboTaskType.Name = "cboTaskType";
-            this.cboTaskType.Size = new System.Drawing.Size(192, 21);
+            this.cboTaskType.Size = new System.Drawing.Size(190, 21);
             this.cboTaskType.TabIndex = 5;
             this.cboTaskType.SelectedIndexChanged += new System.EventHandler(this.cboTaskType_SelectedIndexChanged);
             // 
@@ -213,14 +213,14 @@
             this.lblPriority.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblPriority.Location = new System.Drawing.Point(3, 150);
             this.lblPriority.Name = "lblPriority";
-            this.lblPriority.Size = new System.Drawing.Size(74, 25);
+            this.lblPriority.Size = new System.Drawing.Size(73, 25);
             this.lblPriority.TabIndex = 8;
             this.lblPriority.Text = "Priorité";
             this.lblPriority.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
             // numPriority
             // 
-            this.numPriority.Location = new System.Drawing.Point(83, 153);
+            this.numPriority.Location = new System.Drawing.Point(82, 153);
             this.numPriority.Maximum = new decimal(new int[] {
             1000000,
             0,
@@ -238,7 +238,7 @@
             this.lblPackage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblPackage.Location = new System.Drawing.Point(3, 175);
             this.lblPackage.Name = "lblPackage";
-            this.lblPackage.Size = new System.Drawing.Size(74, 25);
+            this.lblPackage.Size = new System.Drawing.Size(73, 25);
             this.lblPackage.TabIndex = 10;
             this.lblPackage.Text = "Package";
             this.lblPackage.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -249,7 +249,7 @@
             this.lblCreationUser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblCreationUser.Location = new System.Drawing.Point(3, 200);
             this.lblCreationUser.Name = "lblCreationUser";
-            this.lblCreationUser.Size = new System.Drawing.Size(74, 25);
+            this.lblCreationUser.Size = new System.Drawing.Size(73, 25);
             this.lblCreationUser.TabIndex = 12;
             this.lblCreationUser.Text = "Créateur";
             this.lblCreationUser.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -260,7 +260,7 @@
             this.lblRequestUser.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblRequestUser.Location = new System.Drawing.Point(3, 225);
             this.lblRequestUser.Name = "lblRequestUser";
-            this.lblRequestUser.Size = new System.Drawing.Size(74, 25);
+            this.lblRequestUser.Size = new System.Drawing.Size(73, 25);
             this.lblRequestUser.TabIndex = 13;
             this.lblRequestUser.Text = "Demandeur";
             this.lblRequestUser.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -271,9 +271,9 @@
             this.cboCreationUser.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboCreationUser.Enabled = false;
             this.cboCreationUser.FormattingEnabled = true;
-            this.cboCreationUser.Location = new System.Drawing.Point(83, 203);
+            this.cboCreationUser.Location = new System.Drawing.Point(82, 203);
             this.cboCreationUser.Name = "cboCreationUser";
-            this.cboCreationUser.Size = new System.Drawing.Size(192, 21);
+            this.cboCreationUser.Size = new System.Drawing.Size(190, 21);
             this.cboCreationUser.TabIndex = 14;
             // 
             // lblProductLines
@@ -282,7 +282,7 @@
             this.lblProductLines.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblProductLines.Location = new System.Drawing.Point(3, 250);
             this.lblProductLines.Name = "lblProductLines";
-            this.lblProductLines.Size = new System.Drawing.Size(74, 167);
+            this.lblProductLines.Size = new System.Drawing.Size(73, 167);
             this.lblProductLines.TabIndex = 24;
             this.lblProductLines.Text = "Gammes";
             this.lblProductLines.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -292,9 +292,9 @@
             this.chlProductLines.CheckOnClick = true;
             this.chlProductLines.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chlProductLines.FormattingEnabled = true;
-            this.chlProductLines.Location = new System.Drawing.Point(83, 253);
+            this.chlProductLines.Location = new System.Drawing.Point(82, 253);
             this.chlProductLines.Name = "chlProductLines";
-            this.chlProductLines.Size = new System.Drawing.Size(192, 161);
+            this.chlProductLines.Size = new System.Drawing.Size(190, 161);
             this.chlProductLines.TabIndex = 25;
             // 
             // lblObjectifDate
@@ -303,7 +303,7 @@
             this.lblObjectifDate.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblObjectifDate.Location = new System.Drawing.Point(3, 125);
             this.lblObjectifDate.Name = "lblObjectifDate";
-            this.lblObjectifDate.Size = new System.Drawing.Size(74, 25);
+            this.lblObjectifDate.Size = new System.Drawing.Size(73, 25);
             this.lblObjectifDate.TabIndex = 26;
             this.lblObjectifDate.Text = "Objectif";
             this.lblObjectifDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -311,10 +311,10 @@
             // dtpObjectifDate
             // 
             this.dtpObjectifDate.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dtpObjectifDate.Location = new System.Drawing.Point(83, 128);
+            this.dtpObjectifDate.Location = new System.Drawing.Point(82, 128);
             this.dtpObjectifDate.Name = "dtpObjectifDate";
             this.dtpObjectifDate.ShowCheckBox = true;
-            this.dtpObjectifDate.Size = new System.Drawing.Size(192, 20);
+            this.dtpObjectifDate.Size = new System.Drawing.Size(190, 20);
             this.dtpObjectifDate.TabIndex = 27;
             // 
             // lblProjectNumber
@@ -323,7 +323,7 @@
             this.lblProjectNumber.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblProjectNumber.Location = new System.Drawing.Point(3, 100);
             this.lblProjectNumber.Name = "lblProjectNumber";
-            this.lblProjectNumber.Size = new System.Drawing.Size(74, 25);
+            this.lblProjectNumber.Size = new System.Drawing.Size(73, 25);
             this.lblProjectNumber.TabIndex = 28;
             this.lblProjectNumber.Text = "N° projet";
             this.lblProjectNumber.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -333,9 +333,9 @@
             this.cboProjectNumber.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboProjectNumber.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboProjectNumber.FormattingEnabled = true;
-            this.cboProjectNumber.Location = new System.Drawing.Point(83, 103);
+            this.cboProjectNumber.Location = new System.Drawing.Point(82, 103);
             this.cboProjectNumber.Name = "cboProjectNumber";
-            this.cboProjectNumber.Size = new System.Drawing.Size(192, 21);
+            this.cboProjectNumber.Size = new System.Drawing.Size(190, 21);
             this.cboProjectNumber.TabIndex = 29;
             // 
             // tlpPackage
@@ -346,12 +346,12 @@
             this.tlpPackage.Controls.Add(this.cboPackage, 0, 0);
             this.tlpPackage.Controls.Add(this.cmdDeletePackage, 1, 0);
             this.tlpPackage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpPackage.Location = new System.Drawing.Point(80, 175);
+            this.tlpPackage.Location = new System.Drawing.Point(79, 175);
             this.tlpPackage.Margin = new System.Windows.Forms.Padding(0);
             this.tlpPackage.Name = "tlpPackage";
             this.tlpPackage.RowCount = 1;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPackage.Size = new System.Drawing.Size(198, 25);
+            this.tlpPackage.Size = new System.Drawing.Size(196, 25);
             this.tlpPackage.TabIndex = 30;
             // 
             // cboPackage
@@ -361,14 +361,14 @@
             this.cboPackage.FormattingEnabled = true;
             this.cboPackage.Location = new System.Drawing.Point(3, 3);
             this.cboPackage.Name = "cboPackage";
-            this.cboPackage.Size = new System.Drawing.Size(167, 21);
+            this.cboPackage.Size = new System.Drawing.Size(165, 21);
             this.cboPackage.TabIndex = 11;
             // 
             // cmdDeletePackage
             // 
             this.cmdDeletePackage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
-            this.cmdDeletePackage.Location = new System.Drawing.Point(173, 0);
+            this.cmdDeletePackage.Location = new System.Drawing.Point(171, 0);
             this.cmdDeletePackage.Margin = new System.Windows.Forms.Padding(0);
             this.cmdDeletePackage.Name = "cmdDeletePackage";
             this.cmdDeletePackage.Size = new System.Drawing.Size(25, 25);
@@ -382,7 +382,7 @@
             this.lblStatus.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblStatus.Location = new System.Drawing.Point(3, 25);
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(74, 25);
+            this.lblStatus.Size = new System.Drawing.Size(73, 25);
             this.lblStatus.TabIndex = 31;
             this.lblStatus.Text = "Statut";
             this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -390,10 +390,10 @@
             // txtStatus
             // 
             this.txtStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtStatus.Location = new System.Drawing.Point(83, 28);
+            this.txtStatus.Location = new System.Drawing.Point(82, 28);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(192, 20);
+            this.txtStatus.Size = new System.Drawing.Size(190, 20);
             this.txtStatus.TabIndex = 32;
             // 
             // tlpFooter

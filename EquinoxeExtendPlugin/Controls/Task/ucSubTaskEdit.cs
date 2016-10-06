@@ -173,6 +173,47 @@ namespace EquinoxeExtendPlugin.Controls.Task
             return result;
         }
 
+        protected void CommandEnableManagement()
+        {
+
+
+        }
+
+        protected void ValidateEdit()
+        {
+            long projectTaskId = 0;
+
+            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            {
+                if (!ControlValidator())
+                {
+                    MessageBox.Show("Données invalides");
+                    return;
+                }
+
+                if (_StatusEnum == StatusEnum.New)
+                {
+                    var newProjectTask = FillFromControl();
+                    projectTaskId = releaseService.AddSubTask(newProjectTask);
+
+                    //Applications des droits sur dev
+                    Tools.Tools.ReleaseProjectsRights(_Group);
+                }
+                else if (_StatusEnum == StatusEnum.Modified)
+                {
+                    var theProjectTask = FillFromControl();
+                    theProjectTask.SubTaskId = _SubTask.SubTaskId;
+                    releaseService.UpdateSubTask(theProjectTask);
+                }
+                else
+                    throw new NotSupportedException(_StatusEnum.ToStringWithEnumName());
+
+                DialogResult = System.Windows.Forms.DialogResult.OK;
+            }
+
+            Close(null, null);
+        }
+
         #endregion
 
         #region Private FIELDS
@@ -210,37 +251,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             try
             {
-                long projectTaskId = 0;
-
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
-                    {
-                        if (!ControlValidator())
-                        {
-                            MessageBox.Show("Données invalides");
-                            return;
-                        }
-
-                        if (_StatusEnum == StatusEnum.New)
-                        {
-                            var newProjectTask = FillFromControl();
-                            projectTaskId = releaseService.AddSubTask(newProjectTask);
-                        }
-                        else if (_StatusEnum == StatusEnum.Modified)
-                        {
-                            var theProjectTask = FillFromControl();
-                            theProjectTask.SubTaskId = _SubTask.SubTaskId;
-                            releaseService.UpdateSubTask(theProjectTask);
-                        }
-                        else
-                            throw new NotSupportedException(_StatusEnum.ToStringWithEnumName());
-
-                        DialogResult = System.Windows.Forms.DialogResult.OK;
-                    }
+                    ValidateEdit();
                 }
-                Close(null, e);
             }
             catch (Exception ex)
             {
@@ -273,6 +288,40 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     cboProject.SelectedIndex = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void numProgression_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    if (e.KeyCode == Keys.Enter)
+                        ValidateEdit();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void numDuration_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    if (e.KeyCode == Keys.Enter)
+                        ValidateEdit();
                 }
             }
             catch (Exception ex)

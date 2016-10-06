@@ -15,8 +15,8 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_SandBox")]
-        [ProjectDirectory("Q:\\Masters_PréProd")]
-        [ProjectDirectoryArchive("Q:\\Masters_Sandbox\\_Archives")]
+        [ProjectDirectory("Q:\\Masters_PréProd\\")]
+        [ProjectDirectoryArchive("Q:\\Masters_Sandbox\\_Archives\\")]
         Sandbox = 10,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -25,10 +25,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Dev")]
-        [ProjectDirectory("Q:\\Masters_Dev\\1-Projet")]
-        [ProjectDirectoryArchive("Q:\\Masters_Dev\\1-Projet\\_Archives")]
-        [PluginDirectory("Q:\\Masters_Dev\\0-Plugin")]
-        [PluginDirectoryArchive("Q:\\Masters_Dev\\0-Plugin\\_Archives")]
+        [ProjectDirectory("Q:\\Masters_Dev\\1-Projet\\")]
+        [ProjectDirectoryArchive("Q:\\Masters_Dev\\1-Projet\\_Archives\\")]
+        [PluginDirectory("Q:\\Masters_Dev\\0-Plugin\\")]
+        [PluginDirectoryArchive("Q:\\Masters_Dev\\0-Plugin\\_Archives\\")]
         Developpement = 20,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -37,10 +37,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Préprod")]
-        [ProjectDirectory("Q:\\Masters_PréProd\\1-Projet")]
-        [ProjectDirectoryArchive("Q:\\Masters_PréProd\\1-Projet\\_Archives")]
-        [PluginDirectory("Q:\\Masters_PréProd\\0-Plugin")]
-        [PluginDirectoryArchive("Q:\\Masters_PréProd\\0-Plugin\\_Archives")]
+        [ProjectDirectory("Q:\\Masters_PréProd\\1-Projet\\")]
+        [ProjectDirectoryArchive("Q:\\Masters_PréProd\\1-Projet\\_Archives\\")]
+        [PluginDirectory("Q:\\Masters_PréProd\\0-Plugin\\")]
+        [PluginDirectoryArchive("Q:\\Masters_PréProd\\0-Plugin\\_Archives\\")]
         Staging = 30,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -49,10 +49,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("5")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Product")]
-        [ProjectDirectory("Q:\\Masters_Product\\1-Projet")]
-        [ProjectDirectoryArchive("Q:\\Masters_Product\\1-Projet\\_Archives")]
-        [PluginDirectory("Q:\\Masters_Product\\0-Plugin")]
-        [PluginDirectoryArchive("Q:\\Masters_Product\\0-Plugin\\_Archives")]
+        [ProjectDirectory("Q:\\Masters_Product\\1-Projet\\")]
+        [ProjectDirectoryArchive("Q:\\Masters_Product\\1-Projet\\_Archives\\")]
+        [PluginDirectory("Q:\\Masters_Product\\0-Plugin\\")]
+        [PluginDirectoryArchive("Q:\\Masters_Product\\0-Plugin\\_Archives\\")]
         Production = 40,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -61,10 +61,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Backup")]
-        [ProjectDirectory("Q:\\Masters_Backup\\1-Projet")]
-        [ProjectDirectoryArchive("Q:\\Masters_Backup\\1-Projet\\_Archives")]
-        [PluginDirectory("Q:\\Masters_Backup\\0-Plugin")]
-        [PluginDirectoryArchive("Q:\\Masters_Backup\\0-Plugin\\_Archives")]
+        [ProjectDirectory("Q:\\Masters_Backup\\1-Projet\\")]
+        [ProjectDirectoryArchive("Q:\\Masters_Backup\\1-Projet\\_Archives\\")]
+        [PluginDirectory("Q:\\Masters_Backup\\0-Plugin\\")]
+        [PluginDirectoryArchive("Q:\\Masters_Backup\\0-Plugin\\_Archives\\")]
         Backup = 50
     };
 }

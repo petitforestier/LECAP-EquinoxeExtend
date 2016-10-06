@@ -69,7 +69,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                     cboProductLine.SelectedIndex = -1;
 
                     //Package
-                    cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdString);
+                    cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdStatusString);
                     cboPackage.ValueMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageId);
                     cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All);
                     cboPackage.SelectedIndex = -1;

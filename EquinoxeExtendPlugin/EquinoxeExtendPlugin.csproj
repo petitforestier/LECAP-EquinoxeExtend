@@ -141,6 +141,7 @@
     </Compile>
     <Compile Include="Task.cs" />
     <Compile Include="Tools\EventArgs.cs" />
+    <Compile Include="Tools\Tools.cs" />
     <Compile Include="UDF.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -168,10 +169,6 @@
     <ProjectReference Include="..\EquinoxeExtend.Shared.Object\EquinoxeExtend.Shared.Object.csproj">
       <Project>{f0c9e438-4a29-4c9f-a58a-52273f3f7e19}</Project>
       <Name>EquinoxeExtend.Shared.Object</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\GanttChart\GanttChart.csproj">
-      <Project>{f98f97d5-4f29-4531-ad05-d90f8e84c9aa}</Project>
-      <Name>GanttChart</Name>
     </ProjectReference>
     <ProjectReference Include="..\Service.Log.Front\Service.Log.Front.csproj">
       <Project>{cff12927-f80c-4e6e-8d99-12fbf2aa9dfa}</Project>
@@ -306,6 +303,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\Planning\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\1475694463_test_tube24.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -20,7 +20,6 @@ using System.Windows.Forms;
 namespace EquinoxeExtendPlugin.Controls.Task
 {
     
-
     public partial class ucMainTaskEdit : UserControl, IUcUserControl
     {
         #region Public EVENTS
@@ -333,7 +332,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             return result;
         }
 
-
         #endregion
 
         #region Private FIELDS
@@ -408,8 +406,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         else
                             throw new NotSupportedException(_StatusEnum.ToStringWithEnumName());
 
-                        DialogResult = System.Windows.Forms.DialogResult.OK;
+                        DialogResult = System.Windows.Forms.DialogResult.OK;                      
                     }
+
+                    //Applications des droits sur dev
+                    Tools.Tools.ReleaseProjectsRights(_Group);
                 }
                 EditionEventArgs.StatusEnum status;
                 if (_StatusEnum == StatusEnum.New)
