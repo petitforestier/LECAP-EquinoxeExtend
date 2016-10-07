@@ -114,8 +114,8 @@ namespace Service.Release.Front
             var thePackage = GetPackageById(iPackage.PackageId, GranularityEnum.Full);
             using (var ts = new System.Transactions.TransactionScope())
             {
-                thePackage.Status = PackageStatusEnum.Staging;
-                UpdatePackage(thePackage);
+                //UpdatePackageStatus
+                UpdatePackageStatus(thePackage, PackageStatusEnum.Staging);
 
                 //Passage en staging des tâches
                 foreach (var mainTaskItem in thePackage.MainTasks)

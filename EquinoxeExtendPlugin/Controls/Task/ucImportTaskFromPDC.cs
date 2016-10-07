@@ -57,7 +57,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvProject.RowHeadersVisible = false;
                 dgvProject.AllowUserToResizeRows = false;
                 dgvProject.AllowUserToResizeColumns = true;
-                dgvProject.AllowUserToOrderColumns = false;
+                dgvProject.AllowUserToOrderColumns = true;
 
                 dgvProject.DataSource = _ExternalProjetBindingSource;
                 _ExternalProjetBindingSource.DataSource = new List<ExternalProjectView>();
@@ -88,48 +88,56 @@ namespace EquinoxeExtendPlugin.Controls.Task
             [Name("FR", "N° Projet")]
             [WidthColumn(80)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            [Sortable]
             public string ProjectNumber { get; set; }
 
             [Visible]
             [Name("FR", "Statut")]
             [WidthColumn(50)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            [Sortable]
             public string Status { get; set; }
 
             [Visible]
             [Name("FR", "Priorité")]
             [WidthColumn(50)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            [Sortable]
             public string Priority { get; set; }
 
             [Visible]
             [Name("FR", "Nom")]
             [WidthColumn(250)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [Sortable]
             public string ProjectName { get; set; }
 
             [Visible]
             [Name("FR", "Description")]
             [WidthColumn(200)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [Sortable]
             public string Description { get; set; }
 
             [Visible]
             [Name("FR", "Date cloture objectif")]
             [WidthColumn(80)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [Sortable]
             public string DateObjectiveEnd { get; set; }
 
             [Visible]
             [Name("FR", "Pilote")]
             [WidthColumn(80)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [Sortable]
             public string Pilote { get; set; }
 
             [Visible]
             [Name("FR", "Equinoxe")]
             [WidthColumn(60)]
-            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            [Sortable]
             public bool BEImpacted { get; set; }
 
             public ExternalProject Object { get; set; }

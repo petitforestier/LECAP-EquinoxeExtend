@@ -51,27 +51,30 @@ namespace EquinoxeExtendPlugin
                     //Chargement des boutons
                     this.RegisterProjectCommandButton();
 
-                    //Affichage des tâches ouvertes sur ce projet
-                    var groupService = _Application.ServiceManager.GetService<IGroupService>();
-                    var activeGroupe = groupService.ActiveGroup;
-
-                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                    var activeProject = projectService.ActiveProject;
-
-                    if (groupService.ActiveGroup.Name == EnvironmentEnum.Developpement.GetName("FR"))
+                    if (!Consts.Consts.DontShowCheckTaskOnStartup.Value)
                     {
-                        var ucCheckTaskOnStartupControl = new ucCheckTaskOnStartup(activeProject);
-                        using (var checkTaskOnStartupForm = new frmUserControl(ucCheckTaskOnStartupControl, "Vérification des tâches", false, false))
-                        {
-                            ucCheckTaskOnStartupControl.Close += (s, d) => checkTaskOnStartupForm.Close();
-                            checkTaskOnStartupForm.StartPosition = FormStartPosition.CenterParent;
-                            checkTaskOnStartupForm.Width = 500;
-                            checkTaskOnStartupForm.Height = 500;
-                            if(ucCheckTaskOnStartupControl.RunCheckup())
-                                checkTaskOnStartupForm.ShowDialog();
+                        //Affichage des tâches ouvertes sur ce projet
+                        var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                        var activeGroupe = groupService.ActiveGroup;
 
-                            if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.Yes)
-                                projectService.CloseProject();
+                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                        var activeProject = projectService.ActiveProject;
+
+                        if (groupService.ActiveGroup.Name == EnvironmentEnum.Developpement.GetName("FR"))
+                        {
+                            var ucCheckTaskOnStartupControl = new ucCheckTaskOnStartup(activeProject);
+                            using (var checkTaskOnStartupForm = new frmUserControl(ucCheckTaskOnStartupControl, "Vérification des tâches", false, false))
+                            {
+                                ucCheckTaskOnStartupControl.Close += (s, d) => checkTaskOnStartupForm.Close();
+                                checkTaskOnStartupForm.StartPosition = FormStartPosition.CenterParent;
+                                checkTaskOnStartupForm.Width = 500;
+                                checkTaskOnStartupForm.Height = 500;
+                                if (ucCheckTaskOnStartupControl.RunCheckup())
+                                    checkTaskOnStartupForm.ShowDialog();
+
+                                if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.Yes)
+                                    projectService.CloseProject();
+                            }
                         }
                     }
                 }

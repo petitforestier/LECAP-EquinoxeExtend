@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Command.cs" />
+    <Compile Include="Consts\Consts.cs" />
     <Compile Include="Controls\ControlVersion\ucControlVersion.cs">
       <SubType>UserControl</SubType>
     </Compile>

@@ -253,7 +253,7 @@
             this.cmdDeployToDev.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cmdDeployToDev.Name = "cmdDeployToDev";
             this.cmdDeployToDev.Size = new System.Drawing.Size(33, 27);
-            this.cmdDeployToDev.Text = "(Ré) Ouvrir Package";
+            this.cmdDeployToDev.Text = "Basculer en Dev";
             this.cmdDeployToDev.Click += new System.EventHandler(this.cmdDeployToDev_Click);
             // 
             // cmdDeployToStaging

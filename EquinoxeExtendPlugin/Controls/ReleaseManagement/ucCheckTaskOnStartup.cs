@@ -61,7 +61,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
             using (var releaseService = new Service.Release.Front.ReleaseService(_Project.Group.GetEnvironment().GetExtendConnectionString()))
             {
-                var openedTask = releaseService.GetOpenedMainTasks(Library.Tools.Enums.GranularityEnum.Full);
+                var openedTask = releaseService.GetDevMainTasks(Library.Tools.Enums.GranularityEnum.Full);
                 var concerneTaskList = openedTask.Enum().Where(x => x.SubTasks.Enum().Any(y => y.ProjectGUID == _Project.Id)).Enum().ToList();
 
                 if (concerneTaskList.Any())

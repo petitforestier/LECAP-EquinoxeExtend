@@ -137,6 +137,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 foreach (var item in GenerateProjetTableTreeNode().Enum())
                     trvProjectTable.Nodes.Add(item);
             }
+
         }
 
         private List<TreeNode> GenerateProjetTableTreeNode()
@@ -257,29 +258,33 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    //Confirmation
-                    if (MessageBox.Show("Le recensement des tables va débuter, et peut prendre quelques minutes. Etes-vous sûr de vouloir lancer le traitement ?", "Cas d'emploi", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                        return;
-
-                    //Création des services
-                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                    var OpenedProjectName = projectService.ActiveProject.Name;
-                    projectService.CloseProject();
-
-                    //Vérification que tous les projets sont fermés
-                    var groupService = _Application.ServiceManager.GetService<IGroupService>();
-                    var openedProjectList = groupService.ActiveGroup.GetOpenedProjectList();
-
-                    if (openedProjectList.IsNotNullAndNotEmpty())
+                    using (var projectOpenLocker = new BoolLocker(ref Consts.Consts.DontShowCheckTaskOnStartup))
                     {
-                        MessageBox.Show("Certains projets du groupe sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine
-                            + Environment.NewLine + openedProjectList.Select(x => x.Name).Concat(Environment.NewLine), "Projet ouvert", MessageBoxButtons.OK);
+                        //Confirmation
+                        if (MessageBox.Show("Le recensement des tables va débuter, et peut prendre quelques minutes. Etes-vous sûr de vouloir lancer le traitement ?", "Cas d'emploi", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                            return;
+
+                        //Création des services
+                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                        var OpenedProjectName = projectService.ActiveProject.Name;
+                        projectService.CloseProject();
+
+                        //Vérification que tous les projets sont fermés
+                        var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                        var openedProjectList = groupService.ActiveGroup.GetOpenedProjectList();
+
+                        if (openedProjectList.IsNotNullAndNotEmpty())
+                        {
+                            MessageBox.Show("Certains projets du groupe sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine
+                                + Environment.NewLine + openedProjectList.Select(x => x.Name).Concat(Environment.NewLine), "Projet ouvert", MessageBoxButtons.OK);
+                        }
+                        else
+                        {
+                            LoadTreeView();
+                        }
+                        projectService.OpenProject(OpenedProjectName);
+
                     }
-                    else
-                    {
-                        LoadTreeView();
-                    }
-                    projectService.OpenProject(OpenedProjectName);
                 }
             }
             catch (Exception ex)
@@ -295,38 +300,41 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    var inProgressUserControl = new ucMessageBox("Traitement en cours");
-                    using (var inProgressForm = new frmUserControl(inProgressUserControl, "Recherche des tables inutilisées", false, false))
+                    using (var projectOpenLocker = new BoolLocker(ref Consts.Consts.DontShowCheckTaskOnStartup))
                     {
-                        inProgressForm.TopMost = true;
-                        inProgressForm.Show();
-                        inProgressForm.Refresh();
-
-                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                        var activeProject = projectService.ActiveProject;
-
-                        var result = new List<string>();
-
-                        //Récupération de la liste des tables settings
-                        var settingsDatatable = activeProject.GetTableSettingsList();
-
-                        //récupération de la liste des tables
-                        var searchProcess = new SearchRuleProcess(activeProject);
-
-                        foreach (var tableItem in activeProject.DataTables.Enum())
+                        var inProgressUserControl = new ucMessageBox("Traitement en cours");
+                        using (var inProgressForm = new frmUserControl(inProgressUserControl, "Recherche des tables inutilisées", false, false))
                         {
-                            //ignore les tables de settings
-                            if (settingsDatatable.Exists(x => x == tableItem.InvariantName))
-                                continue;
+                            inProgressForm.TopMost = true;
+                            inProgressForm.Show();
+                            inProgressForm.Refresh();
 
-                            if (!searchProcess.GetSearchResult("DwLookup" + tableItem.InvariantName).IsNotNullAndNotEmpty())
-                                result.Add(tableItem.DisplayName);
+                            var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                            var activeProject = projectService.ActiveProject;
+
+                            var result = new List<string>();
+
+                            //Récupération de la liste des tables settings
+                            var settingsDatatable = activeProject.GetTableSettingsList();
+
+                            //récupération de la liste des tables
+                            var searchProcess = new SearchRuleProcess(activeProject);
+
+                            foreach (var tableItem in activeProject.DataTables.Enum())
+                            {
+                                //ignore les tables de settings
+                                if (settingsDatatable.Exists(x => x == tableItem.InvariantName))
+                                    continue;
+
+                                if (!searchProcess.GetSearchResult("DwLookup" + tableItem.InvariantName).IsNotNullAndNotEmpty())
+                                    result.Add(tableItem.DisplayName);
+                            }
+
+                            dgvUnusedTable.DataSource = result.Enum().Select(x => TableView.ConvertTo(x)).Enum().ToList();
+                            dgvUnusedTable.FormatColumns<TableView>("FR");
+
+                            MessageBox.Show("{0} tables sont inutilisées sur {1} tables".FormatString(result.Count, activeProject.DataTables.Count()));
                         }
-
-                        dgvUnusedTable.DataSource = result.Enum().Select(x => TableView.ConvertTo(x)).Enum().ToList();
-                        dgvUnusedTable.FormatColumns<TableView>("FR");
-
-                        MessageBox.Show("{0} tables sont inutilisées sur {1} tables".FormatString(result.Count, activeProject.DataTables.Count()));
                     }
                 }
             }
@@ -343,30 +351,33 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                    var activeProject = projectService.ActiveProject;
-
-                    var inProgressUserControl = new ucMessageBox("Traitement en cours");
-                    using (var inProgressForm = new frmUserControl(inProgressUserControl, "Recherches des variables inutilisés", false, false))
+                    using (var projectOpenLocker = new BoolLocker(ref Consts.Consts.DontShowCheckTaskOnStartup))
                     {
-                        inProgressForm.TopMost = true;
-                        inProgressForm.Show();
-                        inProgressForm.Refresh();
+                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                        var activeProject = projectService.ActiveProject;
 
-                        var result = new List<string>();
-
-                        //récupération de la liste des tables
-                        var searchProcess = new SearchRuleProcess(activeProject);
-
-                        foreach (var variableItem in activeProject.Variables.GetVariables().Enum())
+                        var inProgressUserControl = new ucMessageBox("Traitement en cours");
+                        using (var inProgressForm = new frmUserControl(inProgressUserControl, "Recherches des variables inutilisés", false, false))
                         {
-                            if (!searchProcess.GetSearchResult(variableItem.Name).IsNotNullAndNotEmpty())
-                                result.Add(variableItem.Name);
-                        }
-                        dgvUnusedVariables.DataSource = result.Enum().Select(x => VariableView.ConvertTo(x)).Enum().ToList();
-                        dgvUnusedVariables.FormatColumns<VariableView>("FR");
+                            inProgressForm.TopMost = true;
+                            inProgressForm.Show();
+                            inProgressForm.Refresh();
 
-                        MessageBox.Show("{0} paramètres sont inutilisés sur {1} paramètres".FormatString(result.Count, activeProject.Variables.GetVariables().Enum().Count()));
+                            var result = new List<string>();
+
+                            //récupération de la liste des tables
+                            var searchProcess = new SearchRuleProcess(activeProject);
+
+                            foreach (var variableItem in activeProject.Variables.GetVariables().Enum())
+                            {
+                                if (!searchProcess.GetSearchResult(variableItem.Name).IsNotNullAndNotEmpty())
+                                    result.Add(variableItem.Name);
+                            }
+                            dgvUnusedVariables.DataSource = result.Enum().Select(x => VariableView.ConvertTo(x)).Enum().ToList();
+                            dgvUnusedVariables.FormatColumns<VariableView>("FR");
+
+                            MessageBox.Show("{0} paramètres sont inutilisés sur {1} paramètres".FormatString(result.Count, activeProject.Variables.GetVariables().Enum().Count()));
+                        }
                     }
                 }
             }
