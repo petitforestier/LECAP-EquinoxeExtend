@@ -43,6 +43,11 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             dgvUnusedTable.AllowUserToResizeRows = false;
             dgvUnusedTable.AllowUserToResizeColumns = true;
             dgvUnusedTable.AllowUserToOrderColumns = false;
+
+            //image list
+            trvProjectTable.ImageList = _ImageList;
+            _ImageList.Images.Add(Properties.Resources.blank);
+            _ImageList.Images.Add(Properties.Resources.Warning16);
         }
 
         #endregion
@@ -109,6 +114,8 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
         private BoolLock _IsLoading = new BoolLock();
 
+        private ImageList _ImageList = new ImageList();
+
         #endregion
 
         #region Private METHODS
@@ -163,7 +170,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             var treeNodeCollection = new List<TreeNode>();
 
             //Fichier excel
-            foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item2.FileLocation).Enum())
+            foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item2.FileLocation).Enum().OrderBy(x => x.First().Item2.FileLocation).Enum())
             {
                 var theLocationNode = new TreeNode();
                 theLocationNode.Name = excelFileLocationItem.First().Item2.FileLocation;
@@ -176,6 +183,21 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                     var theSheetNode = new TreeNode();
                     theSheetNode.Name = sheetItem.First().Item2.SheetName;
                     theSheetNode.Text = "Feuille : " + theSheetNode.Name;
+
+                    if (sheetItem.Count() >= 2)
+                    {
+                        var tableList = sheetItem.Select(x => new Tuple<string, ProjectDetails, ImportedDataTable>(groupService.ActiveGroup.GetEnvironment().GetName("FR"), x.Item1, x.Item2)).ToList();
+                        var tableDifferences = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(tableList);
+
+                        if (tableDifferences.IsNotNullAndNotEmpty())
+                        {
+                            theLocationNode.ImageIndex = 1;
+                            theLocationNode.SelectedImageIndex = 1;
+
+                            theSheetNode.ImageIndex = 1;
+                            theSheetNode.SelectedImageIndex = 1;
+                        }
+                    }
 
                     //Projet
                     foreach (var projectItem in sheetItem.GroupBy(x => x.Item1.Name).Enum())

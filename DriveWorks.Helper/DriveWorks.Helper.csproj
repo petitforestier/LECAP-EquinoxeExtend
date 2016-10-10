@@ -64,7 +64,7 @@
   <ItemGroup>
     <Compile Include="GroupHelper.cs" />
     <Compile Include="IProjectServiceHelper.cs" />
-    <Compile Include="ImportedDataTableHelper.cs" />
+    <Compile Include="DataTableHelper.cs" />
     <Compile Include="Object\AddedConstantManaged.cs" />
     <Compile Include="Object\AddedControlManaged.cs" />
     <Compile Include="Object\ConstantState.cs" />

@@ -3,7 +3,6 @@ using DriveWorks.Helper;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
-using Library.Control.Extensions;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using Library.Tools.Misc;
@@ -109,36 +108,55 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         protected void DisplayEditMode()
         {
-            //cmdAddSubTask.Enabled = false;
-            //cmdDeleteSubTask.Enabled = false;
             dgvSubTasks.Enabled = false;
         }
 
         protected void DisplaySelectionMode()
         {
-            //cmdAddSubTask.Enabled = true;
-            //cmdDeleteSubTask.Enabled = true;
             dgvSubTasks.Enabled = true;
         }
 
         protected void CommandEnableManagement()
         {
+            if (_MainTask == null)
+            {
+                cmdAddSubTask.Enabled = false;
+            }
+            else
+            {
+                if (_MainTask.Status == MainTaskStatusEnum.Dev ||
+                    _MainTask.Status == MainTaskStatusEnum.Waiting)
+                {
+                    cmdAddSubTask.Enabled = true;
+                }
+                else
+                {
+                    cmdAddSubTask.Enabled = false;
+                }
+            }
+
             var theSubTask = GetSelectedSubTask();
 
             if (theSubTask == null)
             {
-                cmdAddSubTask.Enabled = false;
                 cmdEditSubTask.Enabled = false;
                 cmdDeleteSubTask.Enabled = false;
             }
             else
             {
-                cmdAddSubTask.Enabled = true;
-                cmdEditSubTask.Enabled = true;
-                if(theSubTask.Progression ==0)
-                    cmdDeleteSubTask.Enabled = true;
+                if (_MainTask.Status == MainTaskStatusEnum.Dev ||
+                    _MainTask.Status == MainTaskStatusEnum.Waiting)
+                {
+                    cmdEditSubTask.Enabled = true;
+                    if (theSubTask.Progression == 0)
+                        cmdDeleteSubTask.Enabled = true;
+                }
+                else
+                {
+                    cmdEditSubTask.Enabled = false;
+                    cmdDeleteSubTask.Enabled = false;
+                }
             }
-
         }
 
         #endregion
@@ -147,7 +165,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         protected class SubTaskView
         {
-
             #region Public PROPERTIES
 
             [Visible]

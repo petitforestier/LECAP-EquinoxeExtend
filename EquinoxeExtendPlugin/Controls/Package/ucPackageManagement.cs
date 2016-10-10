@@ -130,7 +130,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             var thePackage = GetSelectedPackage();
 
-            if(thePackage == null)
+            if (thePackage == null)
             {
                 cmdDeletePackage.Enabled = false;
                 cmdDeployToDev.Enabled = false;
@@ -141,13 +141,13 @@ namespace EquinoxeExtendPlugin.Controls.Task
             else
             {
                 //DeletePackage
-                if ((thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Developpement) )
+                if ((thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Developpement))
                     cmdDeletePackage.Enabled = true;
                 else
                     cmdDeletePackage.Enabled = false;
- 
+
                 //OpenPackage
-                if(thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Staging)
+                if (thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Staging)
                     cmdDeployToDev.Enabled = true;
                 else
                     cmdDeployToDev.Enabled = false;
@@ -165,7 +165,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     cmdDeployToProduction.Enabled = false;
 
                 //LockUnlock
-                if(thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Developpement)
+                if (thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Developpement)
                     cmdLockUnlock.Enabled = true;
                 else
                     cmdLockUnlock.Enabled = false;
@@ -449,7 +449,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     LoadPackageDataGridView();
-                    
+
                 }
             }
             catch (Exception ex)
@@ -497,13 +497,13 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 var projectList = new List<SubTask>();
                 foreach (var groupItem in projectTaskGroup.Enum())
                 {
-                    if(groupItem.First().ProjectGUID != null)
+                    if (groupItem.First().ProjectGUID != null)
                     {
                         var newProjectTask = new SubTask();
                         newProjectTask.Progression = (int)Math.Round(groupItem.Average(x => x.Progression));
                         newProjectTask.ProjectGUID = groupItem.First().ProjectGUID;
                         projectList.Add(newProjectTask);
-                    } 
+                    }
                 }
                 bdsSubTask.DataSource = projectList.Select(x => SubTaskView.ConvertTo(x, _Group)).Enum().ToList();
                 bdsDeployement.DataSource = seletedPackage.Deployements.Enum().Select(x => DeployementView.ConvertTo(x)).Enum().ToList();
@@ -710,22 +710,26 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                                 //Vérification qu'aucun projet à copier dans le groupe dev est ouvert
                                 var openedDevProjectlist = devgroup.GetOpenedProjectList();
-                                var projectDevComparator = new ListComparator<ProjectDetails, SubTask>(openedDevProjectlist, x => x.Id, packageToDeployInQuality.SubTasks, x => x.ProjectGUID);
-                                if (projectDevComparator.CommonList.IsNotNullAndNotEmpty())
-                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine + Environment.NewLine + projectDevComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine).FormatString(devgroup.Name));
 
-                                var packageDistinctProjectGUIDList = packageToDeployInQuality.SubTasks.GroupBy(x => x.ProjectGUID).Select(x => (Guid?)x.First().ProjectGUID).ToList();
-                                var packageDisctinctProjectDetailsList = new List<ProjectDetails>();
+                                var packageDistinctProjectGUIDList = packageToDeployInQuality.SubTasks.Where(x => x.ProjectGUID != null).GroupBy(x => x.ProjectGUID).Select(x => (Guid?)x.First().ProjectGUID).ToList();
+                                var packageDistinctProjectDetailsList = new List<ProjectDetails>();
                                 foreach (var item in packageDistinctProjectGUIDList)
-                                    packageDisctinctProjectDetailsList.Add(devgroup.Projects.GetProject((Guid)item));
+                                {
+                                    if (item != null)
+                                        packageDistinctProjectDetailsList.Add(devgroup.Projects.GetProject((Guid)item));
+                                }
+
+                                var projectDevComparator = new ListComparator<ProjectDetails, ProjectDetails>(openedDevProjectlist, x => x.Id, packageDistinctProjectDetailsList, x => x.Id);
+                                if (projectDevComparator.CommonList.IsNotNullAndNotEmpty())
+                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(devgroup.Name) + Environment.NewLine + Environment.NewLine + projectDevComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));                                
 
                                 //Vérification que les tables à source commune et entre différent projets sont bien identique
-                                var tupleTables = new List<Tuple<ProjectDetails, ImportedDataTable>>();
+                                var tupleTables = new List<Tuple<string, ProjectDetails, ImportedDataTable>>();
 
-                                loadingControl.SetMessage("Vérification des tables de projets en cours...");
+                                loadingControl.SetMessage("Vérification des différences entre tables de projets en cours...");
 
-                                //Bouclage sur les projets
-                                foreach (var projectItem in packageDisctinctProjectDetailsList.Enum())
+                                //Bouclage sur les projets en dev inclus dans le package
+                                foreach (var projectItem in packageDistinctProjectDetailsList.Enum())
                                 {
                                     var projectService = _Application.ServiceManager.GetService<IProjectService>();
                                     projectService.OpenProject(projectItem.Name);
@@ -733,33 +737,55 @@ namespace EquinoxeExtendPlugin.Controls.Task
                                     var project = projectService.ActiveProject;
                                     var importedDataTables = project.GetImportedDataTableList();
                                     foreach (var tableItem in importedDataTables.Enum())
-                                        tupleTables.Add(new Tuple<ProjectDetails, ImportedDataTable>(projectItem, tableItem));
+                                        tupleTables.Add(new Tuple<string,ProjectDetails, ImportedDataTable>(EnvironmentEnum.Developpement.GetName("FR"), projectItem, tableItem));
                                 }
+
+                                //Récupère les projets de préprod non impacté par le package
+                                var stagingGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
+                                var openedStagingProjectlist = stagingGroup.GetOpenedProjectList();
+                                if(openedStagingProjectlist.IsNotNullAndNotEmpty())
+                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(stagingGroup.Name) + Environment.NewLine + Environment.NewLine + openedStagingProjectlist.Select(x => x.Name).Concat(Environment.NewLine));
+
+                                var projectStagingComparator = new ListComparator<ProjectDetails, ProjectDetails>(stagingGroup.GetProjectList(), x => x.Name, packageDistinctProjectDetailsList, x => x.Name);
+
+                                foreach (var projectItem in projectStagingComparator.RemovedList.Enum())
+                                {
+                                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                                    projectService.OpenProject(projectItem.Name);
+
+                                    var project = projectService.ActiveProject;
+                                    var importedDataTables = project.GetImportedDataTableList();
+                                    foreach (var tableItem in importedDataTables.Enum())
+                                        tupleTables.Add(new Tuple<string, ProjectDetails, ImportedDataTable>(EnvironmentEnum.Staging.GetName("FR"), projectItem, tableItem));
+                                }
+
 
                                 var invalideDataTables = new List<string>();
                                 //Bouclage sur les fichiers
-                                foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item2.FileLocation).Enum())
+                                foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item3.FileLocation).Enum())
                                 {
                                     //Bouclage sur les feuilles excels
-                                    foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item2.SheetName).Enum())
+                                    foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item3.SheetName).Enum())
                                     {
                                         var projectList = sheetItem.ToList();
                                         if (projectList.Count > 1)
                                         {
-                                            var notEqualsTable = sheetItem.ToList().Select(x => x.Item2).ToList().GetProjectDataTableDifferent();
-                                            if (notEqualsTable.IsNotNullAndNotEmpty())
-                                                throw new Exception("Les tables de projet excel suivantes utilisent le même fichier source et ne sont pas identiques." + notEqualsTable.Select(x => x.Item1.DisplayName).Concat(Environment.NewLine));
+                                            var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
+                                            if (differenceList.IsNotNullAndNotEmpty())
+                                                invalideDataTables.AddRange(differenceList);
                                         }
                                     }
                                 }
 
+                                if(invalideDataTables.IsNotNullAndNotEmpty())
+                                    throw new Exception("Des tables de projet excel suivantes utilisent le même fichier source et ne sont pas identiques." + Environment.NewLine + invalideDataTables.Concat(Environment.NewLine));
 
                                 //Vérification qu'aucun projet de destination dans le groupe préprod est ouvert
                                 var qualityGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
                                 var openedQualityProjectlist = qualityGroup.GetOpenedProjectList();
                                 var projectQualityComparator = new ListComparator<ProjectDetails, SubTask>(openedQualityProjectlist, x => x.Id, packageToDeployInQuality.SubTasks, x => x.ProjectGUID);
                                 if (projectQualityComparator.CommonList.IsNotNullAndNotEmpty())
-                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine + Environment.NewLine + projectQualityComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine).FormatString(devgroup.Name));
+                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(qualityGroup.Name) + Environment.NewLine + Environment.NewLine + projectQualityComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));
 
                                 devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
 
@@ -810,7 +836,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                                 //IMPORTATION DES PROJECTS
                                 loadingControl.SetMessage("Importation des projets...");
                                 qualityGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
-                                foreach (var projectItem in packageDisctinctProjectDetailsList)
+                                foreach (var projectItem in packageDistinctProjectDetailsList)
                                 {
                                     var qualityProjectDirectory = EnvironmentEnum.Staging.GetProjectDirectory() + projectItem.Name;
                                     var projectService = _Application.ServiceManager.GetService<IProjectService>();

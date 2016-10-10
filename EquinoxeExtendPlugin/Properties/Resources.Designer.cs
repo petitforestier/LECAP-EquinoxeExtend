@@ -93,6 +93,16 @@ namespace EquinoxeExtendPlugin.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap blank {
+            get {
+                object obj = ResourceManager.GetObject("blank", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Button_Help_icon24 {
             get {
                 object obj = ResourceManager.GetObject("Button_Help_icon24", resourceCulture);
@@ -256,6 +266,16 @@ namespace EquinoxeExtendPlugin.Properties {
         internal static System.Drawing.Bitmap up_icon {
             get {
                 object obj = ResourceManager.GetObject("up_icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Warning16 {
+            get {
+                object obj = ResourceManager.GetObject("Warning16", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

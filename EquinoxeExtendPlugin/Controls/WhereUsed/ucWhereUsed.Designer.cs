@@ -76,9 +76,9 @@
             this.tlpWhereUsed.Name = "tlpWhereUsed";
             this.tlpWhereUsed.RowCount = 3;
             this.tlpWhereUsed.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tlpWhereUsed.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tlpWhereUsed.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 45F));
             this.tlpWhereUsed.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpWhereUsed.Size = new System.Drawing.Size(695, 580);
+            this.tlpWhereUsed.Size = new System.Drawing.Size(984, 592);
             this.tlpWhereUsed.TabIndex = 0;
             // 
             // lblGroupTable
@@ -87,7 +87,7 @@
             this.lblGroupTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblGroupTable.Location = new System.Drawing.Point(3, 30);
             this.lblGroupTable.Name = "lblGroupTable";
-            this.lblGroupTable.Size = new System.Drawing.Size(340, 25);
+            this.lblGroupTable.Size = new System.Drawing.Size(483, 45);
             this.lblGroupTable.TabIndex = 0;
             this.lblGroupTable.Text = "Tables de groupes dans tous les projets";
             this.lblGroupTable.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -95,28 +95,30 @@
             // trvGroupTable
             // 
             this.trvGroupTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trvGroupTable.Location = new System.Drawing.Point(3, 58);
+            this.trvGroupTable.Location = new System.Drawing.Point(3, 78);
             this.trvGroupTable.Name = "trvGroupTable";
-            this.trvGroupTable.Size = new System.Drawing.Size(340, 519);
+            this.trvGroupTable.Size = new System.Drawing.Size(483, 511);
             this.trvGroupTable.TabIndex = 3;
             // 
             // lblProjectTable
             // 
             this.lblProjectTable.AutoSize = true;
             this.lblProjectTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblProjectTable.Location = new System.Drawing.Point(349, 30);
+            this.lblProjectTable.Location = new System.Drawing.Point(492, 30);
             this.lblProjectTable.Name = "lblProjectTable";
-            this.lblProjectTable.Size = new System.Drawing.Size(343, 25);
+            this.lblProjectTable.Size = new System.Drawing.Size(489, 45);
             this.lblProjectTable.TabIndex = 1;
-            this.lblProjectTable.Text = "Tables de projets dans tout le groupe";
+            this.lblProjectTable.Text = "Tables de projets dans tout le groupe\r\n- Ligne rouge : fichier excel introuvable " +
+    "au chein spécifié\r\n- Icone warning : Les données des tables utilisant le fichier" +
+    " ne base ne sont pas identiques";
             this.lblProjectTable.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // trvProjectTable
             // 
             this.trvProjectTable.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trvProjectTable.Location = new System.Drawing.Point(349, 58);
+            this.trvProjectTable.Location = new System.Drawing.Point(492, 78);
             this.trvProjectTable.Name = "trvProjectTable";
-            this.trvProjectTable.Size = new System.Drawing.Size(343, 519);
+            this.trvProjectTable.Size = new System.Drawing.Size(489, 511);
             this.trvProjectTable.TabIndex = 4;
             // 
             // cmdRunWhereUsedAnalyse
@@ -137,7 +139,7 @@
             this.tabMain.Location = new System.Drawing.Point(0, 0);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(486, 529);
+            this.tabMain.Size = new System.Drawing.Size(998, 624);
             this.tabMain.TabIndex = 1;
             // 
             // pagGroup
@@ -147,7 +149,7 @@
             this.pagGroup.Location = new System.Drawing.Point(4, 22);
             this.pagGroup.Name = "pagGroup";
             this.pagGroup.Padding = new System.Windows.Forms.Padding(3);
-            this.pagGroup.Size = new System.Drawing.Size(701, 586);
+            this.pagGroup.Size = new System.Drawing.Size(990, 598);
             this.pagGroup.TabIndex = 0;
             this.pagGroup.Text = "Groupe";
             // 
@@ -158,7 +160,7 @@
             this.pagProject.Location = new System.Drawing.Point(4, 22);
             this.pagProject.Name = "pagProject";
             this.pagProject.Padding = new System.Windows.Forms.Padding(3);
-            this.pagProject.Size = new System.Drawing.Size(478, 503);
+            this.pagProject.Size = new System.Drawing.Size(990, 598);
             this.pagProject.TabIndex = 1;
             this.pagProject.Text = "Projet";
             // 
@@ -170,7 +172,7 @@
             this.tabProject.Location = new System.Drawing.Point(3, 3);
             this.tabProject.Name = "tabProject";
             this.tabProject.SelectedIndex = 0;
-            this.tabProject.Size = new System.Drawing.Size(472, 497);
+            this.tabProject.Size = new System.Drawing.Size(984, 592);
             this.tabProject.TabIndex = 1;
             // 
             // pagProjectTable
@@ -180,7 +182,7 @@
             this.pagProjectTable.Location = new System.Drawing.Point(4, 22);
             this.pagProjectTable.Name = "pagProjectTable";
             this.pagProjectTable.Padding = new System.Windows.Forms.Padding(3);
-            this.pagProjectTable.Size = new System.Drawing.Size(511, 488);
+            this.pagProjectTable.Size = new System.Drawing.Size(976, 566);
             this.pagProjectTable.TabIndex = 0;
             this.pagProjectTable.Text = "Tables";
             // 
@@ -198,7 +200,7 @@
             this.tlpUnused.RowCount = 2;
             this.tlpUnused.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 39F));
             this.tlpUnused.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpUnused.Size = new System.Drawing.Size(505, 482);
+            this.tlpUnused.Size = new System.Drawing.Size(970, 560);
             this.tlpUnused.TabIndex = 0;
             // 
             // cmdRunUnusedAnalyse
@@ -218,13 +220,13 @@
             this.dgvUnusedTable.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dgvUnusedTable.Location = new System.Drawing.Point(3, 42);
             this.dgvUnusedTable.Name = "dgvUnusedTable";
-            this.dgvUnusedTable.Size = new System.Drawing.Size(499, 437);
+            this.dgvUnusedTable.Size = new System.Drawing.Size(964, 515);
             this.dgvUnusedTable.TabIndex = 1;
             // 
             // cmdExportProjectTableToExcel
             // 
             this.cmdExportProjectTableToExcel.Image = global::EquinoxeExtendPlugin.Properties.Resources.Excel_icon24;
-            this.cmdExportProjectTableToExcel.Location = new System.Drawing.Point(467, 3);
+            this.cmdExportProjectTableToExcel.Location = new System.Drawing.Point(932, 3);
             this.cmdExportProjectTableToExcel.Name = "cmdExportProjectTableToExcel";
             this.cmdExportProjectTableToExcel.Size = new System.Drawing.Size(35, 33);
             this.cmdExportProjectTableToExcel.TabIndex = 3;
@@ -295,7 +297,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tabMain);
             this.Name = "ucWhereUsed";
-            this.Size = new System.Drawing.Size(486, 529);
+            this.Size = new System.Drawing.Size(998, 624);
             this.tlpWhereUsed.ResumeLayout(false);
             this.tlpWhereUsed.PerformLayout();
             this.tabMain.ResumeLayout(false);
