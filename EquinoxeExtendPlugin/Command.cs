@@ -111,6 +111,11 @@ namespace EquinoxeExtendPlugin
                     var releaseCommand = settingsEnvironment.CommandManager.RegisterCommand("ReleaseManagement", StateFilter.Empty, "Gestion des releases", null);
                     var releaseButtonUi = groupTablesEnvironmentUIGroup.AddCommandButton(releaseCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
                     releaseCommand.Invoking += Release_Invoking;
+
+                    //Cas d'emploi des tables
+                    var tableWhereUsedCommand = settingsEnvironment.CommandManager.RegisterCommand("Tables groupe", StateFilter.Empty, "Cas d'emploi Groupe", null);
+                    var tableWhereUsedButtonUi = groupTablesEnvironmentUIGroup.AddCommandButton(tableWhereUsedCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
+                    tableWhereUsedCommand.Invoking += WhereUsedTableGroup_Invoking;
                 }
             }
             catch (Exception ex)
@@ -132,10 +137,20 @@ namespace EquinoxeExtendPlugin
                 IViewEnvironment settingsEnvironment = settingsView.ViewEnvironment;
                 var groupTablesEnvironmentUIGroup = settingsEnvironment.CommandBarManager.AddGroup("Utilisation tables");
 
+                //Gestion des release
+                var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                if (groupService.ActiveGroup.Name == EnvironmentEnum.Developpement.GetName("FR") ||
+                    groupService.ActiveGroup.Name == EnvironmentEnum.Sandbox.GetName("FR"))
+                {
+                    var releaseCommand = settingsEnvironment.CommandManager.RegisterCommand("ReleaseManagement", StateFilter.Empty, "Gestion des releases", null);
+                    var releaseButtonUi = groupTablesEnvironmentUIGroup.AddCommandButton(releaseCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
+                    releaseCommand.Invoking += Release_Invoking;
+                }
+
                 //Cas d'emploi des tables
-                var tableWhereUsedCommand = settingsEnvironment.CommandManager.RegisterCommand("Tables", StateFilter.Empty, "Cas d'emploi", null);
+                var tableWhereUsedCommand = settingsEnvironment.CommandManager.RegisterCommand("Tables projet", StateFilter.Empty, "Cas d'emploi Projet", null);
                 var tableWhereUsedButtonUi = groupTablesEnvironmentUIGroup.AddCommandButton(tableWhereUsedCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
-                tableWhereUsedCommand.Invoking += WhereUsedTable_Invoking;
+                tableWhereUsedCommand.Invoking += WhereUsedTableProject_Invoking;
 
                 IView formNavigationView = viewManager.GetViewByName(AdministratorViewNames.FormNavigation, true);
                 IViewEnvironment formNavigationEnvironment = formNavigationView.ViewEnvironment;
@@ -152,17 +167,47 @@ namespace EquinoxeExtendPlugin
             }
         }
 
-        private void WhereUsedTable_Invoking(object sender, CommandInvokeEventArgs e)
+        private void WhereUsedTableGroup_Invoking(object sender, CommandInvokeEventArgs e)
         {
             try
             {
-                var usedTableUserControl = new ucWhereUsed(_Application);
+                var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                var activeGroup = groupService.ActiveGroup;
+
+                if (!Tools.Tools.IsAdminCurrentUser(activeGroup))
+                    throw new Exception("Seul l'admin peut executer cette fonction");
+
+                var usedTableUserControl = new ucWhereUsedGroup(_Application, activeGroup);
                 using (var usedTableForm = new frmUserControl(usedTableUserControl, "Cas d'emploi des tables", true, false))
                 {
                     usedTableUserControl.Close += (s, d) => usedTableForm.Close();
                     usedTableForm.StartPosition = FormStartPosition.CenterParent;
-                    usedTableForm.Width = 500;
-                    usedTableForm.Height = 500;
+                    usedTableForm.Width = 1000;
+                    usedTableForm.Height = 800;
+
+                    usedTableForm.ShowDialog();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void WhereUsedTableProject_Invoking(object sender, CommandInvokeEventArgs e)
+        {
+            try
+            {
+                var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                var activeGroup = groupService.ActiveGroup;
+
+                var usedTableUserControl = new ucWhereUsedProject(_Application, activeGroup);
+                using (var usedTableForm = new frmUserControl(usedTableUserControl, "Cas d'emploi des tables", true, false))
+                {
+                    usedTableUserControl.Close += (s, d) => usedTableForm.Close();
+                    usedTableForm.StartPosition = FormStartPosition.CenterParent;
+                    usedTableForm.Width = 1000;
+                    usedTableForm.Height = 800;
 
                     usedTableForm.ShowDialog();
                 }

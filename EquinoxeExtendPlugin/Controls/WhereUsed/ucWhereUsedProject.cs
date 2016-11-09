@@ -2,13 +2,13 @@
 using DriveWorks.Applications;
 using DriveWorks.Helper;
 using EquinoxeExtend.Shared.Enum;
+using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
 using Library.Control.UserControls;
 using Library.Excel;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using Library.Tools.Misc;
-using Service.Specification.Front;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,7 +20,7 @@ using System.Windows.Forms;
 
 namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 {
-    public partial class ucWhereUsed : UserControl, IUcUserControl
+    public partial class ucWhereUsedProject : UserControl, IUcUserControl
     {
         #region Public EVENTS
 
@@ -30,7 +30,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
         #region Public CONSTRUCTORS
 
-        public ucWhereUsed(IApplication iApplication)
+        public ucWhereUsedProject(IApplication iApplication, Group iGroup)
         {
             InitializeComponent();
             _Application = iApplication;
@@ -44,10 +44,6 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             dgvUnusedTable.AllowUserToResizeColumns = true;
             dgvUnusedTable.AllowUserToOrderColumns = false;
 
-            //image list
-            trvProjectTable.ImageList = _ImageList;
-            _ImageList.Images.Add(Properties.Resources.blank);
-            _ImageList.Images.Add(Properties.Resources.Warning16);
         }
 
         #endregion
@@ -120,97 +116,85 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
         #region Private METHODS
 
-        private void LoadTreeView()
-        {
-            var inProgressUserControl = new ucMessageBox("Traitement en cours");
-            using (var inProgressForm = new frmUserControl(inProgressUserControl, "Cas d'emploi des fichiers tables excel", false, false))
-            {
-                inProgressForm.TopMost = true;
-                inProgressForm.Show();
-                inProgressForm.Refresh();
-
-                //GroupTable
-                inProgressUserControl.SetMessage("Traitement des tables de groupes");
-                inProgressForm.Refresh();
-                trvGroupTable.Nodes.Clear();
-
-                foreach (var item in GenerateGroupTableTreeNode().Enum())
-                    trvGroupTable.Nodes.Add(item);
-
-                //ProjectTable
-                inProgressUserControl.SetMessage("Traitement des tables de projet");
-                inProgressForm.Refresh();
-                trvProjectTable.Nodes.Clear();
-                foreach (var item in GenerateProjetTableTreeNode().Enum())
-                    trvProjectTable.Nodes.Add(item);
-            }
-
-        }
-
-        private List<TreeNode> GenerateProjetTableTreeNode()
+        private List<TreeNode> GenerateProjetTableTreeNode(EquinoxeExtend.Shared.Object.Release.Package iPackage)
         {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
             var projects = groupService.ActiveGroup.Projects.GetProjects();
 
             //Génération d'une liste facilement groupable
-            var tupleTables = new List<Tuple<ProjectDetails, ImportedDataTable>>();
+            var tupleTables = new List<Tuple<string, ProjectDetails, ImportedDataTable>>();
 
-            //Bouclage sur les projets
-            foreach (var projectItem in projects.Enum())
+            if (iPackage == null)
             {
-                var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                projectService.OpenProject(projectItem.Name);
+                //Bouclage sur les projets
+                foreach (var projectItem in projects.Enum())
+                {
+                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                    projectService.OpenProject(projectItem.Name);
 
-                var project = projectService.ActiveProject;
-                var importedDataTables = project.GetImportedDataTableList();
-                foreach (var tableItem in importedDataTables.Enum())
-                    tupleTables.Add(new Tuple<ProjectDetails, ImportedDataTable>(projectItem, tableItem));
+                    var project = projectService.ActiveProject;
+                    var importedDataTables = project.GetImportedDataTableList();
+                    foreach (var tableItem in importedDataTables.Enum())
+                        tupleTables.Add(new Tuple<string, ProjectDetails, ImportedDataTable>("", projectItem, tableItem));
+                    projectService.CloseProject();
+                }
+            }
+            else
+            {
+                tupleTables = Tools.Tools.GetImportedDataTableFromPackage(_Application, iPackage);
             }
 
             var treeNodeCollection = new List<TreeNode>();
 
             //Fichier excel
-            foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item2.FileLocation).Enum().OrderBy(x => x.First().Item2.FileLocation).Enum())
+            foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item3.FileLocation).Enum().OrderBy(x => x.First().Item3.FileLocation).Enum())
             {
                 var theLocationNode = new TreeNode();
-                theLocationNode.Name = excelFileLocationItem.First().Item2.FileLocation;
+                theLocationNode.Name = excelFileLocationItem.First().Item3.FileLocation;
                 theLocationNode.Text = "Fichier : " + theLocationNode.Name;
-                theLocationNode.ForeColor = (File.Exists(theLocationNode.Name)) ? theLocationNode.ForeColor : System.Drawing.Color.Red;
+
+                if (!File.Exists(theLocationNode.Name))
+                {
+                    theLocationNode.ForeColor = System.Drawing.Color.Red;
+                    theLocationNode.ToolTipText = "Le fichier est introuvable." + Environment.NewLine;
+                }
 
                 //Feuille excel
-                foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item2.SheetName).Enum())
+                foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item3.SheetName).Enum())
                 {
                     var theSheetNode = new TreeNode();
-                    theSheetNode.Name = sheetItem.First().Item2.SheetName;
+                    theSheetNode.Name = sheetItem.First().Item3.SheetName;
                     theSheetNode.Text = "Feuille : " + theSheetNode.Name;
 
                     if (sheetItem.Count() >= 2)
                     {
-                        var tableList = sheetItem.Select(x => new Tuple<string, ProjectDetails, ImportedDataTable>(groupService.ActiveGroup.GetEnvironment().GetName("FR"), x.Item1, x.Item2)).ToList();
+                        var tableList = sheetItem.Select(x => new Tuple<string, ProjectDetails, ImportedDataTable>(groupService.ActiveGroup.GetEnvironment().GetName("FR"), x.Item2, x.Item3)).ToList();
                         var tableDifferences = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(tableList);
 
                         if (tableDifferences.IsNotNullAndNotEmpty())
                         {
                             theLocationNode.ImageIndex = 1;
                             theLocationNode.SelectedImageIndex = 1;
+                            theLocationNode.ToolTipText += tableDifferences.Concat(Environment.NewLine);
 
                             theSheetNode.ImageIndex = 1;
                             theSheetNode.SelectedImageIndex = 1;
+                            theSheetNode.ToolTipText += tableDifferences.Concat(Environment.NewLine);
                         }
                     }
 
                     //Projet
-                    foreach (var projectItem in sheetItem.GroupBy(x => x.Item1.Name).Enum())
+                    foreach (var projectItem in sheetItem.GroupBy(x => x.Item2.Name).Enum())
                     {
                         var theProjectNode = new TreeNode();
-                        theProjectNode.Name = projectItem.First().Item1.Name;
+                        theProjectNode.Name = projectItem.First().Item2.Name;
                         theProjectNode.Text = "Projet : " + theProjectNode.Name;
 
                         //Table
-                        foreach (var tableItem in projectItem.GroupBy(x => x.Item2.DisplayName).Enum())
+                        foreach (var tableItem in projectItem.GroupBy(x => x.Item3.DisplayName).Enum())
                         {
                             var theTableNode = new TreeNode();
-                            theTableNode.Name = tableItem.First().Item2.DisplayName;
+                            theTableNode.Name = tableItem.First().Item3.DisplayName;
                             theTableNode.Text = "Table : " + theTableNode.Name;
                             theProjectNode.Nodes.Add(theTableNode);
                         }
@@ -243,6 +227,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
                 foreach (var tableItem in projectService.ActiveProject.GetUsedGroupTableList(groupDataTables).Enum())
                     tupleTables.Add(new Tuple<ProjectDetails, GroupDataTable>(projectItem, tableItem));
+                projectService.CloseProject();
             }
 
             var treeNodeCollection = new List<TreeNode>();
@@ -273,48 +258,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             Close(sender, e);
         }
 
-        private void cmdRunWhereUsedAnalyse_Click(object sender, System.EventArgs e)
-        {
-            try
-            {
-                if (_IsLoading.Value) return;
-                using (var locker = new BoolLocker(ref _IsLoading))
-                {
-                    using (var projectOpenLocker = new BoolLocker(ref Consts.Consts.DontShowCheckTaskOnStartup))
-                    {
-                        //Confirmation
-                        if (MessageBox.Show("Le recensement des tables va débuter, et peut prendre quelques minutes. Etes-vous sûr de vouloir lancer le traitement ?", "Cas d'emploi", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                            return;
-
-                        //Création des services
-                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                        var OpenedProjectName = projectService.ActiveProject.Name;
-                        projectService.CloseProject();
-
-                        //Vérification que tous les projets sont fermés
-                        var groupService = _Application.ServiceManager.GetService<IGroupService>();
-                        var openedProjectList = groupService.ActiveGroup.GetOpenedProjectList();
-
-                        if (openedProjectList.IsNotNullAndNotEmpty())
-                        {
-                            MessageBox.Show("Certains projets du groupe sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine
-                                + Environment.NewLine + openedProjectList.Select(x => x.Name).Concat(Environment.NewLine), "Projet ouvert", MessageBoxButtons.OK);
-                        }
-                        else
-                        {
-                            LoadTreeView();
-                        }
-                        projectService.OpenProject(OpenedProjectName);
-
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                ex.ShowInMessageBox();
-            }
-        }
-
+       
         private void cmdRunUnusedAnalyse_Click(object sender, System.EventArgs e)
         {
             try
@@ -466,7 +410,8 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 ex.ShowInMessageBox();
             }
         }
-
+      
+        
         #endregion
     }
 }

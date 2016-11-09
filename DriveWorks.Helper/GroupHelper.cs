@@ -109,9 +109,6 @@ namespace DriveWorks.Helper
             {
                 if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission))
                     throw new Exception("Erreur lors de l'ajout du droit d'édition");
-
-                if (!iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission))
-                    throw new Exception("Erreur lors de l'ajout du droit de run");
             }
         }
 
@@ -125,10 +122,7 @@ namespace DriveWorks.Helper
         {
             //Bouclage sur les projets à enlever les droits
             foreach (var projectItem in iForbidenProjectList.Enum())
-            {
                 iGroup.Security.TryRemoveProjectPermissionFromTeam(iTeam.Id, projectItem, StandardProjectPermissions.EditPermission);
-                iGroup.Security.TryRemoveProjectPermissionFromTeam(iTeam.Id, projectItem, StandardProjectPermissions.SpecifyPermission);
-            }
         }
 
         /// <summary>
@@ -139,14 +133,12 @@ namespace DriveWorks.Helper
         /// <param name="iAllowedProjectList"></param>
         public static void SetExclusitivelyPermissionToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iAllowedProjectList)
         {
-            iGroup.Security.ClearProjectPermissionsForTeam(iTeam.Id);
+            var completeProjectList = iGroup.Projects.GetProjects().Enum().Select(x=>x.Id).Enum().ToList();
+            RemoveProjectPermissionsToTeam(iGroup, iTeam, completeProjectList);
 
             //Bouclage sur les projets à autoriser
             foreach (var item in iAllowedProjectList.Enum())
-            {
                 iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission);
-                iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.SpecifyPermission);
-            }
         }
 
         public static List<ProjectDetails> GetOpenedProjectList (this Group iGroup)

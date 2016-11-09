@@ -109,7 +109,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 _Group = iGroup;
 
                 //Init
-                this.ucNavigator.Initialize(30, 1);
+                this.ucNavigator.Initialize(200, 1);
                 ucNavigator.LoadRequested += ucNavigator_LoadRequested;
 
                 dgvMain.MultiSelect = false;
@@ -458,7 +458,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     _MainTaskBindingSource.Clear();
                 }
             }
-            dgvMain.SetFirstDisplayedScrollingRowIndex(firstDisplayIndex);
+            //dgvMain.SetFirstDisplayedScrollingRowIndex(firstDisplayIndex);
 
             if (dgvMain.RowCount != 0)
             {
@@ -480,6 +480,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 NothingSelected(null, null);
             }
             CommandEnableManagement();
+            dgvMain.PerformLayout();
         }
 
         private void ucNavigator_LoadRequested(object sender, System.EventArgs e)

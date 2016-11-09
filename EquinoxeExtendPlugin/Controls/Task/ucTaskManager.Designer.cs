@@ -31,14 +31,10 @@
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.fraMainTasks = new System.Windows.Forms.GroupBox();
             this.tlpMainTask = new System.Windows.Forms.TableLayoutPanel();
-            this.ucMainTaskManager = new EquinoxeExtendPlugin.Controls.Task.ucMainTaskManager();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
-            this.ucMainTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucMainTaskEdit();
             this.fraProjectTasks = new System.Windows.Forms.GroupBox();
             this.tlpProjectTask = new System.Windows.Forms.TableLayoutPanel();
-            this.ucSubTaskManager = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskManager();
             this.fraProjectTask = new System.Windows.Forms.GroupBox();
-            this.ucSubTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskEdit();
             this.tlpHeader = new System.Windows.Forms.TableLayoutPanel();
             this.fraCriteriaSearch = new System.Windows.Forms.GroupBox();
             this.tlpCriteriaSearch = new System.Windows.Forms.TableLayoutPanel();
@@ -62,6 +58,10 @@
             this.lblMainTaskId = new System.Windows.Forms.Label();
             this.cmdMainTaskSearch = new System.Windows.Forms.Button();
             this.txtMaintaskId = new Library.Control.UserControls.ucTextBox();
+            this.ucMainTaskManager = new EquinoxeExtendPlugin.Controls.Task.ucMainTaskManager();
+            this.ucMainTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucMainTaskEdit();
+            this.ucSubTaskManager = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskManager();
+            this.ucSubTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskEdit();
             this.tlpMain.SuspendLayout();
             this.fraMainTasks.SuspendLayout();
             this.tlpMainTask.SuspendLayout();
@@ -119,14 +119,6 @@
             this.tlpMainTask.Size = new System.Drawing.Size(1588, 485);
             this.tlpMainTask.TabIndex = 0;
             // 
-            // ucMainTaskManager
-            // 
-            this.ucMainTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucMainTaskManager.Location = new System.Drawing.Point(3, 3);
-            this.ucMainTaskManager.Name = "ucMainTaskManager";
-            this.ucMainTaskManager.Size = new System.Drawing.Size(1218, 479);
-            this.ucMainTaskManager.TabIndex = 4;
-            // 
             // fraMainTask
             // 
             this.fraMainTask.Controls.Add(this.ucMainTaskEdit);
@@ -137,14 +129,6 @@
             this.fraMainTask.TabIndex = 4;
             this.fraMainTask.TabStop = false;
             this.fraMainTask.Text = "Tâche";
-            // 
-            // ucMainTaskEdit
-            // 
-            this.ucMainTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucMainTaskEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucMainTaskEdit.Name = "ucMainTaskEdit";
-            this.ucMainTaskEdit.Size = new System.Drawing.Size(352, 460);
-            this.ucMainTaskEdit.TabIndex = 3;
             // 
             // fraProjectTasks
             // 
@@ -172,14 +156,6 @@
             this.tlpProjectTask.Size = new System.Drawing.Size(1588, 275);
             this.tlpProjectTask.TabIndex = 0;
             // 
-            // ucSubTaskManager
-            // 
-            this.ucSubTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucSubTaskManager.Location = new System.Drawing.Point(3, 3);
-            this.ucSubTaskManager.Name = "ucSubTaskManager";
-            this.ucSubTaskManager.Size = new System.Drawing.Size(1218, 269);
-            this.ucSubTaskManager.TabIndex = 3;
-            // 
             // fraProjectTask
             // 
             this.fraProjectTask.BackColor = System.Drawing.SystemColors.Control;
@@ -191,15 +167,6 @@
             this.fraProjectTask.TabIndex = 4;
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâche";
-            // 
-            // ucSubTaskEdit
-            // 
-            this.ucSubTaskEdit.BackColor = System.Drawing.SystemColors.Control;
-            this.ucSubTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucSubTaskEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucSubTaskEdit.Name = "ucSubTaskEdit";
-            this.ucSubTaskEdit.Size = new System.Drawing.Size(352, 250);
-            this.ucSubTaskEdit.TabIndex = 4;
             // 
             // tlpHeader
             // 
@@ -485,6 +452,39 @@
             this.txtMaintaskId.TabIndex = 5;
             this.txtMaintaskId.ValueType = Library.Control.UserControls.ucTextBox.TextBoxTypeEnum.IntegerPositiveOnly;
             this.txtMaintaskId.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMaintaskId_KeyDown);
+            // 
+            // ucMainTaskManager
+            // 
+            this.ucMainTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucMainTaskManager.Location = new System.Drawing.Point(3, 3);
+            this.ucMainTaskManager.Name = "ucMainTaskManager";
+            this.ucMainTaskManager.Size = new System.Drawing.Size(1218, 479);
+            this.ucMainTaskManager.TabIndex = 4;
+            // 
+            // ucMainTaskEdit
+            // 
+            this.ucMainTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucMainTaskEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucMainTaskEdit.Name = "ucMainTaskEdit";
+            this.ucMainTaskEdit.Size = new System.Drawing.Size(352, 460);
+            this.ucMainTaskEdit.TabIndex = 3;
+            // 
+            // ucSubTaskManager
+            // 
+            this.ucSubTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucSubTaskManager.Location = new System.Drawing.Point(3, 3);
+            this.ucSubTaskManager.Name = "ucSubTaskManager";
+            this.ucSubTaskManager.Size = new System.Drawing.Size(1218, 269);
+            this.ucSubTaskManager.TabIndex = 3;
+            // 
+            // ucSubTaskEdit
+            // 
+            this.ucSubTaskEdit.BackColor = System.Drawing.SystemColors.Control;
+            this.ucSubTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucSubTaskEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucSubTaskEdit.Name = "ucSubTaskEdit";
+            this.ucSubTaskEdit.Size = new System.Drawing.Size(352, 250);
+            this.ucSubTaskEdit.TabIndex = 4;
             // 
             // ucTaskManager
             // 

@@ -133,6 +133,33 @@ namespace Service.Release.Front
             }
         }
 
+        public void MovePackageToProduction(Package iPackage)
+        {
+            if (iPackage == null)
+                throw new Exception("Le package est null");
+
+            var thePackage = GetPackageById(iPackage.PackageId, GranularityEnum.Full);
+            using (var ts = new System.Transactions.TransactionScope())
+            {
+                //UpdatePackageStatus
+                UpdatePackageStatus(thePackage, PackageStatusEnum.Production);
+
+                //Passage en staging des tâches
+                foreach (var mainTaskItem in thePackage.MainTasks)
+                    MoveMainTaskToProduction(mainTaskItem.MainTaskId);
+
+                //Création de la trace de déploiement
+                var newDeployement = new EquinoxeExtend.Shared.Object.Release.Deployement();
+                newDeployement.DeployementDate = DateTime.Now;
+                newDeployement.DeployementId = -1;
+                newDeployement.EnvironmentDestination = EnvironmentEnum.Production;
+                newDeployement.PackageId = thePackage.PackageId;
+                AddDeployement(newDeployement);
+
+                ts.Complete();
+            }
+        }
+
         public Package GetPackageById(long iPackageId, GranularityEnum iGranularity)
         {
             if (iPackageId < 1) throw new Exception("L'id du package n'est pas valide");
@@ -253,6 +280,11 @@ namespace Service.Release.Front
                 else if (packageWithCommonProject.Count == 0)
                     result.AddRange(openUnlockPackages.Enum());
             }
+            else
+            {
+                var openUnlockPackages = DBReleaseDataService.GetQuery<T_E_Package>(null).Where(x => !x.IsLocked && x.StatusRef == (short)PackageStatusEnum.Developpement).Enum().ToList().Select(x => GetPackageById(x.PackageId, GranularityEnum.Full)).Enum().ToList();
+                result.AddRange(openUnlockPackages.Enum());
+            }
 
             //Suppression des doublons
             return result.Enum().GroupBy(x => x.PackageId).Select(x=>x.First()).ToList();
@@ -364,7 +396,7 @@ namespace Service.Release.Front
             }
             else if (iNewPackageStatus == PackageStatusEnum.Production)
             {
-                throw new NotSupportedException("Pour l'instant");
+                //Rien à faire
             }
             else
                 throw new NotSupportedException(iPackage.Status.ToStringWithEnumName());

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Tools.Extensions;
+using Library.Tools.Debug;
 
 namespace DriveWorks.Helper
 {
@@ -39,10 +40,15 @@ namespace DriveWorks.Helper
             var tableData2 = iImportedDataTable2.GetCachedTableData();
 
             if (tableData1.GetLength(0) != tableData2.GetLength(0))
-                return "Le nombre de ligne est différent";
+                MyDebug.BreakForDebug();
+                //return "Le nombre de ligne est différent";
 
             if (tableData1.GetLength(1) != tableData2.GetLength(1))
-                return "Le nombre de colonne est différent";
+                MyDebug.BreakForDebug();
+            //return "Le nombre de colonne est différent";
+
+            tableData1 = RemoveEmptyRowColumnDataTable(iImportedDataTable1);
+            tableData2 = RemoveEmptyRowColumnDataTable(iImportedDataTable2);
 
             //Bouclage sur les lignes
             for (int rowIndex = 0; rowIndex <= tableData1.GetLength(0) - 1; rowIndex++)
@@ -50,11 +56,62 @@ namespace DriveWorks.Helper
                 //Bouclage sur les lignes
                 for (int columnIndex = 0; columnIndex <= tableData1.GetLength(1) - 1; columnIndex++)
                 {
-                    if (tableData1[rowIndex, columnIndex] != tableData2[rowIndex, columnIndex])
+                    if (tableData1[rowIndex, columnIndex].ToString() != tableData2[rowIndex, columnIndex].ToString())
                         return "La valeur : colonne {0}, ligne {1} est différente.".FormatString(columnIndex+1,rowIndex+1);
                 }
             }
             return null;
+        }
+
+        private static string[,] RemoveEmptyRowColumnDataTable(ImportedDataTable iImportedDataTable)
+        {
+            var rowIndexMax =0;
+            var columnIndexMax = 0;
+
+            var tableData = iImportedDataTable.GetCachedTableData();
+            
+            //Bouclage à l'envers pour trouver les lignes vides
+            for (int rowIndex = tableData.GetLength(0)-1; rowIndex >=0;rowIndex --)
+            {
+                //Bouclage sur les celulles de la ligne
+                for(int columnIndex =0; columnIndex<= tableData.GetLength(1)-1; columnIndex++)
+                {
+                    if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
+                    {
+                        rowIndexMax = rowIndex;
+                        break;
+                    }                       
+                }
+                if (rowIndexMax != 0)
+                    break;
+            }
+
+            //Bouclage à l'envers pour trouver les colonnes vides
+            for (int columnIndex = tableData.GetLength(1)-1; columnIndex >= 0; columnIndex--)
+            {
+                //Bouclage sur les celulles de la ligne
+                for (int rowIndex = 0; rowIndex <= tableData.GetLength(0)-1; rowIndex++)
+                {
+                    if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
+                    {
+                        columnIndexMax = columnIndex;
+                        break;
+                    }       
+                }
+                if (columnIndexMax != 0)
+                    break;
+            }
+
+            var resultArray = new string[rowIndexMax+1, columnIndexMax+1];
+
+            //Remplissage du tableau sans les lignes vides ou colonne vides
+            for( int rowIndex = 0; rowIndex <= rowIndexMax; rowIndex++)
+            {
+                for(int columnIndex = 0; columnIndex <= columnIndexMax; columnIndex++)
+                    resultArray[rowIndex, columnIndex] = tableData[rowIndex, columnIndex].ToString();
+            }
+
+            return resultArray;
         }
 
     }

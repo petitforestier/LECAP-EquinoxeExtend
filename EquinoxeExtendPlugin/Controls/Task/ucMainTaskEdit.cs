@@ -101,10 +101,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             if (_IsLoading.Value) return;
             using (var locker = new BoolLocker(ref _IsLoading))
-            {
-                LoadPackageCombo();
+            {              
                 _StatusEnum = StatusEnum.New;
                 _MainTask = null;
+                LoadPackageCombo();
                 FillControl();
 
                 cboCreationUser.SelectedValue = _Group.CurrentUser.Id;
@@ -505,5 +505,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
+
+        
     }
 }

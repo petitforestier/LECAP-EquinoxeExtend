@@ -36,6 +36,25 @@ namespace Service.Release.Front
 
             using (var ts = new TransactionScope())
             {
+                var affectedPackage = GetPackageById((long)iMainTask.PackageId, GranularityEnum.Nude);
+                if (affectedPackage.Status == PackageStatusEnum.Developpement)
+                {
+                    iMainTask.Status = MainTaskStatusEnum.Dev;
+                    iMainTask.OpenedDate = DateTime.Now;
+                }
+                else if (affectedPackage.Status == PackageStatusEnum.Canceled ||
+                    affectedPackage.Status == PackageStatusEnum.Production ||
+                    affectedPackage.Status == PackageStatusEnum.Staging)
+                {
+                    throw new Exception("Il n'est pas possible d'affecter une tâche au package avec ce status");
+                }
+                else if (affectedPackage.Status == PackageStatusEnum.Waiting)
+                {
+                    //ne rien faire
+                }
+                else
+                    throw new Exception(affectedPackage.Status.ToStringWithEnumName());
+
                 var entity = new T_E_MainTask();
                 entity.Merge(iMainTask);
                 newMainTaskId = DBReleaseDataService.AddMainTask(entity);
@@ -202,6 +221,24 @@ namespace Service.Release.Front
                 throw new Exception("La tâche contient des sous-tâches avec un avancement différent de 100. Il n'est pas possible de passer en test");
 
             UpdateMainTaskStatus(originalTask, MainTaskStatusEnum.Staging);
+        }
+
+        public void MoveMainTaskToProduction(long iMainTaskId)
+        {
+            if (iMainTaskId < 1) throw new Exception("L'id de la tâche est invalide");
+
+            var originalTask = GetMainTaskById(iMainTaskId, GranularityEnum.Full);
+
+            if (originalTask.Status != MainTaskStatusEnum.Staging)
+                throw new Exception("Seul une tâche en préprod peut aller en production");
+
+            if (originalTask.Status == MainTaskStatusEnum.Completed)
+                throw new Exception("La tâche est déjà en production");
+
+            if (originalTask.SubTasks.Exists(x => x.Progression != 100))
+                throw new Exception("La tâche contient des sous-tâches avec un avancement différent de 100. Il n'est pas possible de passer en production");
+
+            UpdateMainTaskStatus(originalTask, MainTaskStatusEnum.Completed);
         }
 
         public void MoveUpMainTaskPriority(MainTask iMainTask)
@@ -484,6 +521,11 @@ namespace Service.Release.Front
             {
                 throw new Exception("Le changement de status n'est pas permis");
             }
+            else if (originalMainTask.Status == MainTaskStatusEnum.Staging
+              && iNewStatus != MainTaskStatusEnum.Dev && iNewStatus != MainTaskStatusEnum.Completed && iNewStatus != MainTaskStatusEnum.Canceled)
+            {
+                throw new Exception("Le changement de status n'est pas permis");
+            }
             else if (originalMainTask.Status == MainTaskStatusEnum.Completed)
             {
                 throw new Exception("Le changement de status n'est pas permis");
@@ -548,6 +590,10 @@ namespace Service.Release.Front
             {
                 originalMainTask.OpenedDate = DateTime.Now;
             }
+            else if (iNewStatus == MainTaskStatusEnum.Staging)
+            {
+                originalMainTask.Priority = null;
+            }
             else if (iNewStatus == MainTaskStatusEnum.Completed)
             {
                 originalMainTask.CompletedDate = DateTime.Now;
@@ -556,6 +602,7 @@ namespace Service.Release.Front
             else if (iNewStatus == MainTaskStatusEnum.Canceled)
             {
                 originalMainTask.Priority = null;
+                originalMainTask.PackageId = null;
             }
 
             //Application du nouveau status
