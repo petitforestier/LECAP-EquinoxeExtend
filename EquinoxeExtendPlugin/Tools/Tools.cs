@@ -1,21 +1,24 @@
-﻿using System;
+﻿using DriveWorks;
+using DriveWorks.Applications;
+using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
+using EquinoxeExtend.Shared.Enum;
+using EquinoxeExtend.Shared.Object.Release;
+using Library.Tools.Attributes;
+using Library.Tools.Comparator;
+using Library.Tools.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DriveWorks;
-using DriveWorks.Applications;
-using DriveWorks.Helper;
-using EquinoxeExtend.Shared.Enum;
-using EquinoxeExtend.Shared.Object.Release;
-using Library.Tools.Extensions;
-using Library.Tools.Attributes;
-using Library.Tools.Comparator;
 
 namespace EquinoxeExtendPlugin.Tools
 {
     public static class Tools
     {
+        #region Public METHODS
+
         public static void ReleaseProjectsRights(Group iGroup)
         {
             using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetExtendConnectionString()))
@@ -23,7 +26,7 @@ namespace EquinoxeExtendPlugin.Tools
                 var devSubTasks = releaseService.GetDevSubTasks();
 
                 var devProjects = devSubTasks.Enum().Where(x => x.ProjectGUID != null).Enum().Select(x => (Guid)x.ProjectGUID).Enum().ToList();
-                
+
                 //Supprime les doublons
                 devProjects = devProjects.Enum().GroupBy(x => x).Enum().Select(x => x.First()).Enum().ToList();
 
@@ -31,7 +34,6 @@ namespace EquinoxeExtendPlugin.Tools
                 iGroup.SetExclusitivelyPermissionToTeam(iGroup.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), devProjects);
             }
         }
-
 
         public static void ThrowExceptionIfCurrentUserIsNotAdmin(Group iGroup)
         {
@@ -43,7 +45,6 @@ namespace EquinoxeExtendPlugin.Tools
         {
             return (iGroup.CurrentUser.LoginName == iGroup.GetEnvironment().GetLoginPassword().Item1);
         }
-
 
         public static List<Tuple<string, ProjectDetails, ImportedDataTable>> GetImportedDataTableFromPackage(IApplication iApplication, Package iPackageDeployToStaging)
         {
@@ -95,5 +96,7 @@ namespace EquinoxeExtendPlugin.Tools
 
             return result;
         }
+
+        #endregion
     }
 }

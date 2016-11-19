@@ -1,54 +1,19 @@
-﻿using DriveWorks.Helper.Object;
+﻿using DriveWorks.Applications;
 using DriveWorks.Security;
 using Library.Tools.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data.EntityClient;
-using System.IO;
 using System.Linq;
-using EquinoxeExtend.Shared.Enum;
-using DriveWorks.Applications;
 
 namespace DriveWorks.Helper
 {
     public static class GroupHelper
     {
-        public static EnvironmentEnum GetEnvironment(this Group iGroup)
-        {
-            return new EnvironmentEnum().ParseEnumFromName(iGroup.Name, "FR");          
-        }
-
         #region Public METHODS
 
         public static List<ProjectDetails> GetProjectList(this Group iGroup)
         {
             return iGroup.Projects.GetProjects().ToList();
-        }
-
-        public static void DeleteSpecification(this Group iGroup, string iSpecificationName)
-        {
-            if (iSpecificationName.IsNullOrEmpty())
-                throw new Exception("Le nom de la spécification est invalide");
-
-            var theSpecification = iGroup.Specifications.GetSpecification(iSpecificationName);
-            if (theSpecification == null)
-                throw new Exception("La spécification DW n'existe pas");
-
-            iGroup.Specifications.DeleteSpecification(theSpecification);
-        }
-
-        public static Dictionary<string, string> GetProjectAliasDic(this Group iGroup)
-        {
-            var projectList = iGroup.Projects.GetProjects().ToList();
-            var projectDic = new Dictionary<string, string>();
-
-            //recherche des alias
-            foreach (var projectItem in projectList.Enum())
-            {
-                var alias = GetProjectAlias(iGroup, projectItem.Id.ToString());
-                projectDic.Add(projectItem.Id.ToString(), (alias ?? projectItem.Name));
-            }
-            return projectDic;
         }
 
         public static List<UserDetails> GetUserList(this Group iGroup, bool iOnlyEnabled = true)
@@ -133,7 +98,7 @@ namespace DriveWorks.Helper
         /// <param name="iAllowedProjectList"></param>
         public static void SetExclusitivelyPermissionToTeam(this Group iGroup, TeamDetails iTeam, List<Guid> iAllowedProjectList)
         {
-            var completeProjectList = iGroup.Projects.GetProjects().Enum().Select(x=>x.Id).Enum().ToList();
+            var completeProjectList = iGroup.Projects.GetProjects().Enum().Select(x => x.Id).Enum().ToList();
             RemoveProjectPermissionsToTeam(iGroup, iTeam, completeProjectList);
 
             //Bouclage sur les projets à autoriser
@@ -141,13 +106,13 @@ namespace DriveWorks.Helper
                 iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission);
         }
 
-        public static List<ProjectDetails> GetOpenedProjectList (this Group iGroup)
+        public static List<ProjectDetails> GetOpenedProjectList(this Group iGroup)
         {
             if (iGroup == null)
                 throw new Exception("Le groupe est null");
 
             var resultList = new List<ProjectDetails>();
-            foreach(var projectItem in iGroup.Projects.GetProjects().Enum())
+            foreach (var projectItem in iGroup.Projects.GetProjects().Enum())
             {
                 if (projectItem.ProjectIsAlreadyOpen())
                     resultList.Add(projectItem);
@@ -155,13 +120,8 @@ namespace DriveWorks.Helper
             return resultList;
         }
 
-        public static Group OpenGroup(this IGroupService iGroupService, EnvironmentEnum iEnvironmentToOpen)
-        {
-            var loginTuple = iEnvironmentToOpen.GetLoginPassword();
-            iGroupService.OpenGroup(iEnvironmentToOpen.GetConnectionString(), DriveWorksCredentials.Create(loginTuple.Item1, loginTuple.Item2));
-            return iGroupService.ActiveGroup;
-        }
-   
+       
+
         public static ProjectDetails GetProjectFromGUID(this Group iGroup, Guid iProjectGUID)
         {
             if (iGroup == null)
@@ -180,35 +140,16 @@ namespace DriveWorks.Helper
             }
         }
 
-        #endregion
-
-        #region Private FIELDS
-
-        private const string PROJECTALIASFILENAME = "LiveProjectAlias.txt";
-        private const string GROUPSETTINGSDATATABLENAME = "GrpSettings";
-        private const string EXTENDDATABASECONNECTIONSTRING = "ExtendDataBaseConnectionString";
-        private const string SPECIFICATIONPREFIX = "SpecificationPrefix";
-        private const string TEAMDEVELOPPEUR = "DeveloppeurTeam";
-
-        #endregion
-
-        #region Private METHODS
-
-        private static string GetProjectAlias(Group iGroup, string iProjectId)
+        public static void DeleteSpecification(this Group iGroup, string iSpecificationName)
         {
-            var theMasterProject = iGroup.Projects.GetProject(new Guid(iProjectId));
-            if (theMasterProject == null)
-                throw new Exception("Le projet est inexistante");
+            if (iSpecificationName.IsNullOrEmpty())
+                throw new Exception("Le nom de la spécification est invalide");
 
-            var filePath = theMasterProject.Directory + "\\" + PROJECTALIASFILENAME;
-            try
-            {
-                return File.ReadAllText(filePath);
-            }
-            catch
-            {
-                return null;
-            }
+            var theSpecification = iGroup.Specifications.GetSpecification(iSpecificationName);
+            if (theSpecification == null)
+                throw new Exception("La spécification DW n'existe pas");
+
+            iGroup.Specifications.DeleteSpecification(theSpecification);
         }
 
         #endregion

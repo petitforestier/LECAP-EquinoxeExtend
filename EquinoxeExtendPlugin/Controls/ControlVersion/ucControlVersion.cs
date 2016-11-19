@@ -2,7 +2,9 @@
 using DriveWorks.Applications;
 using DriveWorks.Helper;
 using DriveWorks.Helper.Object;
+using Library.Control.Datagridview;
 using Library.Control.UserControls;
+using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using Library.Tools.Misc;
 using System;
@@ -11,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.ControlVersion
 {
@@ -31,7 +34,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             dgvNewConstant.MultiSelect = false;
             dgvNewConstant.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvNewConstant.ReadOnly = true;
+            dgvNewConstant.ReadOnly = false;
             dgvNewConstant.AllowUserToAddRows = false;
             dgvNewConstant.RowHeadersVisible = false;
             dgvNewConstant.AllowUserToResizeRows = false;
@@ -40,7 +43,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             dgvNewControl.MultiSelect = false;
             dgvNewControl.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvNewControl.ReadOnly = true;
+            dgvNewControl.ReadOnly = false;
             dgvNewControl.AllowUserToAddRows = false;
             dgvNewControl.RowHeadersVisible = false;
             dgvNewControl.AllowUserToResizeRows = false;
@@ -49,7 +52,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             dgvOldConstant.MultiSelect = false;
             dgvOldConstant.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvOldConstant.ReadOnly = true;
+            dgvOldConstant.ReadOnly = false;
             dgvOldConstant.AllowUserToAddRows = false;
             dgvOldConstant.RowHeadersVisible = false;
             dgvOldConstant.AllowUserToResizeRows = false;
@@ -58,13 +61,293 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             dgvOldControl.MultiSelect = false;
             dgvOldControl.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            dgvOldControl.ReadOnly = true;
+            dgvOldControl.ReadOnly = false;
             dgvOldControl.AllowUserToAddRows = false;
             dgvOldControl.RowHeadersVisible = false;
             dgvOldControl.AllowUserToResizeRows = false;
             dgvOldControl.AllowUserToResizeColumns = true;
             dgvOldControl.AllowUserToOrderColumns = false;
 
+            LoadData();
+        }
+
+        #endregion
+
+        #region Protected CLASSES
+
+        protected class AddedControlView
+        {
+            #region Public PROPERTIES
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Nom contrôle")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string ControlName { get; set; }
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Version")]
+            [WidthColumn(60)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public decimal ProjectVersion { get; set; }
+
+            [Visible]
+            [Name("FR", "Information d'ouverture")]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [WidthColumn(250)]
+            public string Message { get; set; }
+
+            public AddedControlManaged Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static AddedControlView ConvertTo(AddedControlManaged iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new AddedControlView();
+                newView.Object = iObj;
+
+                newView.ControlName = iObj.ControlName;
+                newView.Message = iObj.Message;
+                newView.ProjectVersion = iObj.ProjectVersion;
+
+                return newView;
+            }
+
+            public static AddedControlManaged GetFromRow(DataGridViewRow iRow)
+            {
+                var addedControl = new AddedControlManaged();
+                var viewRow = (AddedControlView)iRow.DataBoundItem;
+
+                addedControl.ControlName = viewRow.Object.ControlName;
+                addedControl.ProjectVersion = viewRow.Object.ProjectVersion;
+                addedControl.Message = viewRow.Message;
+
+                return addedControl;
+            }
+
+            #endregion
+        }
+
+        protected class DeletedControlView
+        {
+            #region Public PROPERTIES
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Nom contrôle")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string ControlName { get; set; }
+
+            [Visible]
+            [Name("FR", "Description contrôle")]
+            [WidthColumn(200)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string ControlDescription { get; set; }
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Version")]
+            [WidthColumn(60)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public decimal ProjectVersion { get; set; }
+
+            [Visible]
+            [Name("FR", "Contrôle à transférer")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string TransfertControlName { get; set; }
+
+            [Visible]
+            [Name("FR", "Information d'ouverture")]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            [WidthColumn(300)]
+            public string Message { get; set; }
+
+            public DeletedControlManaged Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static DeletedControlView ConvertTo(DeletedControlManaged iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new DeletedControlView();
+                newView.Object = iObj;
+
+                newView.ControlName = iObj.ControlName;
+                newView.ControlDescription = iObj.ControlDescription;
+                newView.TransfertControlName = iObj.TransfertControlName;
+                newView.Message = iObj.Message;
+                newView.ProjectVersion = iObj.ProjectVersion;
+
+                return newView;
+            }
+
+            public static DeletedControlManaged GetFromRow(DataGridViewRow iRow)
+            {
+                var control = new DeletedControlManaged();
+                var viewRow = (DeletedControlView)iRow.DataBoundItem;
+
+                control.ControlName = viewRow.Object.ControlName;
+                control.ControlDescription = viewRow.ControlDescription;
+                control.TransfertControlName = viewRow.TransfertControlName;
+                control.ProjectVersion = viewRow.Object.ProjectVersion;
+                control.Message = viewRow.Message;
+
+                return control;
+            }
+
+            #endregion
+        }
+
+        protected class AddedConstantView
+        {
+            #region Public PROPERTIES
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Nom constante")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string ConstantName { get; set; }
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Version")]
+            [WidthColumn(60)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public decimal ProjectVersion { get; set; }
+
+            public AddedConstantManaged Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static AddedConstantView ConvertTo(AddedConstantManaged iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new AddedConstantView();
+                newView.Object = iObj;
+
+                newView.ConstantName = iObj.ConstantName;
+                newView.ProjectVersion = iObj.ProjectVersion;
+
+                return newView;
+            }
+
+            public static AddedConstantManaged GetFromRow(DataGridViewRow iRow)
+            {
+                var control = new AddedConstantManaged();
+                var viewRow = (AddedConstantView)iRow.DataBoundItem;
+
+                control.ConstantName = viewRow.Object.ConstantName;
+                control.ProjectVersion = viewRow.Object.ProjectVersion;
+
+                return control;
+            }
+
+            #endregion
+        }
+
+        protected class DeletedConstantView
+        {
+            #region Public PROPERTIES
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Nom constante")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string ConstantName { get; set; }
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Version")]
+            [WidthColumn(60)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public decimal ProjectVersion { get; set; }
+
+            [Visible]
+            [ReadOnly]
+            [Name("FR", "Constante à transférer")]
+            [WidthColumn(60)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string TransfertConstantName { get; set; }
+
+            public DeletedConstantManaged Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static DeletedConstantView ConvertTo(DeletedConstantManaged iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new DeletedConstantView();
+                newView.Object = iObj;
+
+                newView.ConstantName = iObj.ConstantName;
+                newView.ProjectVersion = iObj.ProjectVersion;
+                newView.TransfertConstantName = iObj.TransfertConstantName;
+
+                return newView;
+            }
+
+            public static DeletedConstantManaged GetFromRow(DataGridViewRow iRow)
+            {
+                var control = new DeletedConstantManaged();
+                var viewRow = (DeletedConstantView)iRow.DataBoundItem;
+
+                control.ConstantName = viewRow.Object.ConstantName;
+                control.ProjectVersion = viewRow.Object.ProjectVersion;
+                control.TransfertConstantName = viewRow.TransfertConstantName;
+
+                return control;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private IApplication _Application;
+
+        private Project _Project;
+
+        private BoolLock _IsLoading = new BoolLock();
+
+        private List<AddedControlManaged> _AddedControlManaged;
+
+        private List<DeletedControlManaged> _DeletedControlManaged;
+
+        private List<AddedConstantManaged> _AddedConstantManaged;
+
+        private List<DeletedConstantManaged> _DeletedConstantManaged;
+
+        #endregion
+
+        #region Private METHODS
+
+        private void LoadData()
+        {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
 
             var projectService = _Application.ServiceManager.GetService<IProjectService>();
@@ -76,19 +359,23 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
             _AddedConstantManaged = tupleValues.Item3;
             _DeletedConstantManaged = tupleValues.Item4;
 
-            dgvNewControl.DataSource = _AddedControlManaged;
+            dgvNewControl.DataSource = _AddedControlManaged.Enum().Select(x => AddedControlView.ConvertTo(x)).ToList();
+            dgvNewControl.FormatColumns<AddedControlView>("FR");
             if (!_AddedControlManaged.Any())
                 cmdNewControlCopy.Enabled = false;
 
-            dgvOldControl.DataSource = _DeletedControlManaged;
+            dgvOldControl.DataSource = _DeletedControlManaged.Enum().Select(x => DeletedControlView.ConvertTo(x)).ToList();
+            dgvOldControl.FormatColumns<DeletedControlView>("FR");
             if (!_DeletedControlManaged.Any())
                 cmdOldControlCopy.Enabled = false;
 
-            dgvNewConstant.DataSource = _AddedConstantManaged;
+            dgvNewConstant.DataSource = _AddedConstantManaged.Enum().Select(x => AddedConstantView.ConvertTo(x)).ToList();
+            dgvNewConstant.FormatColumns<AddedConstantView>("FR");
             if (!_AddedConstantManaged.Any())
                 cmdNewConstantCopy.Enabled = false;
 
-            dgvOldConstant.DataSource = _DeletedConstantManaged;
+            dgvOldConstant.DataSource = _DeletedConstantManaged.Enum().Select(x => DeletedConstantView.ConvertTo(x)).ToList();
+            dgvOldConstant.FormatColumns<DeletedConstantView>("FR");
             if (!_DeletedConstantManaged.Any())
                 cmdOldConstantCopy.Enabled = false;
 
@@ -97,22 +384,6 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
             lblNewControlCount.Text = _AddedControlManaged.Count.ToString();
             lblOldControlCount.Text = _DeletedControlManaged.Count.ToString();
         }
-
-        #endregion
-
-        #region Private FIELDS
-
-        private IApplication _Application;
-        private Project _Project;
-        private BoolLock _IsLoading = new BoolLock();
-        private List<AddedControlManaged> _AddedControlManaged;
-        private List<DeletedControlManaged> _DeletedControlManaged;
-        private List<AddedConstantManaged> _AddedConstantManaged;
-        private List<DeletedConstantManaged> _DeletedConstantManaged;
-
-        #endregion
-
-        #region Private METHODS
 
         private void CloseFake()
         {
@@ -128,18 +399,17 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                 {
                     if (_AddedControlManaged.Any())
                     {
-                        var result = string.Empty;
+                        var newControls = new List<AddedControlManaged>();
 
                         //Ajout des nouvelles données
-                        foreach (var item in _AddedControlManaged.Enum())
-                        {
-                            if (result.IsNotNullAndNotEmpty())
-                                result += Environment.NewLine;
-                            result += "{0}	{1}	{2}".FormatString(item.ControlName, item.ProjectVersion, "");
-                        }
+                        foreach (DataGridViewRow item in dgvNewControl.Rows)
+                            newControls.Add(AddedControlView.GetFromRow(item));
 
-                        Clipboard.SetText(result);
-                        MessageBox.Show("Les données sont maintenant ajoutées aux presse-papier. Ouvrir la table concernée et coller dans la dernière ligne");
+                        _Project.AddToAddedControlProjectDataTable(newControls);
+
+                        LoadData();
+
+                        MessageBox.Show("Les données sont maintenant ajoutées");
                     }
                 }
             }
@@ -158,17 +428,38 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                 {
                     if (_DeletedControlManaged.Any())
                     {
-                        var result = string.Empty;
+                        var oldControls = new List<DeletedControlManaged>();
+
+                        var currentControlList = _Project.GetCurrentControlStateList();
+
                         //Ajout des nouvelles données
-                        foreach (var item in _DeletedControlManaged.Enum())
+                        foreach (DataGridViewRow item in dgvOldControl.Rows)
                         {
-                            if (result.IsNotNullAndNotEmpty())
-                                result += Environment.NewLine;
-                            result += "{0}	{1}	{2}	{3}	{4}".FormatString(item.ControlName, "", item.ProjectVersion, "", "");
+                            var newDeletedControlManaged = DeletedControlView.GetFromRow(item);
+
+                            //Validation du transfert
+                            if (newDeletedControlManaged.TransfertControlName.IsNotNullAndNotEmpty())
+                            {
+                                if (currentControlList.Any(x => x.Name == newDeletedControlManaged.TransfertControlName) == false)
+                                    throw new Exception("Le transfert de {0} vers {1} est impossible car {1} est introuvable".FormatString(newDeletedControlManaged.ControlName, newDeletedControlManaged.TransfertControlName));
+                            }
+
+                            //Validation control description
+                            if (newDeletedControlManaged.ControlDescription.IsNullOrEmpty())
+                                throw new Exception("La description est manquante pour {0}".FormatString(newDeletedControlManaged.ControlName));
+
+                            //Validation
+                            if (newDeletedControlManaged.TransfertControlName.IsNullOrEmpty() && newDeletedControlManaged.Message.IsNullOrEmpty())
+                                throw new Exception("Le controle de transfert ou le message est manquant. Il faut au moins un des deux");
+
+                            oldControls.Add(newDeletedControlManaged);
                         }
 
-                        Clipboard.SetText(result);
-                        MessageBox.Show("Les données sont maintenant ajoutées aux presse-papier. Ouvrir la table concernée et coller dans la dernière ligne");
+                        _Project.AddToDeletedControlProjectDataTable(oldControls);
+
+                        LoadData();
+
+                        MessageBox.Show("Les données sont maintenant ajoutées");
                     }
                 }
             }
@@ -187,17 +478,17 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                 {
                     if (_AddedConstantManaged.Any())
                     {
-                        var result = string.Empty;
-                        //Ajout des nouvelles données
-                        foreach (var item in _AddedConstantManaged.Enum())
-                        {
-                            if (result.IsNotNullAndNotEmpty())
-                                result += Environment.NewLine;
-                            result += "{0}	{1}".FormatString(item.ConstantName, item.ProjectVersion);
-                        }
+                        var newConstants = new List<AddedConstantManaged>();
 
-                        Clipboard.SetText(result);
-                        MessageBox.Show("Les données sont maintenant ajoutées aux presse-papier. Ouvrir la table concernée et coller dans la dernière ligne");
+                        //Ajout des nouvelles données
+                        foreach (DataGridViewRow item in dgvNewConstant.Rows)
+                            newConstants.Add(AddedConstantView.GetFromRow(item));
+
+                        _Project.AddToAddedConstantProjectDataTable(newConstants);
+
+                        LoadData();
+
+                        MessageBox.Show("Les données sont maintenant ajoutées");
                     }
                 }
             }
@@ -216,17 +507,28 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                 {
                     if (_DeletedConstantManaged.Any())
                     {
-                        var result = string.Empty;
+                        var oldConstants = new List<DeletedConstantManaged>();
+
+                        var currentConstantList = _Project.GetCurrentConstantList();
+
                         //Ajout des nouvelles données
-                        foreach (var item in _DeletedConstantManaged.Enum())
+                        foreach (DataGridViewRow item in dgvOldConstant.Rows)
                         {
-                            if (result.IsNotNullAndNotEmpty())
-                                result += Environment.NewLine;
-                            result += "{0}	{1}	{2}".FormatString(item.ConstantName, item.ProjectVersion, "");
+                            var newDeletedConstantManaged = DeletedConstantView.GetFromRow(item);
+
+                            if (newDeletedConstantManaged.TransfertConstantName.IsNotNullAndNotEmpty())
+                            {
+                                if (currentConstantList.Any(x => x.Name == newDeletedConstantManaged.TransfertConstantName) == false)
+                                    throw new Exception("Le transfert de {0} vers {1} est impossible car {1} est introuvable".FormatString(newDeletedConstantManaged.ConstantName, newDeletedConstantManaged.TransfertConstantName));
+                            }
+                            oldConstants.Add(newDeletedConstantManaged);
                         }
 
-                        Clipboard.SetText(result);
-                        MessageBox.Show("Les données sont maintenant ajoutées aux presse-papier. Ouvrir la table concernée et coller dans la dernière ligne");
+                        _Project.AddToDeletedConstantProjectDataTable(oldConstants);
+
+                        LoadData();
+
+                        MessageBox.Show("Les données sont maintenant ajoutées");
                     }
                 }
             }

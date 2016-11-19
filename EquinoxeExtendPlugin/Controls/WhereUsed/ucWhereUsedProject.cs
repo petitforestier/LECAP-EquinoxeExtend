@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 {
@@ -282,6 +283,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
                             //Récupération de la liste des tables settings
                             var settingsDatatable = activeProject.GetTableSettingsList();
+                            settingsDatatable.AddRange(activeProject.GetControlTableNameList());
 
                             //récupération de la liste des tables
                             var searchProcess = new SearchRuleProcess(activeProject);

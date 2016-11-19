@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Library.Control.UserControls;
+using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {

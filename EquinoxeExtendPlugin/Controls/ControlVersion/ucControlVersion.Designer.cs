@@ -249,9 +249,9 @@
             this.lblOldConstant.AutoSize = true;
             this.lblOldConstant.Location = new System.Drawing.Point(3, 414);
             this.lblOldConstant.Name = "lblOldConstant";
-            this.lblOldConstant.Size = new System.Drawing.Size(100, 13);
+            this.lblOldConstant.Size = new System.Drawing.Size(106, 13);
             this.lblOldConstant.TabIndex = 15;
-            this.lblOldConstant.Text = "Constante supprimé";
+            this.lblOldConstant.Text = "Constante supprimée";
             // 
             // ucControlVersion
             // 

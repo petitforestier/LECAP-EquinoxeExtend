@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 {

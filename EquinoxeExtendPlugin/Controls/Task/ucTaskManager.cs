@@ -1,5 +1,6 @@
 ﻿using DriveWorks;
 using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Product;
 using EquinoxeExtend.Shared.Object.Release;
@@ -84,7 +85,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 cboDevelopper.ValueMember = PropertyObserver.GetPropertyName<DriveWorks.Security.UserDetails>(x => x.Id);
                 cboDevelopper.DataSource = _Group.GetUserAllowedCaptureList();
                 cboDevelopper.SelectedIndex = -1;
-              
+
                 this.ucSubTaskManager.Initialize(_Group);
                 this.ucSubTaskManager.CreateProjectTask += CreateSubTask;
                 this.ucSubTaskManager.UpdateProjectTask += UpdateSubTask;
@@ -381,7 +382,6 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                         cboDevelopper.SelectedIndex = -1;
                         cmdCriteriaSearch.Focus();
                     }
-                        
                 }
             }
             catch (Exception ex)
@@ -389,8 +389,6 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 ex.ShowInMessageBox();
             }
         }
-
-        #endregion
 
         private void cboPackage_KeyDown(object sender, KeyEventArgs e)
         {
@@ -412,5 +410,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 ex.ShowInMessageBox();
             }
         }
+
+        #endregion
     }
 }

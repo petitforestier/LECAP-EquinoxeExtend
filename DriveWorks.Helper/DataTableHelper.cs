@@ -34,18 +34,10 @@ namespace DriveWorks.Helper
             return result;
         }
 
-        private static string DataTableDifference(ImportedDataTable iImportedDataTable1, ImportedDataTable iImportedDataTable2 )
+        private static string DataTableDifference(ImportedDataTable iImportedDataTable1, ImportedDataTable iImportedDataTable2)
         {
             var tableData1 = iImportedDataTable1.GetCachedTableData();
             var tableData2 = iImportedDataTable2.GetCachedTableData();
-
-            if (tableData1.GetLength(0) != tableData2.GetLength(0))
-                MyDebug.BreakForDebug();
-                //return "Le nombre de ligne est différent";
-
-            if (tableData1.GetLength(1) != tableData2.GetLength(1))
-                MyDebug.BreakForDebug();
-            //return "Le nombre de colonne est différent";
 
             tableData1 = RemoveEmptyRowColumnDataTable(iImportedDataTable1);
             tableData2 = RemoveEmptyRowColumnDataTable(iImportedDataTable2);
@@ -57,7 +49,7 @@ namespace DriveWorks.Helper
                 for (int columnIndex = 0; columnIndex <= tableData1.GetLength(1) - 1; columnIndex++)
                 {
                     if (tableData1[rowIndex, columnIndex].ToString() != tableData2[rowIndex, columnIndex].ToString())
-                        return "La valeur : colonne {0}, ligne {1} est différente.".FormatString(columnIndex+1,rowIndex+1);
+                        return "La valeur : colonne {0}, ligne {1} est différente.".FormatString(columnIndex + 1, rowIndex + 1);
                 }
             }
             return null;
@@ -65,53 +57,97 @@ namespace DriveWorks.Helper
 
         private static string[,] RemoveEmptyRowColumnDataTable(ImportedDataTable iImportedDataTable)
         {
-            var rowIndexMax =0;
+            var rowIndexMax = 0;
             var columnIndexMax = 0;
 
             var tableData = iImportedDataTable.GetCachedTableData();
-            
+
             //Bouclage à l'envers pour trouver les lignes vides
-            for (int rowIndex = tableData.GetLength(0)-1; rowIndex >=0;rowIndex --)
+            for (int rowIndex = tableData.GetLength(0) - 1; rowIndex >= 0; rowIndex--)
             {
                 //Bouclage sur les celulles de la ligne
-                for(int columnIndex =0; columnIndex<= tableData.GetLength(1)-1; columnIndex++)
+                for (int columnIndex = 0; columnIndex <= tableData.GetLength(1) - 1; columnIndex++)
                 {
                     if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
                     {
                         rowIndexMax = rowIndex;
                         break;
-                    }                       
+                    }
                 }
                 if (rowIndexMax != 0)
                     break;
             }
 
             //Bouclage à l'envers pour trouver les colonnes vides
-            for (int columnIndex = tableData.GetLength(1)-1; columnIndex >= 0; columnIndex--)
+            for (int columnIndex = tableData.GetLength(1) - 1; columnIndex >= 0; columnIndex--)
             {
                 //Bouclage sur les celulles de la ligne
-                for (int rowIndex = 0; rowIndex <= tableData.GetLength(0)-1; rowIndex++)
+                for (int rowIndex = 0; rowIndex <= tableData.GetLength(0) - 1; rowIndex++)
                 {
                     if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
                     {
                         columnIndexMax = columnIndex;
                         break;
-                    }       
+                    }
                 }
                 if (columnIndexMax != 0)
                     break;
             }
 
-            var resultArray = new string[rowIndexMax+1, columnIndexMax+1];
+            var resultArray = new string[rowIndexMax + 1, columnIndexMax + 1];
 
             //Remplissage du tableau sans les lignes vides ou colonne vides
-            for( int rowIndex = 0; rowIndex <= rowIndexMax; rowIndex++)
+            for (int rowIndex = 0; rowIndex <= rowIndexMax; rowIndex++)
             {
-                for(int columnIndex = 0; columnIndex <= columnIndexMax; columnIndex++)
+                for (int columnIndex = 0; columnIndex <= columnIndexMax; columnIndex++)
                     resultArray[rowIndex, columnIndex] = tableData[rowIndex, columnIndex].ToString();
             }
 
             return resultArray;
+        }
+
+        public static void AddDataToSimpleDataTable(SimpleDataTable iSimpleDataTable, List<List<string>> iNewDataList, bool iIsNewDataCanBeWider = false)
+        {
+            if (iNewDataList.IsNullOrEmpty())
+                throw new Exception("La liste ne peut pas être null");
+
+            var originalData = iSimpleDataTable.GetCachedTableData();
+
+            var newDataIsWider = iNewDataList.First().Count() > originalData.GetLength(0) + 1;
+
+            if (iIsNewDataCanBeWider && newDataIsWider)
+                throw new Exception("Les nouvelles données contiennent plus de colonnes que le tableau initial");
+
+            //Détermine les dimensions du tableau final
+            var columnCount = 0;
+            if (originalData.GetLength(1) > 0)
+                columnCount = (iNewDataList.First().Count() > originalData.GetLength(1)) ? iNewDataList.First().Count() : originalData.GetLength(1);
+            else
+                columnCount = iNewDataList.First().Count();
+
+            var mergeData = new object[iNewDataList.Count + originalData.GetLength(0), columnCount];
+
+            //Ajout données existant dans le tableau
+            for (int j = 0; j <= originalData.GetLength(0)-1; j++)
+            {
+                for (int i = 0; i <= originalData.GetLength(1)-1; i++)
+                    mergeData[j, i] = originalData[j,i];
+            }
+
+            //Ajout des nouvelles données
+            var rowIndex = originalData.GetLength(0);
+            foreach (var iRowItem in iNewDataList.Enum())
+            {
+                var columnIndex = 0;
+                foreach (var iColumnItem in iRowItem.Enum())
+                {
+                    mergeData[rowIndex, columnIndex] = iColumnItem;
+                    columnIndex++;
+                }
+                rowIndex++;
+            }
+
+            iSimpleDataTable.SetTableData(mergeData);
         }
 
     }

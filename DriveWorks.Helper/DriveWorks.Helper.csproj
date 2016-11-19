@@ -62,9 +62,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Manager\ControlVersionManager.cs" />
     <Compile Include="GroupHelper.cs" />
-    <Compile Include="IProjectServiceHelper.cs" />
     <Compile Include="DataTableHelper.cs" />
+    <Compile Include="Manager\EnvironmentManager.cs" />
+    <Compile Include="Manager\MessageManager.cs" />
+    <Compile Include="Manager\SettingsManager.cs" />
     <Compile Include="Object\AddedConstantManaged.cs" />
     <Compile Include="Object\AddedControlManaged.cs" />
     <Compile Include="Object\ConstantState.cs" />
