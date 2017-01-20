@@ -2,6 +2,7 @@
 (
 	[SpecificationName]		NVARCHAR(259)	NOT NULL CONSTRAINT[PK.T_E_Specification.SpecificationName] PRIMARY KEY CLUSTERED,
 	[Description]			NVARCHAR(1000)	NULL,
+	[SpecificationVersion]	INT				NOT NULL,
 	[ProjectVersion]		DECIMAL(10,4)	NOT NULL,
 	[Controls]				NVARCHAR(MAX)	NOT NULL,
 	[Constants]				NVARCHAR(MAX)   NOT NULL,

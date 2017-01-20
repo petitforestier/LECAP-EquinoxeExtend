@@ -94,7 +94,7 @@
             this.tlpMain.ColumnCount = 3;
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 28.81356F));
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 71.18644F));
-            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 61F));
+            this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
             this.tlpMain.Controls.Add(this.cboRequestUser, 1, 9);
             this.tlpMain.Controls.Add(this.lblMainTaskId, 0, 0);
             this.tlpMain.Controls.Add(this.txtMainTaskId, 1, 0);
@@ -142,7 +142,7 @@
             this.cboRequestUser.FormattingEnabled = true;
             this.cboRequestUser.Location = new System.Drawing.Point(81, 228);
             this.cboRequestUser.Name = "cboRequestUser";
-            this.cboRequestUser.Size = new System.Drawing.Size(188, 21);
+            this.cboRequestUser.Size = new System.Drawing.Size(186, 21);
             this.cboRequestUser.TabIndex = 15;
             // 
             // lblMainTaskId
@@ -162,7 +162,7 @@
             this.txtMainTaskId.Location = new System.Drawing.Point(81, 3);
             this.txtMainTaskId.Name = "txtMainTaskId";
             this.txtMainTaskId.ReadOnly = true;
-            this.txtMainTaskId.Size = new System.Drawing.Size(188, 20);
+            this.txtMainTaskId.Size = new System.Drawing.Size(186, 20);
             this.txtMainTaskId.TabIndex = 1;
             // 
             // txtName
@@ -171,7 +171,7 @@
             this.txtName.Location = new System.Drawing.Point(81, 53);
             this.txtName.MaxLength = 300;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(188, 20);
+            this.txtName.Size = new System.Drawing.Size(186, 20);
             this.txtName.TabIndex = 2;
             // 
             // lblName
@@ -203,7 +203,7 @@
             this.cboTaskType.FormattingEnabled = true;
             this.cboTaskType.Location = new System.Drawing.Point(81, 78);
             this.cboTaskType.Name = "cboTaskType";
-            this.cboTaskType.Size = new System.Drawing.Size(188, 21);
+            this.cboTaskType.Size = new System.Drawing.Size(186, 21);
             this.cboTaskType.TabIndex = 5;
             this.cboTaskType.SelectedIndexChanged += new System.EventHandler(this.cboTaskType_SelectedIndexChanged);
             // 
@@ -273,7 +273,7 @@
             this.cboCreationUser.FormattingEnabled = true;
             this.cboCreationUser.Location = new System.Drawing.Point(81, 203);
             this.cboCreationUser.Name = "cboCreationUser";
-            this.cboCreationUser.Size = new System.Drawing.Size(188, 21);
+            this.cboCreationUser.Size = new System.Drawing.Size(186, 21);
             this.cboCreationUser.TabIndex = 14;
             // 
             // lblProductLines
@@ -294,7 +294,7 @@
             this.chlProductLines.FormattingEnabled = true;
             this.chlProductLines.Location = new System.Drawing.Point(81, 253);
             this.chlProductLines.Name = "chlProductLines";
-            this.chlProductLines.Size = new System.Drawing.Size(188, 161);
+            this.chlProductLines.Size = new System.Drawing.Size(186, 161);
             this.chlProductLines.TabIndex = 25;
             // 
             // lblObjectifDate
@@ -314,7 +314,7 @@
             this.dtpObjectifDate.Location = new System.Drawing.Point(81, 128);
             this.dtpObjectifDate.Name = "dtpObjectifDate";
             this.dtpObjectifDate.ShowCheckBox = true;
-            this.dtpObjectifDate.Size = new System.Drawing.Size(188, 20);
+            this.dtpObjectifDate.Size = new System.Drawing.Size(186, 20);
             this.dtpObjectifDate.TabIndex = 27;
             // 
             // lblProjectNumber
@@ -335,7 +335,7 @@
             this.cboProjectNumber.FormattingEnabled = true;
             this.cboProjectNumber.Location = new System.Drawing.Point(81, 103);
             this.cboProjectNumber.Name = "cboProjectNumber";
-            this.cboProjectNumber.Size = new System.Drawing.Size(188, 21);
+            this.cboProjectNumber.Size = new System.Drawing.Size(186, 21);
             this.cboProjectNumber.TabIndex = 29;
             // 
             // tlpPackage
@@ -351,7 +351,7 @@
             this.tlpPackage.Name = "tlpPackage";
             this.tlpPackage.RowCount = 1;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPackage.Size = new System.Drawing.Size(194, 25);
+            this.tlpPackage.Size = new System.Drawing.Size(192, 25);
             this.tlpPackage.TabIndex = 30;
             // 
             // cboPackage
@@ -361,14 +361,14 @@
             this.cboPackage.FormattingEnabled = true;
             this.cboPackage.Location = new System.Drawing.Point(3, 3);
             this.cboPackage.Name = "cboPackage";
-            this.cboPackage.Size = new System.Drawing.Size(163, 21);
+            this.cboPackage.Size = new System.Drawing.Size(161, 21);
             this.cboPackage.TabIndex = 11;
             // 
             // cmdDeletePackage
             // 
             this.cmdDeletePackage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
-            this.cmdDeletePackage.Location = new System.Drawing.Point(169, 0);
+            this.cmdDeletePackage.Location = new System.Drawing.Point(167, 0);
             this.cmdDeletePackage.Margin = new System.Windows.Forms.Padding(0);
             this.cmdDeletePackage.Name = "cmdDeletePackage";
             this.cmdDeletePackage.Size = new System.Drawing.Size(25, 25);
@@ -393,7 +393,7 @@
             this.txtStatus.Location = new System.Drawing.Point(81, 28);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(188, 20);
+            this.txtStatus.Size = new System.Drawing.Size(186, 20);
             this.txtStatus.TabIndex = 32;
             // 
             // tlpFooter

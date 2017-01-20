@@ -1,4 +1,5 @@
 ﻿using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using DriveWorks.Helper.Object;
 using DriveWorks.Specification;
 using EquinoxeExtend.Shared.Enum;
@@ -13,7 +14,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin
 {
@@ -193,6 +193,8 @@ namespace EquinoxeExtendPlugin
                     newSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
                     newSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
 
+                    newSpecification.SpecificationVersion = 1;
+
                     specificationService.NewSpecification(newSpecification);
                 }
                 catch (Exception ex)
@@ -249,6 +251,8 @@ namespace EquinoxeExtendPlugin
                     theSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
                     theSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
                     theSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
+
+                    theSpecification.SpecificationVersion ++;
 
                     specificationService.UpdateSpecification(theSpecification);
                 }
@@ -321,49 +325,50 @@ namespace EquinoxeExtendPlugin
                     specificationControlStateList = controlBuildResult.Item1;
                     var deletedMessageList = controlBuildResult.Item2;
 
-                    //Bouclage sur les Etats de controles pour Application de la synthèse
-                    foreach (var controlStateItem in specificationControlStateList.Enum())
-                    {
-                        try
-                        {
-                            var theControl = ctx.Project.Navigation.GetControl(controlStateItem.Name);
-                            try
-                            {
-                                if (controlStateItem.Value != null)
-                                    ctx.Project.SetControlBaseFromControlState(theControl, controlStateItem);
-                            }
-                            catch { }
-                        }
-                        catch (Exception ex)
-                        {
-                            throw new Exception("Le controle nommé '" + controlStateItem.Name + "' n'existe pas. Sa suppression n'est pas gérée", ex);
-                        }
-                    }
+                    var errorCount = -1;
 
-                    //Bouclage de vérification car une règle du configurateur pourrait faire une modification après écriture
-                    foreach (var controlStateItem in specificationControlStateList.Enum())
-                    {
-                        try
-                        {
-                            var theControl = ctx.Project.Navigation.GetControl(controlStateItem.Name);
-                            var controlState = ctx.Project.GetControlStateFormControlBase(theControl);
+                    var specificationRestControlStateList = specificationControlStateList;
 
-                            if (controlStateItem.Value != null)
+                    while (errorCount != 0)
+                    {
+                        specificationRestControlStateList = Tools.Tools.SetControlValueListToSpecification(ctx, specificationRestControlStateList);
+
+                        if (specificationRestControlStateList.Count() == errorCount)
+                        {
+                            foreach (var controlStateItem in specificationRestControlStateList)
                             {
+                                var theControl = ctx.Project.Navigation.GetControl(controlStateItem.Name);
+                                var controlState = ctx.Project.GetControlStateFormControlBase(theControl);
+
                                 if (controlState.Value != controlStateItem.Value)
                                     errorList.Add("Controle '{0}' la valeur est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value, controlStateItem.Value));
 
                                 if (controlState.Value2 != controlStateItem.Value2)
                                     errorList.Add("Controle '{0}' la valeur 2 est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value2, controlStateItem.Value2));
                             }
+
+                            throw new Exception(errorList.Concat(Environment.NewLine));
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            throw new Exception("Le controle nommé '" + controlStateItem.Name + "' n'existe pas. Sa suppression n'est pas gérée", ex);
+                            errorCount = specificationRestControlStateList.Count();
                         }
                     }
 
-                    if (errorList.IsNotNullAndNotEmpty())
+                    //Vérification des valeurs de tous les controls
+                    foreach (var controlStateItem in specificationControlStateList)
+                    {
+                        var theControl = ctx.Project.Navigation.GetControl(controlStateItem.Name);
+                        var controlState = ctx.Project.GetControlStateFormControlBase(theControl);
+
+                        if (controlState.Value != controlStateItem.Value)
+                            errorList.Add("Controle '{0}' la valeur est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value, controlStateItem.Value));
+
+                        if (controlState.Value2 != controlStateItem.Value2)
+                            errorList.Add("Controle '{0}' la valeur 2 est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value2, controlStateItem.Value2));
+                    }
+
+                    if(errorList.IsNotNullAndNotEmpty())
                         throw new Exception(errorList.Concat(Environment.NewLine));
 
                     ctx.Project.AddMessage("Chargement effectué".FormatString(SpecificationNameProperty.Value));

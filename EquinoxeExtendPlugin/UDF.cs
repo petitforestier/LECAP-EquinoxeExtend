@@ -498,6 +498,24 @@ namespace EquinoxeExtendPlugin
             }
         }
 
+        [Udf]
+        [FunctionInfo("Retourne si la version actuelle de la spécification")]
+        public string UDFSpecificationCurrentVersion([ParamInfo("Nom specification", "Nom de la spécification")]string iSpecificationName)
+        {
+            try
+            {
+                using (var specificationService = new SpecificationService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
+                {
+                    var theSpecification = specificationService.GetSpecificationByName(iSpecificationName);
+                    return theSpecification.SpecificationVersion.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                return "#Error!" + ex.Message;
+            }
+        }
+
         #endregion
     }
 }

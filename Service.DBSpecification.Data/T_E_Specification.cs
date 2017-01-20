@@ -16,6 +16,7 @@ namespace Service.DBSpecification.Data
     {
         public string SpecificationName { get; set; }
         public string Description { get; set; }
+        public int SpecificationVersion { get; set; }
         public decimal ProjectVersion { get; set; }
         public string Controls { get; set; }
         public string Constants { get; set; }

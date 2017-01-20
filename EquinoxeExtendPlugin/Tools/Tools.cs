@@ -12,7 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using DriveWorks.Helper.Object;
+using DriveWorks.Specification;
 namespace EquinoxeExtendPlugin.Tools
 {
     public static class Tools
@@ -96,6 +97,55 @@ namespace EquinoxeExtendPlugin.Tools
 
             return result;
         }
+
+        public static List<ControlState> SetControlValueListToSpecification(SpecificationContext iContext, List<ControlState> iControlList)
+        {
+            var errorControlState = new List<ControlState>();
+
+            //Bouclage sur les Etats de controles pour Application de la synthèse
+            foreach (var controlStateItem in iControlList.Enum())
+            {
+                try
+                {
+                    var theControl = iContext.Project.Navigation.GetControl(controlStateItem.Name);
+                    try
+                    {
+                        if (controlStateItem.Value != null)
+                            iContext.Project.SetControlBaseFromControlState(theControl, controlStateItem);
+                    }
+                    catch { }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Le controle nommé '" + controlStateItem.Name + "' n'existe pas. Sa suppression n'est pas gérée", ex);
+                }
+            }
+
+            //Bouclage de vérification car une règle du configurateur pourrait faire une modification après écriture
+            foreach (var controlStateItem in iControlList.Enum())
+            {
+                try
+                {
+                    var theControl = iContext.Project.Navigation.GetControl(controlStateItem.Name);
+                    var controlState = iContext.Project.GetControlStateFormControlBase(theControl);
+
+                    if (controlStateItem.Value != null)
+                    {
+                        if (controlState.Value != controlStateItem.Value)
+                            errorControlState.Add(controlState);
+                        else if (controlState.Value2 != controlStateItem.Value2)
+                            errorControlState.Add(controlState);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Le controle nommé '" + controlStateItem.Name + "' n'existe pas. Sa suppression n'est pas gérée", ex);
+                }
+            }
+
+            return errorControlState;
+        }
+    
 
         #endregion
     }

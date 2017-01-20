@@ -107,6 +107,7 @@
     <None Include="Snapshots\Deployed\v014.dacpac" />
     <None Include="Snapshots\Deployed\v015.dacpac" />
     <None Include="Snapshots\Deployed\v016.dacpac" />
+    <None Include="Snapshots\Deployed\v017.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="EquinoxeExtendDB.refactorlog" />

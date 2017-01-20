@@ -4,33 +4,35 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="SpecificationModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Equinoxe_SandBox_ExtendModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="T_E_Specification">
           <Key>
             <PropertyRef Name="SpecificationName" />
           </Key>
           <Property Name="SpecificationName" Type="nvarchar" MaxLength="259" Nullable="false" />
           <Property Name="Description" Type="nvarchar" MaxLength="1000" />
+          <Property Name="SpecificationVersion" Type="int" Nullable="false" />
           <Property Name="ProjectVersion" Type="decimal" Precision="10" Scale="4" Nullable="false" />
           <Property Name="Controls" Type="nvarchar(max)" Nullable="false" />
           <Property Name="Constants" Type="nvarchar(max)" Nullable="false" />
           <Property Name="IsTemplate" Type="bit" Nullable="false" />
           <Property Name="DisplayName" Type="nvarchar" MaxLength="259" />
         </EntityType>
-        <EntityContainer Name="SpecificationModelStoreContainer">
+        <EntityContainer Name="Equinoxe_SandBox_ExtendModelStoreContainer">
           <EntitySet Name="T_E_Specification" EntityType="Self.T_E_Specification" Schema="S_Record" store:Type="Tables" />
         </EntityContainer>
       </Schema>
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="SpecificationModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="Equinoxe_SandBox_ExtendModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="T_E_Specification">
           <Key>
             <PropertyRef Name="SpecificationName" />
           </Key>
           <Property Name="SpecificationName" Type="String" MaxLength="259" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Description" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
+          <Property Name="SpecificationVersion" Type="Int32" Nullable="false" />
           <Property Name="ProjectVersion" Type="Decimal" Precision="10" Scale="4" Nullable="false" />
           <Property Name="Controls" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Constants" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
@@ -45,12 +47,13 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="SpecificationModelStoreContainer" CdmEntityContainer="SpecificationDBContext">
+        <EntityContainerMapping StorageEntityContainer="Equinoxe_SandBox_ExtendModelStoreContainer" CdmEntityContainer="SpecificationDBContext">
           <EntitySetMapping Name="T_E_Specification">
-            <EntityTypeMapping TypeName="SpecificationModel.T_E_Specification">
+            <EntityTypeMapping TypeName="Equinoxe_SandBox_ExtendModel.T_E_Specification">
               <MappingFragment StoreEntitySet="T_E_Specification">
                 <ScalarProperty Name="SpecificationName" ColumnName="SpecificationName" />
                 <ScalarProperty Name="Description" ColumnName="Description" />
+                <ScalarProperty Name="SpecificationVersion" ColumnName="SpecificationVersion" />
                 <ScalarProperty Name="ProjectVersion" ColumnName="ProjectVersion" />
                 <ScalarProperty Name="Controls" ColumnName="Controls" />
                 <ScalarProperty Name="Constants" ColumnName="Constants" />

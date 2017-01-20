@@ -412,5 +412,6 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         }
 
         #endregion
+
     }
 }

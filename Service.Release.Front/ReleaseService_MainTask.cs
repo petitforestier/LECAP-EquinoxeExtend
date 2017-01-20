@@ -36,24 +36,27 @@ namespace Service.Release.Front
 
             using (var ts = new TransactionScope())
             {
-                var affectedPackage = GetPackageById((long)iMainTask.PackageId, GranularityEnum.Nude);
-                if (affectedPackage.Status == PackageStatusEnum.Developpement)
+                if (iMainTask.PackageId != null)
                 {
-                    iMainTask.Status = MainTaskStatusEnum.Dev;
-                    iMainTask.OpenedDate = DateTime.Now;
+                    var affectedPackage = GetPackageById((long)iMainTask.PackageId, GranularityEnum.Nude);
+                    if (affectedPackage.Status == PackageStatusEnum.Developpement)
+                    {
+                        iMainTask.Status = MainTaskStatusEnum.Dev;
+                        iMainTask.OpenedDate = DateTime.Now;
+                    }
+                    else if (affectedPackage.Status == PackageStatusEnum.Canceled ||
+                        affectedPackage.Status == PackageStatusEnum.Production ||
+                        affectedPackage.Status == PackageStatusEnum.Staging)
+                    {
+                        throw new Exception("Il n'est pas possible d'affecter une tâche au package avec ce status");
+                    }
+                    else if (affectedPackage.Status == PackageStatusEnum.Waiting)
+                    {
+                        //ne rien faire
+                    }
+                    else
+                        throw new Exception(affectedPackage.Status.ToStringWithEnumName());
                 }
-                else if (affectedPackage.Status == PackageStatusEnum.Canceled ||
-                    affectedPackage.Status == PackageStatusEnum.Production ||
-                    affectedPackage.Status == PackageStatusEnum.Staging)
-                {
-                    throw new Exception("Il n'est pas possible d'affecter une tâche au package avec ce status");
-                }
-                else if (affectedPackage.Status == PackageStatusEnum.Waiting)
-                {
-                    //ne rien faire
-                }
-                else
-                    throw new Exception(affectedPackage.Status.ToStringWithEnumName());
 
                 var entity = new T_E_MainTask();
                 entity.Merge(iMainTask);

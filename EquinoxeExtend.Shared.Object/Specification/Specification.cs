@@ -24,6 +24,7 @@ namespace EquinoxeExtend.Shared.Object.Specification
                 IsTemplate = iEntity.IsTemplate,
                 ProjectVersion = iEntity.ProjectVersion,
                 SpecificationName = iEntity.SpecificationName,
+                SpecificationVersion = iEntity.SpecificationVersion,
             };
         }
 
@@ -36,6 +37,7 @@ namespace EquinoxeExtend.Shared.Object.Specification
             iEntity.IsTemplate = iObj.IsTemplate;
             iEntity.ProjectVersion = iObj.ProjectVersion;
             iEntity.SpecificationName = iObj.SpecificationName;
+            iEntity.SpecificationVersion = iObj.SpecificationVersion;
         }
 
         #endregion
@@ -47,6 +49,7 @@ namespace EquinoxeExtend.Shared.Object.Specification
 
         public string SpecificationName { get; set; }
         public string Description { get; set; }
+        public int SpecificationVersion { get; set; }
         public decimal ProjectVersion { get; set; }
         public string Controls { get; set; }
         public string Constants { get; set; }
