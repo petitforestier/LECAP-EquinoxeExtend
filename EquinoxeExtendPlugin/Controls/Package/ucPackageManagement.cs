@@ -957,5 +957,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
+
+        private void cmdUpPackagePriority_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

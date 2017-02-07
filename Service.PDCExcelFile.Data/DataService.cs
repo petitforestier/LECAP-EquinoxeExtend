@@ -12,7 +12,7 @@ using System.Diagnostics;
 
 namespace Service.PDCExcelFile.Data
 {
-   
+
 
     public class DataService
     {
@@ -24,6 +24,8 @@ namespace Service.PDCExcelFile.Data
         public List<ExternalProject> GetExternalProjectListFromFile(string iFilePath)
         {
             Process excelProcess = null;
+            var rowIndex = 3;
+
             try
             {
                 Excel.Application excel = null;
@@ -39,17 +41,19 @@ namespace Service.PDCExcelFile.Data
                 wkb = OpenBook(excel, iFilePath, true, false, false);
                 var sheet = wkb.Sheets[1] as Excel.Worksheet;
 
-                var rowIndex = 3;
                 var result = new List<ExternalProject>();
 
                 //bouclage sur les lignes
                 while (sheet.Cells[rowIndex, PROJECTNUMBERCOLUMNINDEX].Value != null)
                 {
+                    if (rowIndex == 129)
+                        Library.Tools.Debug.MyDebug.BreakForDebug();
+
                     var newExternalProject = new ExternalProject();
 
                     //Priority
                     double? priority = sheet.Cells[rowIndex, PRIORITYCOLUMNINDEX].Value;
-                    newExternalProject.Priority = (priority!= null) ? (int?)Convert.ToInt32(priority) : null;
+                    newExternalProject.Priority = (priority != null) ? (int?)Convert.ToInt32(priority) : null;
 
                     //project Number
                     newExternalProject.ProjectNumber = sheet.Cells[rowIndex, PROJECTNUMBERCOLUMNINDEX].Value;
@@ -71,7 +75,7 @@ namespace Service.PDCExcelFile.Data
                     newExternalProject.ProjectName = sheet.Cells[rowIndex, PROJECTNAMECOLUMNINDEX].Value;
 
                     //Description
-                    newExternalProject.Description = sheet.Cells[rowIndex, DESCRIPTIONCOLUMNINDEX].Value;
+                    newExternalProject.Description = null;//sheet.Cells[rowIndex, DESCRIPTIONCOLUMNINDEX].Value;
 
                     //Pilote
                     newExternalProject.Pilote = sheet.Cells[rowIndex, PILOTECOLUMNINDEX].Value;
@@ -81,7 +85,7 @@ namespace Service.PDCExcelFile.Data
                     newExternalProject.BEImpacted = (beImpacted.IsNullOrEmpty()) ? false : true;
 
                     //Date cloture prev
-                    DateTime? dateInit = sheet.Cells[rowIndex, DATEOBJECTIFENDINITCOLUMNINDEX].Value;
+                    var dateInit = sheet.Cells[rowIndex, DATEOBJECTIFENDINITCOLUMNINDEX].Value;
                     if (dateInit != null)
                     {
                         newExternalProject.DateObjectiveEnd = (DateTime?)Convert.ToDateTime(dateInit);
@@ -124,13 +128,13 @@ namespace Service.PDCExcelFile.Data
 
         private const int PROJECTNAMECOLUMNINDEX = 5;
 
-        private const int DESCRIPTIONCOLUMNINDEX = 6;
+        //private const int DESCRIPTIONCOLUMNINDEX = 6;
 
-        private const int PILOTECOLUMNINDEX = 7;
+        private const int PILOTECOLUMNINDEX = 6;
 
-        private const int DATEOBJECTIFENDINITCOLUMNINDEX = 9;
+        private const int DATEOBJECTIFENDINITCOLUMNINDEX = 8;
 
-        private const int DATEOBJECTIFENDPREVCOLUMNINDEX = 10;
+        private const int DATEOBJECTIFENDPREVCOLUMNINDEX = 9;
 
         private const int BECOLUMNINDEX = 31;
 

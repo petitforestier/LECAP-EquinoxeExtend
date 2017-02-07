@@ -42,13 +42,16 @@
             this.cmdAddPackage = new System.Windows.Forms.ToolStripButton();
             this.cmdDeletePackage = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdUpPackagePriority = new System.Windows.Forms.ToolStripButton();
+            this.cmdDownPackagePriority = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdDeployToDev = new System.Windows.Forms.ToolStripButton();
             this.cmdDeployToStaging = new System.Windows.Forms.ToolStripButton();
             this.cmdDeployToProduction = new System.Windows.Forms.ToolStripButton();
             this.cmdRestoreFromBackup = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdLockUnlock = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.dgvPackage = new System.Windows.Forms.DataGridView();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
@@ -196,6 +199,7 @@
             this.tlpPackage.RowCount = 2;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tlpPackage.Size = new System.Drawing.Size(616, 230);
             this.tlpPackage.TabIndex = 0;
             // 
@@ -207,13 +211,16 @@
             this.cmdAddPackage,
             this.cmdDeletePackage,
             this.toolStripSeparator1,
+            this.cmdUpPackagePriority,
+            this.cmdDownPackagePriority,
+            this.toolStripSeparator3,
             this.cmdDeployToDev,
             this.cmdDeployToStaging,
             this.cmdDeployToProduction,
             this.cmdRestoreFromBackup,
             this.toolStripSeparator2,
             this.cmdLockUnlock,
-            this.toolStripSeparator3});
+            this.toolStripSeparator4});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(616, 30);
@@ -245,6 +252,30 @@
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 30);
+            // 
+            // cmdUpPackagePriority
+            // 
+            this.cmdUpPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdUpPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.up_icon;
+            this.cmdUpPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdUpPackagePriority.Name = "cmdUpPackagePriority";
+            this.cmdUpPackagePriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdUpPackagePriority.Text = "Monter la priorité";
+            this.cmdUpPackagePriority.Click += new System.EventHandler(this.cmdUpPackagePriority_Click);
+            // 
+            // cmdDownPackagePriority
+            // 
+            this.cmdDownPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDownPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.down_icon;
+            this.cmdDownPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDownPackagePriority.Name = "cmdDownPackagePriority";
+            this.cmdDownPackagePriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdDownPackagePriority.Text = "Descendre la priorité";
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
             // 
             // cmdDeployToDev
             // 
@@ -303,10 +334,10 @@
             this.cmdLockUnlock.Text = "Verrouiller/Déverrouiller l\'ajout de tâche";
             this.cmdLockUnlock.Click += new System.EventHandler(this.cmdLockUnlock_Click);
             // 
-            // toolStripSeparator3
+            // toolStripSeparator4
             // 
-            this.toolStripSeparator3.Name = "toolStripSeparator3";
-            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
+            this.toolStripSeparator4.Name = "toolStripSeparator4";
+            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 30);
             // 
             // dgvPackage
             // 
@@ -455,5 +486,8 @@
         private System.Windows.Forms.ToolStripButton cmdDeployToDev;
         private System.Windows.Forms.ToolStripButton cmdLockUnlock;
         private System.Windows.Forms.ToolStripButton cmdDeletePackage;
+        private System.Windows.Forms.ToolStripButton cmdDownPackagePriority;
+        private System.Windows.Forms.ToolStripButton cmdUpPackagePriority;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
     }
 }
