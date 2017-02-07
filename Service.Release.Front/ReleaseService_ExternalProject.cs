@@ -18,7 +18,7 @@ namespace Service.Release.Front
     {
         #region Public METHODS
 
-        private const string PDCFILEPATH = @"\\lecapitaine.fr\Siege\Donnees\Projets\Developper catalogue\1-Suivi projets\Suivi projets développer catalogue.xlsm";
+        private const string PDCFILEPATH = @"\\lecapitaine.fr\Siege\Donnees\Projets\Developper catalogue\1-Suivi projets\Suivi PDC.xlsm";
 
         public void AddAndUpdateExternalProjectFromFile()
         {
