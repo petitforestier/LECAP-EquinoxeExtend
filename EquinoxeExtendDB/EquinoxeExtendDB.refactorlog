@@ -63,4 +63,11 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[SubTaskId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="550721e7-64c6-44ab-9ed6-39d73f5a26b3" ChangeDateTime="03/13/2017 10:50:30">
+    <Property Name="ElementName" Value="[S_Release].[T_E_Test]" />
+    <Property Name="ElementType" Value="SqlTable" />
+    <Property Name="ParentElementName" Value="[S_Release]" />
+    <Property Name="ParentElementType" Value="SqlSchema" />
+    <Property Name="NewName" Value="[T_E_Test2]" />
+  </Operation>
 </Operations>

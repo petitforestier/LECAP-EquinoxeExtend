@@ -131,7 +131,6 @@ namespace EquinoxeExtendPlugin
             }          
         }
 
-
         #endregion
     }
 

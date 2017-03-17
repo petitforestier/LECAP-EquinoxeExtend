@@ -389,6 +389,116 @@ namespace EquinoxeExtendPlugin
         #endregion
     }
 
+    //[Task("SPECMGT:SetControlValue", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    //public class SetControlValue : DriveWorks.Specification.Task
+    //{
+    //    private FlowProperty<string> ControlNameProperty;
+    //    private FlowProperty<string> ValueControlProperty;
+
+    //    public SetControlValue()
+    //    {
+    //        ControlNameProperty = Properties.RegisterStringProperty("Nom du Contrôle", "Nom du Contrôle");
+    //        ValueControlProperty = Properties.RegisterStringProperty("Valeur du Contrôle", "Texte à envoyer au contrôle");
+    //    }
+
+    //    protected override void Execute(SpecificationContext ctx)
+    //    {
+
+    //        var theControl = ctx.Project.Navigation.GetControl(ControlNameProperty.Value);
+    //        theControl.SetInputValue(ValueControlProperty.Value);
+    //    }
+
+    //}
+
+    //[Task("SPECMGT:TransferControlValue", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    //public class TransferControlValue : DriveWorks.Specification.Task
+    //{
+    //    private FlowProperty<string> ControlSourceProperty;
+    //    private FlowProperty<string> ControlCibleProperty;
+
+    //    public TransferControlValue()
+    //    {
+    //        ControlSourceProperty = Properties.RegisterStringProperty("Nom du Controle Source", "Nom du Controle Source");
+    //        ControlCibleProperty = Properties.RegisterStringProperty("Nom du Controle Cible", "Nom du Controle Cible");
+    //    }
+
+    //    protected override void Execute(SpecificationContext ctx)
+    //    {
+    //        var theControlSource = ctx.Project.Navigation.GetControl(ControlSourceProperty.Value);
+    //        var inputvalue = theControlSource.GetInputValue();
+            
+    //        var theControlCible = ctx.Project.Navigation.GetControl(ControlCibleProperty.Value);
+    //        theControlCible.SetInputValue(inputvalue);
+
+    //    }
+
+    //}
+       
+    //[Task("SPECMGT:SetControlColor", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    //public class SetControlColor : DriveWorks.Specification.Task
+    //{
+    //    private FlowProperty<string> ControlNameProperty;
+    //    private FlowProperty<string> ColorControlProperty;
+
+    //    public SetControlColor()
+    //    {
+    //        ControlNameProperty = Properties.RegisterStringProperty("Nom du Controle", "Nom du Controle");
+    //        ColorControlProperty = Properties.RegisterStringProperty("Couleur du Contrôle", "Couleur à affecter au contrôle");
+    //    }
+
+    //    protected override void Execute(SpecificationContext ctx)
+    //    {
+
+    //        var theControlColor = ctx.Project.Navigation.GetControl(ControlNameProperty.Value);
+    //        theControlColor.BackgroundColor = DriveWorks.Forms.SimpleColor.FromName(ColorControlProperty.Value);
+            
+    //    }
+
+    //}
+
+
+    //[Task("SPECMGT:ChooseControlColor", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    //public class ChooseControlColor : DriveWorks.Specification.Task
+    //{
+    //    private FlowProperty<string> ControlNameProperty;
+    //    private FlowProperty<string> ControlResultProperty;
+    //    private FlowProperty<string> ControlCibleProperty;
+
+
+    //    public ChooseControlColor()
+    //    {
+    //        ControlNameProperty = Properties.RegisterStringProperty("Nom du Controle Couleur", "Nom du Controle Couleur");
+    //        ControlResultProperty = Properties.RegisterStringProperty("Nom du Controle Résultat", "Nom du Controle Résultat");
+    //        ControlCibleProperty = Properties.RegisterStringProperty("Nom du Controle Cible", "Nom du Controle Cible");
+    //    }
+
+    //    protected override void Execute(SpecificationContext ctx)
+    //    {
+
+    //        var theControlColor = ctx.Project.Navigation.GetControl(ControlNameProperty.Value);
+    //        var inputcolor = theControlColor.GetInputValue();
+
+    //        var theControlResult = ctx.Project.Navigation.GetControl(ControlResultProperty.Value);
+    //        theControlResult.SetInputValue(inputcolor);
+
+    //        var theControlCible = ctx.Project.Navigation.GetControl(ControlCibleProperty.Value);
+
+    //        //if (inputcolor.ToString() == "OptionColorRed")
+    //        //{
+    //        //    theControlCible.BackgroundColor = DriveWorks.Forms.SimpleColor.FromName("Red");
+    //        //}
+    //        //else
+    //        //{
+    //        //    theControlCible.BackgroundColor = DriveWorks.Forms.SimpleColor.FromName("Blue");
+    //        //}
+
+    //        theControlCible.BackgroundColor = DriveWorks.Forms.SimpleColor.FromName(inputcolor.ToString());
+
+    //    }
+
+    //}
+
+
     [Task("SPECMGT:CheckErrorList", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class CheckErrorList : DriveWorks.Specification.Task
     {
