@@ -43,9 +43,9 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetExtendConnectionString()))
             {
                 //Package
-                cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdStatusString);
-                cboPackage.ValueMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageId);
-                cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All);
+                cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
+                cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
+                cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All,PackageOrderByEnum.PackageId);
                 cboPackage.SelectedIndex = -1;
             }
         }
@@ -380,7 +380,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                                 inProgressForm.Refresh();
                                 trvProjectTable.Nodes.Clear();
 
-                                var selectedPackage = (cboPackage.SelectedIndex != -1) ? (Package)cboPackage.SelectedItem : null;
+                                var selectedPackage = (cboPackage.SelectedIndex != -1) ? (EquinoxeExtend.Shared.Object.Release.Package)cboPackage.SelectedItem : null;
                                 foreach (var item in GenerateProjetTableTreeNode(selectedPackage).Enum())
                                     trvProjectTable.Nodes.Add(item);
                             }

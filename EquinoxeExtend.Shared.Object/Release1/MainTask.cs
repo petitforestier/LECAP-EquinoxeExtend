@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Product;
 using Library.Tools.Attributes;
+using Library.Tools.Extensions;
 
 namespace EquinoxeExtend.Shared.Object.Release
 {
@@ -93,6 +94,22 @@ namespace EquinoxeExtend.Shared.Object.Release
             get
             {
                 return TypeDocumentEnum.MainTask.GetName("FR") + MainTaskId.ToString("0000000");
+            }
+        }
+
+        public int DurationSum
+        {
+            get
+            {
+                return SubTasks.IsNotNullAndNotEmpty() ? (int)SubTasks.Enum().Sum(x => x.Duration) : 0;
+            }
+        }
+
+        public int DoneDuration
+        {
+            get
+            {
+                return SubTasks.IsNotNullAndNotEmpty() ? (int)(Math.Truncate(SubTasks.Enum().Sum(x => decimal.Multiply(Convert.ToDecimal(x.Duration), decimal.Divide(x.Progression, 100))))) : 0;
             }
         }
 

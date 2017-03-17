@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace Service.Release.Front
 {
@@ -22,6 +23,9 @@ namespace Service.Release.Front
             newPackage.ReleaseNumber = null;
             newPackage.IsLocked = true;
             newPackage.Status = PackageStatusEnum.Waiting;
+            newPackage.Priority = null;
+            newPackage.DeployementDateObjectif = null;
+
             var newEntity = new T_E_Package();
             newEntity.Merge(newPackage);
             return DBReleaseDataService.AddPackage(newEntity);
@@ -84,13 +88,13 @@ namespace Service.Release.Front
 
                 //Vérification des status des tâches
                 if (originalPackage.MainTasks.Enum().Exists2(x => x.Status != MainTaskStatusEnum.Waiting))
-                    throw new Exception("Toutes les tâches de ce package doivent 'En attente' ou en test"); 
+                    throw new Exception("Toutes les tâches de ce package doivent 'En attente' ou en test");
             }
-            else if(originalPackage.Status == PackageStatusEnum.Staging)
+            else if (originalPackage.Status == PackageStatusEnum.Staging)
             {
                 //Vérification des status des tâches
                 if (originalPackage.MainTasks.Enum().Exists2(x => x.Status != MainTaskStatusEnum.Staging))
-                    throw new Exception("Toutes les tâches de ce package doivent 'En test'"); 
+                    throw new Exception("Toutes les tâches de ce package doivent 'En test'");
             }
 
             using (var ts = new System.Transactions.TransactionScope())
@@ -141,6 +145,8 @@ namespace Service.Release.Front
             var thePackage = GetPackageById(iPackage.PackageId, GranularityEnum.Full);
             using (var ts = new System.Transactions.TransactionScope())
             {
+                //todo enlever la priorité du package une fois en production
+
                 //UpdatePackageStatus
                 UpdatePackageStatus(thePackage, PackageStatusEnum.Production);
 
@@ -155,6 +161,104 @@ namespace Service.Release.Front
                 newDeployement.EnvironmentDestination = EnvironmentEnum.Production;
                 newDeployement.PackageId = thePackage.PackageId;
                 AddDeployement(newDeployement);
+
+                ts.Complete();
+            }
+        }
+
+        public void MoveUpPackagePriority(Package iPackage)
+        {
+            if (iPackage == null)
+                throw new Exception("La tâche est nulle");
+
+            if (iPackage.Priority != null)
+            {
+                if (iPackage.Priority < 0)
+                    throw new Exception("La priorité doit être positive");
+
+                if (iPackage.Priority == 1)
+                    throw new Exception("La priorité est déjà maximale");
+            }
+
+            using (var ts = new TransactionScope())
+            {
+                //3 actions car contrainte d'unicité en base de données
+                var thePackage = DBReleaseDataService.GetPackageById(iPackage.PackageId);
+
+                int? thePriority = 1;
+                T_E_Package previousPackage = null;
+
+                if (thePackage.Priority != null)
+                {
+                    thePriority = thePackage.Priority - 1;
+                    previousPackage = DBReleaseDataService.GetSingleOrDefault<T_E_Package>(x => x.Priority == iPackage.Priority - 1);
+                }
+                else
+                {
+                    previousPackage = DBReleaseDataService.GetSingleOrDefault<T_E_Package>(x => x.Priority == 1);
+
+                    var packageWithPriority = DBReleaseDataService.GetList<T_E_Package>(x => x.Priority != null && x.Priority != 1).Enum().OrderByDescending(x => x.Priority).Enum().Select(x => x.Convert()).Enum().ToList();
+
+                    foreach (var packagePriority in packageWithPriority.Enum())
+                        MoveDownPackagePriority(packagePriority);
+                }
+
+                thePackage.Priority = null;
+                DBReleaseDataService.Update(thePackage);
+
+                if (previousPackage != null)
+                {
+                    previousPackage.Priority += 1;
+                    DBReleaseDataService.Update(previousPackage);
+                }
+
+                thePackage.Priority = thePriority;
+                DBReleaseDataService.Update(thePackage);
+
+                ts.Complete();
+            }
+        }
+
+        public void MoveDownPackagePriority(Package iPackage)
+        {
+            if (iPackage == null)
+                throw new Exception("La tâche est nulle");
+
+            if (iPackage.Priority < 0)
+                throw new Exception("La priorité doit être positive");
+
+            using (var ts = new TransactionScope())
+            {
+                var thePackage = DBReleaseDataService.GetPackageById(iPackage.PackageId);
+
+                T_E_Package followingPackage = null;
+                int? thePriority;
+
+                if (thePackage.Priority != null)
+                {
+                    thePriority = thePackage.Priority + 1;
+                    followingPackage = DBReleaseDataService.GetSingleOrDefault<T_E_Package>(x => x.Priority == iPackage.Priority + 1);
+                }
+                else
+                {
+                    var lastPriority = DBReleaseDataService.GetQuery<T_E_Package>(null).Max(x => x.Priority);
+                    if (lastPriority == null)
+                        thePriority = 1;
+                    else
+                        thePriority = lastPriority + 1;
+                }
+
+                thePackage.Priority = null;
+                DBReleaseDataService.Update(thePackage);
+
+                if (followingPackage != null)
+                {
+                    followingPackage.Priority -= 1;
+                    DBReleaseDataService.Update(followingPackage);
+                }
+
+                thePackage.Priority = thePriority;
+                DBReleaseDataService.Update(thePackage);
 
                 ts.Complete();
             }
@@ -186,10 +290,11 @@ namespace Service.Release.Front
             return thePackage;
         }
 
-        public List<Package> GetPackageList(PackageStatusSearchEnum iPackageEnvironmentSearch)
+        public List<Package> GetPackageList(PackageStatusSearchEnum iPackageEnvironmentSearch, PackageOrderByEnum iPackageOrderBy)
         {
             var theQuery = DBReleaseDataService.GetQuery<T_E_Package>(null);
 
+            //Status
             if (iPackageEnvironmentSearch == PackageStatusSearchEnum.Developpement)
             {
                 theQuery = theQuery.Where(x => x.StatusRef == (short)PackageStatusEnum.Developpement).AsQueryable();
@@ -223,6 +328,16 @@ namespace Service.Release.Front
             var packageList = theQuery.Enum().ToList();
             var result = new List<Package>();
 
+            //OrderBy
+            if (iPackageOrderBy == PackageOrderByEnum.Priority)
+                packageList = packageList.OrderByDescending(x => x.Priority.HasValue).ThenBy(x => x.Priority).ToList();
+            else if (iPackageOrderBy == PackageOrderByEnum.PackageId)
+                packageList = packageList.OrderBy(x => x.PackageId).ToList();
+            else if (iPackageOrderBy == PackageOrderByEnum.DateObjectif)
+                packageList = packageList.OrderByDescending(x => x.DeployementObjectifDate.HasValue).ThenBy(x => x.DeployementObjectifDate).ToList();
+            else
+                throw new Exception(iPackageOrderBy.ToStringWithEnumName());
+
             foreach (var item in packageList.Enum())
                 result.Add(GetPackageById(item.PackageId, GranularityEnum.Full));
 
@@ -235,11 +350,11 @@ namespace Service.Release.Front
 
             var affectedPackageIsLocked = false;
 
-            if(iMainTask != null)
+            if (iMainTask != null)
             {
                 //Package déjà affecté à la tâche
                 var originalMainTask = GetMainTaskById(iMainTask.MainTaskId, GranularityEnum.Nude);
-                if(originalMainTask.PackageId != null)
+                if (originalMainTask.PackageId != null)
                 {
                     var affectedPackage = GetPackageById((long)originalMainTask.PackageId, GranularityEnum.Full);
                     result.Add(affectedPackage);
@@ -252,7 +367,7 @@ namespace Service.Release.Front
             {
                 //Retourne seulement le package affecté locké
                 return result;
-            }               
+            }
             else
             {
                 //Récupération des packages non ouvert déverrouillé
@@ -287,7 +402,7 @@ namespace Service.Release.Front
             }
 
             //Suppression des doublons
-            return result.Enum().GroupBy(x => x.PackageId).Select(x=>x.First()).ToList();
+            return result.Enum().GroupBy(x => x.PackageId).Select(x => x.First()).ToList();
         }
 
         public bool IsMainTaskCanJoinThisPackage(long iMainTaskId, long iPackageId)
@@ -333,7 +448,7 @@ namespace Service.Release.Front
 
             if (theMainTask.Status == MainTaskStatusEnum.Dev)
             {
-                var openedPackages = GetPackageList(PackageStatusSearchEnum.InProgress);
+                var openedPackages = GetPackageList(PackageStatusSearchEnum.InProgress,PackageOrderByEnum.PackageId);
 
                 //Bouclage sur les packages
                 foreach (var packageItem in openedPackages.Enum())

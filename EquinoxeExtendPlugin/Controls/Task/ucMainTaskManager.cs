@@ -1,5 +1,5 @@
 ﻿using DriveWorks;
-using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
@@ -16,7 +16,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -178,7 +177,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             else
             {
                 //UpdateMainTask
-                if (theMainTask.Status == MainTaskStatusEnum.Dev 
+                if (theMainTask.Status == MainTaskStatusEnum.Dev
                     || theMainTask.Status == MainTaskStatusEnum.Requested
                     || theMainTask.Status == MainTaskStatusEnum.Waiting)
                     cmdUpdateMainTask.Enabled = true;
@@ -201,7 +200,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 {
                     cmdUpPriority.Enabled = true;
                     cmdDownPriority.Enabled = true;
-                }      
+                }
                 else
                 {
                     cmdUpPriority.Enabled = true;
@@ -214,7 +213,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 else
                     cmdAcceptRequestMainTask.Enabled = false;
             }
-
         }
 
         #endregion
@@ -347,8 +345,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     newView.Objectif = null;
 
                 //Duration
-                int durationSum = iObj.SubTasks.IsNotNullAndNotEmpty() ? (int)iObj.SubTasks.Enum().Sum(x => x.Duration) : 0;
-                int doneDuration = iObj.SubTasks.IsNotNullAndNotEmpty() ? (int)(Math.Truncate(iObj.SubTasks.Enum().Sum(x => decimal.Multiply(Convert.ToDecimal(x.Duration), decimal.Divide(x.Progression, 100))))) : 0;
+                int durationSum = iObj.DurationSum;
+                int doneDuration = iObj.DoneDuration;
                 if (durationSum != 0 || doneDuration != 0)
                     newView.Duration = doneDuration + "/" + durationSum;
                 else
@@ -576,7 +574,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             try
             {
-                ThrowExceptionIfCurrentUserIsNotAdmin();
+                Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
@@ -604,7 +602,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    ThrowExceptionIfCurrentUserIsNotAdmin();
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
                     var selectedMainTask = GetSelectedMainTask();
                     if (selectedMainTask == null)
@@ -636,7 +634,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    ThrowExceptionIfCurrentUserIsNotAdmin();
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
                     var selectedMainTask = GetSelectedMainTask();
                     if (selectedMainTask == null)
@@ -671,7 +669,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    ThrowExceptionIfCurrentUserIsNotAdmin();
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
                     var selectedMainTask = GetSelectedMainTask();
                     if (selectedMainTask == null)
@@ -696,12 +694,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
-        private void ThrowExceptionIfCurrentUserIsNotAdmin()
-        {
-            if (_Group.CurrentUser.LoginName != _Group.GetEnvironment().GetLoginPassword().Item1)
-                throw new Exception("Seul le login Admin peut effectuer cette action");
-        }
-
         private void cmdImportFromProjectExcelFile_Click(object sender, System.EventArgs e)
         {
             try
@@ -709,7 +701,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    ThrowExceptionIfCurrentUserIsNotAdmin();
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
                     var ucImportTaskControl = new ucImportTaskFromPDC(_Group);
                     using (var ImportTaskForm = new frmUserControl(ucImportTaskControl, "Importation Tâche", true, false))

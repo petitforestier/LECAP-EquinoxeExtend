@@ -23,7 +23,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
         public ucTaskManager()
         {
-            InitializeComponent();
+            InitializeComponent(); 
         }
 
         #endregion
@@ -70,9 +70,9 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                     cboProductLine.SelectedIndex = -1;
 
                     //Package
-                    cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdStatusString);
-                    cboPackage.ValueMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageId);
-                    cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All);
+                    cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
+                    cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
+                    cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All,PackageOrderByEnum.PackageId);
                     cboPackage.SelectedIndex = -1;
                 }
 
@@ -95,6 +95,10 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
                 this.ucSubTaskEdit.Initialize(_Group);
                 this.ucSubTaskEdit.Close += SubTaskEditClosed;
+
+                //sptMain.SplitterDistance = sptMain.Height - 250;
+                //sptTasks.SplitterDistance = sptTasks.Width - 200;
+                //sptSubTasks.SplitterDistance = sptSubTasks.Width - 200;
 
                 LoadCriteria();
             }
@@ -412,6 +416,5 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         }
 
         #endregion
-
     }
 }

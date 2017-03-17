@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Tools.Attributes;
+using Library.Tools.Extensions;
 
 namespace EquinoxeExtend.Shared.Object.Release
 {
@@ -23,6 +24,9 @@ namespace EquinoxeExtend.Shared.Object.Release
                 ReleaseNumber = iEntity.ReleaseNumber,
                 Status = (PackageStatusEnum)iEntity.StatusRef,
                 IsLocked = iEntity.IsLocked,
+                Priority = iEntity.Priority,
+                DeployementDateObjectif = iEntity.DeployementObjectifDate,
+
             };
         }
 
@@ -32,6 +36,8 @@ namespace EquinoxeExtend.Shared.Object.Release
             iEntity.ReleaseNumber = iObj.ReleaseNumber;
             iEntity.IsLocked = iObj.IsLocked;
             iEntity.StatusRef = (short)iObj.Status;
+            iEntity.Priority = iObj.Priority;
+            iEntity.DeployementObjectifDate = iObj.DeployementDateObjectif;
         }
 
         #endregion
@@ -45,6 +51,8 @@ namespace EquinoxeExtend.Shared.Object.Release
         public int? ReleaseNumber { get; set; }
         public bool IsLocked { get; set; }
         public PackageStatusEnum Status { get; set; }
+        public int? Priority { get; set; }
+        public DateTime? DeployementDateObjectif { get; set; }
 
         public List<Deployement> Deployements { get; set; }
         public List<MainTask> MainTasks { get; set; }
@@ -63,6 +71,22 @@ namespace EquinoxeExtend.Shared.Object.Release
             get
             {
                 return PackageIdString + " (" + Status.GetName("FR") + ")";
+            }
+        }
+
+        public int DurationSum
+        {
+            get
+            {
+                return MainTasks.Enum().Sum(x => x.DurationSum);
+            }
+        }
+
+        public int DoneDuration
+        {
+            get
+            {
+                return MainTasks.Enum().Sum(x => x.DoneDuration);
             }
         }
 

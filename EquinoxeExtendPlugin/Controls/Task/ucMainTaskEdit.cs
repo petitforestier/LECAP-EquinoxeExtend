@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using DriveWorks.Helper.Manager;
 
+
 namespace EquinoxeExtendPlugin.Controls.Task
 {
     
@@ -354,8 +355,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
             {
-                cboPackage.DisplayMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageIdStatusString);
-                cboPackage.ValueMember = PropertyObserver.GetPropertyName<Package>(x => x.PackageId);
+                cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
+                cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
                 cboPackage.DataSource = releaseService.GetAllowedPackagesForMainTask(_MainTask);
             }
         }

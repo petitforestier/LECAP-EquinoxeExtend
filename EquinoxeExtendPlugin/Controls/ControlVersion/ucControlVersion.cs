@@ -1,6 +1,6 @@
 ﻿using DriveWorks;
 using DriveWorks.Applications;
-using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using DriveWorks.Helper.Object;
 using Library.Control.Datagridview;
 using Library.Control.UserControls;
@@ -13,7 +13,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.ControlVersion
 {
@@ -25,11 +24,18 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
         #endregion
 
+        #region Public PROPERTIES
+
+        public bool SaveNeeded { get; private set; }
+
+        #endregion
+
         #region Public CONSTRUCTORS
 
         public ucControlVersion(IApplication iApplication)
         {
             InitializeComponent();
+
             _Application = iApplication;
 
             dgvNewConstant.MultiSelect = false;
@@ -409,6 +415,8 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
                         LoadData();
 
+                        SaveNeeded = true;
+
                         MessageBox.Show("Les données sont maintenant ajoutées");
                     }
                 }
@@ -458,6 +466,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                         _Project.AddToDeletedControlProjectDataTable(oldControls);
 
                         LoadData();
+                        SaveNeeded = true;
 
                         MessageBox.Show("Les données sont maintenant ajoutées");
                     }
@@ -487,6 +496,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                         _Project.AddToAddedConstantProjectDataTable(newConstants);
 
                         LoadData();
+                        SaveNeeded = true;
 
                         MessageBox.Show("Les données sont maintenant ajoutées");
                     }
@@ -527,6 +537,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                         _Project.AddToDeletedConstantProjectDataTable(oldConstants);
 
                         LoadData();
+                        SaveNeeded = true;
 
                         MessageBox.Show("Les données sont maintenant ajoutées");
                     }

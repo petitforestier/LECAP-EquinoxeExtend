@@ -25,6 +25,8 @@ namespace Service.DBRelease.Data
         public Nullable<int> ReleaseNumber { get; set; }
         public short StatusRef { get; set; }
         public bool IsLocked { get; set; }
+        public Nullable<int> Priority { get; set; }
+        public Nullable<System.DateTime> DeployementObjectifDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<T_E_Deployement> T_E_Deployement { get; set; }

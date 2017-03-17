@@ -45,6 +45,7 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="ExternalProjectStatusSearchEnum.cs" />
     <Compile Include="ExternalProjectTypeEnum.cs" />
+    <Compile Include="PackageOrderByEnum.cs" />
     <Compile Include="MainTaskOrderByEnum.cs" />
     <Compile Include="ExternalProjectStatusEnum.cs" />
     <Compile Include="MainTaskStatusEnum.cs" />

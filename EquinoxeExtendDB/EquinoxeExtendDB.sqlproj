@@ -90,7 +90,6 @@
     <None Include="Script\Deployed\Scriptv013.sql" />
     <None Include="Script\Deployed\Scriptv014.sql" />
     <None Include="Script\Deployed\Scriptv015.sql" />
-    <Build Include="Tables\S_Release\Table1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Equinoxe_SandBox_Extend.publish.xml" />
@@ -109,6 +108,7 @@
     <None Include="Snapshots\Deployed\v015.dacpac" />
     <None Include="Snapshots\Deployed\v016.dacpac" />
     <None Include="Snapshots\Deployed\v017.dacpac" />
+    <None Include="Snapshots\v018.dacpac" />
   </ItemGroup>
   <ItemGroup>
     <RefactorLog Include="EquinoxeExtendDB.refactorlog" />

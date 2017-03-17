@@ -618,7 +618,7 @@ namespace Service.Release.Front
         private bool IsProjectTaskAlreadyInProgress(MainTask iMainTask)
         {
             //Package en cours
-            var inProgressPackages = GetPackageList(PackageStatusSearchEnum.InProgress).Enum().Where(x => x.PackageId != iMainTask.PackageId).Enum().ToList();
+            var inProgressPackages = GetPackageList(PackageStatusSearchEnum.InProgress, PackageOrderByEnum.PackageId).Enum().Where(x => x.PackageId != iMainTask.PackageId).Enum().ToList();
 
             //Main task en cours sans iMaintask
             var inProgressMainTasks = new List<T_E_MainTask>();

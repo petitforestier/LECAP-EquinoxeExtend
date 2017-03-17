@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="ReleaseModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="ReleaseDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="T_E_Deployement">
           <Key>
             <PropertyRef Name="DeployementId" />
@@ -60,6 +60,8 @@
           <Property Name="ReleaseNumber" Type="int" />
           <Property Name="StatusRef" Type="smallint" Nullable="false" />
           <Property Name="IsLocked" Type="bit" Nullable="false" />
+          <Property Name="Priority" Type="int" />
+          <Property Name="DeployementObjectifDate" Type="datetime2" Precision="7" />
         </EntityType>
         <EntityType Name="T_E_ProductLineTask">
           <Key>
@@ -143,7 +145,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="ReleaseModelStoreContainer">
+        <EntityContainer Name="ReleaseDBModelStoreContainer">
           <EntitySet Name="T_E_Deployement" EntityType="Self.T_E_Deployement" Schema="S_Release" store:Type="Tables" />
           <EntitySet Name="T_E_ExternalProject" EntityType="Self.T_E_ExternalProject" Schema="S_Release" store:Type="Tables" />
           <EntitySet Name="T_E_MainTask" EntityType="Self.T_E_MainTask" Schema="S_Release" store:Type="Tables" />
@@ -175,7 +177,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="ReleaseModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="ReleaseDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="T_E_Deployement">
           <Key>
             <PropertyRef Name="DeployementId" />
@@ -237,6 +239,8 @@
           <Property Name="ReleaseNumber" Type="Int32" />
           <Property Name="StatusRef" Type="Int16" Nullable="false" />
           <Property Name="IsLocked" Type="Boolean" Nullable="false" />
+          <Property Name="Priority" Type="Int32" />
+          <Property Name="DeployementObjectifDate" Type="DateTime" Precision="7" />
           <NavigationProperty Name="T_E_Deployement" Relationship="Self.FK_T_E_Deployement_PackageId" FromRole="T_E_Package" ToRole="T_E_Deployement" />
           <NavigationProperty Name="T_E_MainTask" Relationship="Self.FK_T_E_MainTask_PackageId" FromRole="T_E_Package" ToRole="T_E_MainTask" />
         </EntityType>
@@ -357,9 +361,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="ReleaseModelStoreContainer" CdmEntityContainer="ReleaseDBContext">
+        <EntityContainerMapping StorageEntityContainer="ReleaseDBModelStoreContainer" CdmEntityContainer="ReleaseDBContext">
           <EntitySetMapping Name="T_E_Deployement">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_Deployement">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_Deployement">
               <MappingFragment StoreEntitySet="T_E_Deployement">
                 <ScalarProperty Name="DeployementId" ColumnName="DeployementId" />
                 <ScalarProperty Name="PackageId" ColumnName="PackageId" />
@@ -369,7 +373,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="T_E_ExternalProject">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_ExternalProject">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_ExternalProject">
               <MappingFragment StoreEntitySet="T_E_ExternalProject">
                 <ScalarProperty Name="ExternalProjectId" ColumnName="ExternalProjectId" />
                 <ScalarProperty Name="ProjectNumber" ColumnName="ProjectNumber" />
@@ -386,7 +390,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="T_E_MainTask">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_MainTask">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_MainTask">
               <MappingFragment StoreEntitySet="T_E_MainTask">
                 <ScalarProperty Name="MainTaskId" ColumnName="MainTaskId" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -409,17 +413,19 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="T_E_Package">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_Package">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_Package">
               <MappingFragment StoreEntitySet="T_E_Package">
                 <ScalarProperty Name="PackageId" ColumnName="PackageId" />
                 <ScalarProperty Name="ReleaseNumber" ColumnName="ReleaseNumber" />
                 <ScalarProperty Name="StatusRef" ColumnName="StatusRef" />
                 <ScalarProperty Name="IsLocked" ColumnName="IsLocked" />
+                <ScalarProperty Name="Priority" ColumnName="Priority" />
+                <ScalarProperty Name="DeployementObjectifDate" ColumnName="DeployementObjectifDate" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="T_E_ProductLineTask">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_ProductLineTask">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_ProductLineTask">
               <MappingFragment StoreEntitySet="T_E_ProductLineTask">
                 <ScalarProperty Name="ProductLineTaskId" ColumnName="ProductLineTaskId" />
                 <ScalarProperty Name="ProductLineId" ColumnName="ProductLineId" />
@@ -428,7 +434,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="T_E_SubTask">
-            <EntityTypeMapping TypeName="ReleaseModel.T_E_SubTask">
+            <EntityTypeMapping TypeName="ReleaseDBModel.T_E_SubTask">
               <MappingFragment StoreEntitySet="T_E_SubTask">
                 <ScalarProperty Name="SubTaskId" ColumnName="SubTaskId" />
                 <ScalarProperty Name="MainTaskId" ColumnName="MainTaskId" />

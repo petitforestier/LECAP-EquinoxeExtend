@@ -235,6 +235,9 @@ namespace EquinoxeExtendPlugin
                     controlVersionForm.Height = 800;
 
                     controlVersionForm.ShowDialog();
+
+                    if (ucControlVersionControl.SaveNeeded)
+                        MessageBox.Show("Veuillez sauvegarder le projet pour conserver les modifications sur les contrôles");
                 }
             }
             catch (Exception ex)
@@ -265,6 +268,7 @@ namespace EquinoxeExtendPlugin
                         releaseForm.Parent = Control.FromHandle(_Application.MainWindowHandle);
                         releaseForm.StartPosition = FormStartPosition.CenterParent;
                         releaseForm.WindowState = FormWindowState.Normal;
+                        //releaseForm.WindowState = FormWindowState.Maximized;
                         releaseForm.Width = 1550;
                         releaseForm.Height = 950;
 

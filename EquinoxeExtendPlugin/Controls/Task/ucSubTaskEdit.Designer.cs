@@ -261,7 +261,6 @@
             // cmdDeleteProject
             // 
             this.cmdDeleteProject.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdDeleteProject.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
             this.cmdDeleteProject.Location = new System.Drawing.Point(228, 0);
             this.cmdDeleteProject.Margin = new System.Windows.Forms.Padding(0);
             this.cmdDeleteProject.Name = "cmdDeleteProject";

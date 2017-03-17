@@ -1,10 +1,12 @@
 ﻿using DriveWorks;
 using DriveWorks.Applications;
 using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
 using Library.Control.Extensions;
+using Library.Control.UserControls;
 using Library.Tools.Attributes;
 using Library.Tools.Comparator;
 using Library.Tools.Extensions;
@@ -17,8 +19,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Library.Control.UserControls;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -43,8 +43,15 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 _Group = iGroup;
                 _Application = iApplication;
 
-                cboPackageSearch = cboPackageSearch.FillByDictionary(new PackageStatusSearchEnum().ToDictionary("FR"));
-                cboPackageSearch.SelectedValue = PackageStatusSearchEnum.NotCompleted;
+                ucPackageEdit.Close += UcPackageEdit_Close;
+
+                //Status
+                cboStatus = cboStatus.FillByDictionary(new PackageStatusSearchEnum().ToDictionary("FR"));
+                cboStatus.SelectedValue = PackageStatusSearchEnum.NotCompleted;
+
+                //Order
+                cboOrderBy = cboOrderBy.FillByDictionary(new PackageOrderByEnum().ToDictionary("FR"));
+                cboOrderBy.SelectedValue = PackageOrderByEnum.Priority;
 
                 //Main task
                 dgvMainTask.MultiSelect = false;
@@ -106,21 +113,30 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 dgvDeployement.DataSource = bdsDeployement;
                 dgvDeployement.FormatColumns<DeployementView>("FR");
 
-                LoadPackageDataGridView();
+                DisplaySelectionMode();
+
+                LoadPackageDataGridView(null);
             }
+        }
+
+        private void UcPackageEdit_Close(object sender, EventArgs e)
+        {
+            DisplaySelectionMode();
+
+            if (ucPackageEdit.DialogResult == DialogResult.OK)
+                LoadPackageDataGridView(GetSelectedPackage().PackageId);
         }
 
         #endregion
 
         #region Protected METHODS
 
-        protected Package GetSelectedPackage()
+        protected EquinoxeExtend.Shared.Object.Release.Package GetSelectedPackage()
         {
             if (dgvPackage.SelectedRows.Count == 1)
                 return ((PackageView)dgvPackage.SelectedRows[0].DataBoundItem).Object;
             return null;
         }
-
 
         protected void CommandEnableManagement()
         {
@@ -166,7 +182,20 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 else
                     cmdLockUnlock.Enabled = false;
             }
+        }
 
+        protected void DisplayEditMode()
+        {
+            tlsPackage.Enabled = false;
+            dgvPackage.Enabled = false;
+            ucPackageEdit.Enabled = true;
+        }
+
+        protected void DisplaySelectionMode()
+        {
+            tlsPackage.Enabled = true;
+            dgvPackage.Enabled = true;
+            ucPackageEdit.Enabled = false;
         }
 
         #endregion
@@ -191,6 +220,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
             public Image Lock { get; set; }
 
             [Visible]
+            [Name("FR", "Priorité")]
+            [WidthColumn(50)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public int? Priority { get; set; }
+
+            [Visible]
             [Name("FR", "Package")]
             [WidthColumn(80)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
@@ -208,13 +243,25 @@ namespace EquinoxeExtendPlugin.Controls.Task
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
             public Image Progression { get; set; }
 
-            public Package Object { get; set; }
+            [Visible]
+            [Name("FR", "Objectif")]
+            [WidthColumn(80)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string Objectif { get; set; }
+
+            [Visible]
+            [Name("FR", "Charge ( jrs ) ")]
+            [WidthColumn(75)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string Duration { get; set; }
+
+            public EquinoxeExtend.Shared.Object.Release.Package Object { get; set; }
 
             #endregion
 
             #region Public METHODS
 
-            public static PackageView ConvertTo(Package iObj)
+            public static PackageView ConvertTo(EquinoxeExtend.Shared.Object.Release.Package iObj)
             {
                 if (iObj == null)
                     return null;
@@ -248,6 +295,18 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 var imageWidth = (int)typeof(MainTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<MainTaskView>(x => x.Progression));
                 newView.Progression = Library.Control.Datagridview.ImageHelper.GetProgressionBarImage(progressionAverage, DATAGRIDVIEWROWHEIGTH, imageWidth, true);
+
+                //Priority
+                newView.Priority = iObj.Priority;
+
+                //Objectif
+                if (iObj.DeployementDateObjectif != null)
+                    newView.Objectif = ((DateTime)iObj.DeployementDateObjectif).ToShortDateString();
+                else
+                    newView.Objectif = null;
+
+                //Duration
+                newView.Duration = iObj.DoneDuration.ToString() + "/" + iObj.DurationSum.ToString();
 
                 return newView;
             }
@@ -444,8 +503,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    LoadPackageDataGridView();
-
+                    LoadPackageDataGridView(null);
                 }
             }
             catch (Exception ex)
@@ -454,14 +512,22 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
-        private void LoadPackageDataGridView()
+        private void LoadPackageDataGridView(long? iPackageId)
         {
             using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
             {
-                var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboPackageSearch.SelectedValue);
+                var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboStatus.SelectedValue, (PackageOrderByEnum)cboOrderBy.SelectedValue);
                 bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
             }
+
+            if (iPackageId != null)
+            {
+                dgvPackage.Refresh();
+                dgvPackage.SelectRowByPropertyValue<PackageView>(x => x.Object.PackageId.ToString(), iPackageId.ToString());
+            }
+
             LoadMainTaskProjectTaskDatagridview();
+            DisplaySelectionMode();
             CommandEnableManagement();
         }
 
@@ -473,7 +539,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     LoadMainTaskProjectTaskDatagridview();
+                    ucPackageEdit.Initialize(_Group);
+
                     dgvPackage.Select();
+                    var selectedPackage = GetSelectedPackage();
+                    ucPackageEdit.EditPackage(selectedPackage);
                 }
             }
             catch (Exception ex)
@@ -524,7 +594,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
                         releaseService.AddPackage();
-                        LoadPackageDataGridView();
+                        LoadPackageDataGridView(null);
                     }
                 }
             }
@@ -555,7 +625,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
                         releaseService.DeletePackage(selectedPackage);
-                        LoadPackageDataGridView();
+                        LoadPackageDataGridView(null);
                     }
                 }
             }
@@ -591,7 +661,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                         thePackage.IsLocked = !thePackage.IsLocked;
                         releaseService.UpdatePackage(thePackage);
-                        LoadPackageDataGridView();
+                        LoadPackageDataGridView(null);
                     }
                 }
             }
@@ -635,7 +705,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     Tools.Tools.ReleaseProjectsRights(_Group);
 
                     //Rechargement de l'ensemble
-                    LoadPackageDataGridView();
+                    LoadPackageDataGridView(null);
                 }
             }
             catch (Exception ex)
@@ -725,7 +795,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                                 //PLUGING
                                 if (MessageBox.Show("Voulez-vous effectuer les différentes vérifications (Projet ouvert, cohérence des tables, ...) ?", "Vérifications", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
-
                                     loadingControl.SetMessage("Vérification des projets ouverts en cours...");
 
                                     //Vérification que les tables à source commune et entre différent projets sont bien identique
@@ -810,7 +879,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                                     //Affichage du message des plugings à supprimer
                                     if (removePluging.Any())
                                         MessageBox.Show("Attention, des plugings ont été supprimés {0}. Il est nécessaire de désintaller ces plugings sur les machines préprod".FormatString(newPluging.Select(x => x.Name).Concat(",")));
-
                                 }
 
                                 //IMPORTATION DES PROJECTS
@@ -819,7 +887,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                                 foreach (var projectItem in packageDistinctProjectDetailsList)
                                 {
                                     var answer = MessageBox.Show("Voulez-vous importer le projet '{0}' ? Cliquer sur annuler pour annuler complètement le déploiement".FormatString(projectItem.Name), "Confirmation importation", MessageBoxButtons.YesNoCancel);
-                                    if(answer == DialogResult.Cancel)
+                                    if (answer == DialogResult.Cancel)
                                     {
                                         MessageBox.Show("Annulation du déploiement en l'état");
                                         return;
@@ -864,7 +932,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             }
 
                             //Rechargement de l'ensemble
-                            LoadPackageDataGridView();
+                            LoadPackageDataGridView(null);
                         }
                     }
                 }
@@ -902,7 +970,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
                     {
-                        var  devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
+                        var devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
 
                         releaseService.MovePackageToProduction(selectedPackage);
 
@@ -913,7 +981,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     }
 
                     //Rechargement de l'ensemble
-                    LoadPackageDataGridView();
+                    LoadPackageDataGridView(null);
                 }
             }
             catch (Exception ex)
@@ -956,11 +1024,89 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
-        #endregion
-
         private void cmdUpPackagePriority_Click(object sender, EventArgs e)
         {
+            try
+            {
+                var selectedPackage = GetSelectedPackage();
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
+                    if (selectedPackage == null)
+                        return;
+
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    {
+                        if (selectedPackage.Priority == null)
+                            if (MessageBox.Show("Etes-vous sûr de vouloir placer ce package en priorité 1 et de décaler tous les autres ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                                return;
+                        releaseService.MoveUpPackagePriority(selectedPackage);
+                    }
+                }
+                LoadPackageDataGridView(selectedPackage.PackageId);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
         }
+
+        private void cmdDownPackagePriority_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var selectedPackage = GetSelectedPackage();
+
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
+
+                    if (selectedPackage == null)
+                        return;
+
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    {
+                        releaseService.MoveDownPackagePriority(selectedPackage);
+                    }
+                }
+                LoadPackageDataGridView(selectedPackage.PackageId);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void cmdUpdate_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    var selectedPackage = GetSelectedPackage();
+                    if (selectedPackage == null)
+                        return;
+
+                    ucPackageEdit.Initialize(_Group);
+                    ucPackageEdit.EditPackage(selectedPackage);
+                    DisplayEditMode();
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void dgvPackage_DoubleClick(object sender, EventArgs e)
+        {
+            cmdUpdate_Click(sender, e);
+        }
+
+        #endregion
     }
 }
