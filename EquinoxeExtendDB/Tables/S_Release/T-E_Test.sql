@@ -1,0 +1,6 @@
+﻿CREATE TABLE [S_Release].[T_E_Test]
+(
+	[TestId]			BIGINT				NOT NULL PRIMARY KEY CLUSTERED IDENTITY (1, 1),
+	[Name]				NVARCHAR(100)		NOT NULL,
+	[Value]				NVARCHAR(300)		NULL,
+)
