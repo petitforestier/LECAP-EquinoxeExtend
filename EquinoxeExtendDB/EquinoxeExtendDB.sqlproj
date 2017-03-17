@@ -90,7 +90,7 @@
     <None Include="Script\Deployed\Scriptv013.sql" />
     <None Include="Script\Deployed\Scriptv014.sql" />
     <None Include="Script\Deployed\Scriptv015.sql" />
-    <Build Include="Tables\S_Release\T-E_Test.sql" />
+    <Build Include="Tables\S_Release\Table1.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Equinoxe_SandBox_Extend.publish.xml" />
