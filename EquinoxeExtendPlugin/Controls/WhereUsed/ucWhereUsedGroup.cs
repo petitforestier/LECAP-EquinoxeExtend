@@ -16,6 +16,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DriveWorks.Helper.Manager;
+using Library.Tools.Tasks;
+using DriveWorks.Hosting;
 
 namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 {
@@ -40,7 +42,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             _ImageList.Images.Add(Properties.Resources.blank);
             _ImageList.Images.Add(Properties.Resources.Warning16);
 
-            using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 //Package
                 cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
@@ -145,7 +147,8 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             }
             else
             {
-                tupleTables = Tools.Tools.GetImportedDataTableFromPackage(_Application, iPackage);
+                var tools = new Tools.Tools();
+                tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
             }
 
             var treeNodeCollection = new List<TreeNode>();
@@ -395,10 +398,6 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             catch (Exception ex)
             {
                 ex.ShowInMessageBox();
-            }
-            finally
-            {
-                groupService.OpenGroup(activeEnvironment);
             }
         }
 

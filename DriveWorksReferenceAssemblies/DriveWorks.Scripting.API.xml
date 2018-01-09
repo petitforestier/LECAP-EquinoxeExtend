@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DriveWorks.Scripting.API</name>
+    </assembly>
+    <members>
+        <member name="T:DriveWorks.Scripting.DriveWorksAdministrator">
+            <summary>
+            Provides a wrapper around a running copy of DriveWorks Administrator.
+            </summary>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.#ctor">
+            <summary>
+            Connects to a running instance of DriveWorks Administrator, or attempts to start a new one by looking for the latest installed version.
+            </summary>
+            <exception cref="T:System.NotSupportedException">No running instance of DriveWorks Administrator could be found, and a new one could not be started.</exception>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.#ctor(System.String)">
+            <summary>
+            Connects to a running instance of DriveWorks Administrator, or attempts to start a new one by using the specified path.
+            </summary>
+            <param name="executablePath">The fully qualified path to the DriveWorks Administrator executable to use if a running instance cannot be located.</param>
+            <exception cref="T:System.NotSupportedException">No running instance of DriveWorks Administrator could be found, and a new one could not be started.</exception>
+        </member>
+        <member name="P:DriveWorks.Scripting.DriveWorksAdministrator.Application">
+            <summary>
+            Gets the application in the form used by the main DriveWorks API. See remarks for details.
+            </summary>
+            <remarks>
+            <para>Not all of the services provided by the core DriveWorks API are designed for out of process usage.</para>
+            </remarks>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.SendMessageToUser(System.String)">
+            <summary>
+            Sends a message to the user of the application.
+            </summary>
+            <param name="message">The message to send.</param>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.SendMessageToUser(System.String,System.Windows.Forms.MessageBoxIcon)">
+            <summary>
+            Sends a message to the user of the application.
+            </summary>
+            <param name="message">The message to send.</param>
+            <param name="icon">The icon to show on the message box.</param>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.OpenLocalGroup(System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="path"></param>
+            <param name="userName"></param>
+            <param name="password"></param>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.OpenRemoteGroup(System.String,System.String,System.String,System.String)">
+            <summary>
+            
+            </summary>
+            <param name="serverName"></param>
+            <param name="groupName"></param>
+            <param name="userName"></param>
+            <param name="password"></param>
+        </member>
+        <member name="P:DriveWorks.Scripting.DriveWorksAdministrator.ActiveGroup">
+            <summary>
+            Gets the active group if one is active, otherwise a null reference.
+            </summary>
+        </member>
+        <member name="M:DriveWorks.Scripting.DriveWorksAdministrator.OpenProject(System.String)">
+            <summary>
+            Opens the project with the given name from the active group.
+            </summary>
+            <param name="projectName">The name of the project to open.</param>
+        </member>
+        <member name="P:DriveWorks.Scripting.DriveWorksAdministrator.ActiveProject">
+            <summary>
+            Gets the active project if one is open, otherwise a null reference.
+            </summary>
+        </member>
+        <member name="T:DriveWorks.Scripting.Integration.Proxies.GroupServiceProxy">
+            <summary>
+            Provides a proxy around a Group Service.
+            </summary>
+        </member>
+        <member name="T:DriveWorks.Scripting.Integration.Proxies.ProxyHelper">
+            <summary>
+            Provides helpers related to proxies.
+            </summary>
+        </member>
+        <member name="M:DriveWorks.Scripting.Integration.Proxies.ProxyHelper.GetKnownProxy``1(``0)">
+            <summary>
+             Gets a well known proxy for the specified object.
+            </summary>
+            <typeparam name="T">The contract type for the object, if a null reference, the type of the target will be used.</typeparam>
+            <param name="target">The object for which to obtain a proxy.</param>
+            <returns>A known proxy, or a null reference.</returns>
+        </member>
+        <member name="M:DriveWorks.Scripting.Integration.Proxies.ProxyHelper.GetKnownProxy(System.Object,System.Type)">
+            <summary>
+            Gets a well known proxy for the specified object.
+            </summary>
+            <param name="target">The object for which to obtain a proxy.</param>
+            <param name="contract">The contract type for the object, if a null reference, the type of the target will be used.</param>
+            <returns>A known proxy, or a null reference.</returns>
+        </member>
+        <member name="M:DriveWorks.Scripting.Integration.SafeNativeMethods.GetProcessPointerSize(System.Diagnostics.Process)">
+            <summary>
+            Determines the pointer size of the specified process.
+            </summary>
+            <param name="process">The process to check.</param>
+            <returns>The pointer size, or -1 if access is denied.</returns>
+        </member>
+        <member name="T:DriveWorks.Scripting.Discovery.RunningApplication">
+            <summary>
+            Provides information about a running application.
+            </summary>
+        </member>
+        <member name="P:DriveWorks.Scripting.Discovery.RunningApplication.Id">
+            <summary>
+            Gets the id of the application.
+            </summary>
+        </member>
+        <member name="M:DriveWorks.Scripting.Discovery.RunningApplication.Connect">
+            <summary>
+             Connects to the application.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:DriveWorks.Scripting.Discovery.RunningApplications">
+            <summary>
+            Provides access to the applications running on the machine.
+            </summary>
+        </member>
+        <member name="M:DriveWorks.Scripting.Discovery.RunningApplications.Get">
+            <summary>
+            Gets the applications running on the local machine.
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

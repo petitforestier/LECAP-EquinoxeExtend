@@ -30,7 +30,13 @@
         {
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.tlpHeader = new System.Windows.Forms.TableLayoutPanel();
+            this.fraMainTaskSearch = new System.Windows.Forms.GroupBox();
+            this.tlpMainTaskSearch = new System.Windows.Forms.TableLayoutPanel();
+            this.lblMainTaskId = new System.Windows.Forms.Label();
+            this.txtMaintaskId = new Library.Control.UserControls.ucTextBox();
+            this.cmdMainTaskSearch = new System.Windows.Forms.Button();
             this.fraCriteriaSearch = new System.Windows.Forms.GroupBox();
+            this.panel2 = new System.Windows.Forms.Panel();
             this.tlpCriteriaSearch = new System.Windows.Forms.TableLayoutPanel();
             this.lblMainTaskStatusSearch = new System.Windows.Forms.Label();
             this.cboMainTaskStatusSearch = new System.Windows.Forms.ComboBox();
@@ -47,11 +53,6 @@
             this.cboDevelopper = new System.Windows.Forms.ComboBox();
             this.lblPackage = new System.Windows.Forms.Label();
             this.cboPackage = new System.Windows.Forms.ComboBox();
-            this.fraMainTaskSearch = new System.Windows.Forms.GroupBox();
-            this.tlpMainTaskSearch = new System.Windows.Forms.TableLayoutPanel();
-            this.lblMainTaskId = new System.Windows.Forms.Label();
-            this.txtMaintaskId = new Library.Control.UserControls.ucTextBox();
-            this.cmdMainTaskSearch = new System.Windows.Forms.Button();
             this.sptMain = new System.Windows.Forms.SplitContainer();
             this.fraMainTasks = new System.Windows.Forms.GroupBox();
             this.sptTasks = new System.Windows.Forms.SplitContainer();
@@ -65,10 +66,11 @@
             this.ucSubTaskEdit = new EquinoxeExtendPlugin.Controls.Task.ucSubTaskEdit();
             this.tlpMain.SuspendLayout();
             this.tlpHeader.SuspendLayout();
-            this.fraCriteriaSearch.SuspendLayout();
-            this.tlpCriteriaSearch.SuspendLayout();
             this.fraMainTaskSearch.SuspendLayout();
             this.tlpMainTaskSearch.SuspendLayout();
+            this.fraCriteriaSearch.SuspendLayout();
+            this.panel2.SuspendLayout();
+            this.tlpCriteriaSearch.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.sptMain)).BeginInit();
             this.sptMain.Panel1.SuspendLayout();
             this.sptMain.Panel2.SuspendLayout();
@@ -97,9 +99,9 @@
             this.tlpMain.Location = new System.Drawing.Point(0, 0);
             this.tlpMain.Name = "tlpMain";
             this.tlpMain.RowCount = 2;
-            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 90F));
-            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 500F));
-            this.tlpMain.Size = new System.Drawing.Size(1472, 900);
+            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 108F));
+            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 482F));
+            this.tlpMain.Size = new System.Drawing.Size(1218, 900);
             this.tlpMain.TabIndex = 0;
             // 
             // tlpHeader
@@ -107,34 +109,103 @@
             this.tlpHeader.ColumnCount = 2;
             this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 237F));
             this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpHeader.Controls.Add(this.fraCriteriaSearch, 1, 0);
             this.tlpHeader.Controls.Add(this.fraMainTaskSearch, 0, 0);
+            this.tlpHeader.Controls.Add(this.fraCriteriaSearch, 1, 0);
             this.tlpHeader.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpHeader.Location = new System.Drawing.Point(3, 3);
             this.tlpHeader.Name = "tlpHeader";
             this.tlpHeader.RowCount = 1;
             this.tlpHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpHeader.Size = new System.Drawing.Size(1466, 84);
+            this.tlpHeader.Size = new System.Drawing.Size(1212, 102);
             this.tlpHeader.TabIndex = 8;
+            // 
+            // fraMainTaskSearch
+            // 
+            this.fraMainTaskSearch.Controls.Add(this.tlpMainTaskSearch);
+            this.fraMainTaskSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fraMainTaskSearch.Location = new System.Drawing.Point(3, 3);
+            this.fraMainTaskSearch.Name = "fraMainTaskSearch";
+            this.fraMainTaskSearch.Size = new System.Drawing.Size(231, 96);
+            this.fraMainTaskSearch.TabIndex = 8;
+            this.fraMainTaskSearch.TabStop = false;
+            this.fraMainTaskSearch.Text = "Rechercher une tâche";
+            // 
+            // tlpMainTaskSearch
+            // 
+            this.tlpMainTaskSearch.ColumnCount = 2;
+            this.tlpMainTaskSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
+            this.tlpMainTaskSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpMainTaskSearch.Controls.Add(this.lblMainTaskId, 0, 0);
+            this.tlpMainTaskSearch.Controls.Add(this.txtMaintaskId, 1, 0);
+            this.tlpMainTaskSearch.Controls.Add(this.cmdMainTaskSearch, 1, 1);
+            this.tlpMainTaskSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpMainTaskSearch.Location = new System.Drawing.Point(3, 16);
+            this.tlpMainTaskSearch.Name = "tlpMainTaskSearch";
+            this.tlpMainTaskSearch.RowCount = 2;
+            this.tlpMainTaskSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.84746F));
+            this.tlpMainTaskSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 49.15254F));
+            this.tlpMainTaskSearch.Size = new System.Drawing.Size(225, 77);
+            this.tlpMainTaskSearch.TabIndex = 0;
+            // 
+            // lblMainTaskId
+            // 
+            this.lblMainTaskId.AutoSize = true;
+            this.lblMainTaskId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblMainTaskId.Location = new System.Drawing.Point(3, 0);
+            this.lblMainTaskId.Name = "lblMainTaskId";
+            this.lblMainTaskId.Size = new System.Drawing.Size(57, 39);
+            this.lblMainTaskId.TabIndex = 0;
+            this.lblMainTaskId.Text = "N° Tâche";
+            this.lblMainTaskId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // txtMaintaskId
+            // 
+            this.txtMaintaskId.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.txtMaintaskId.Location = new System.Drawing.Point(66, 3);
+            this.txtMaintaskId.Name = "txtMaintaskId";
+            this.txtMaintaskId.Size = new System.Drawing.Size(156, 20);
+            this.txtMaintaskId.TabIndex = 5;
+            this.txtMaintaskId.ValueType = Library.Control.UserControls.ucTextBox.TextBoxTypeEnum.IntegerPositiveOnly;
+            this.txtMaintaskId.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMaintaskId_KeyDown);
+            // 
+            // cmdMainTaskSearch
+            // 
+            this.cmdMainTaskSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmdMainTaskSearch.Location = new System.Drawing.Point(135, 42);
+            this.cmdMainTaskSearch.Name = "cmdMainTaskSearch";
+            this.cmdMainTaskSearch.Size = new System.Drawing.Size(87, 23);
+            this.cmdMainTaskSearch.TabIndex = 4;
+            this.cmdMainTaskSearch.Text = "Rechercher";
+            this.cmdMainTaskSearch.UseVisualStyleBackColor = true;
+            this.cmdMainTaskSearch.Click += new System.EventHandler(this.cmdMainTaskSearch_Click);
             // 
             // fraCriteriaSearch
             // 
             this.fraCriteriaSearch.AutoSize = true;
             this.fraCriteriaSearch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.fraCriteriaSearch.Controls.Add(this.tlpCriteriaSearch);
+            this.fraCriteriaSearch.Controls.Add(this.panel2);
             this.fraCriteriaSearch.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraCriteriaSearch.Location = new System.Drawing.Point(240, 3);
             this.fraCriteriaSearch.Name = "fraCriteriaSearch";
-            this.fraCriteriaSearch.Size = new System.Drawing.Size(1223, 78);
+            this.fraCriteriaSearch.Size = new System.Drawing.Size(969, 96);
             this.fraCriteriaSearch.TabIndex = 7;
             this.fraCriteriaSearch.TabStop = false;
             this.fraCriteriaSearch.Text = "Rechercher tâche(s) par critères";
             // 
+            // panel2
+            // 
+            this.panel2.AutoScroll = true;
+            this.panel2.Controls.Add(this.tlpCriteriaSearch);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(3, 16);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(963, 77);
+            this.panel2.TabIndex = 10;
+            // 
             // tlpCriteriaSearch
             // 
-            this.tlpCriteriaSearch.AutoScroll = true;
             this.tlpCriteriaSearch.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.tlpCriteriaSearch.ColumnCount = 9;
+            this.tlpCriteriaSearch.ColumnCount = 8;
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 71F));
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 171F));
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 51F));
@@ -142,8 +213,7 @@
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 191F));
             this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 78F));
-            this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 168F));
-            this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpCriteriaSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
             this.tlpCriteriaSearch.Controls.Add(this.lblMainTaskStatusSearch, 0, 0);
             this.tlpCriteriaSearch.Controls.Add(this.cboMainTaskStatusSearch, 1, 0);
             this.tlpCriteriaSearch.Controls.Add(this.lblOrderBy, 0, 1);
@@ -159,13 +229,12 @@
             this.tlpCriteriaSearch.Controls.Add(this.cboDevelopper, 5, 1);
             this.tlpCriteriaSearch.Controls.Add(this.lblPackage, 6, 0);
             this.tlpCriteriaSearch.Controls.Add(this.cboPackage, 7, 0);
-            this.tlpCriteriaSearch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpCriteriaSearch.Location = new System.Drawing.Point(3, 16);
+            this.tlpCriteriaSearch.Location = new System.Drawing.Point(0, 0);
             this.tlpCriteriaSearch.Name = "tlpCriteriaSearch";
             this.tlpCriteriaSearch.RowCount = 2;
             this.tlpCriteriaSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tlpCriteriaSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpCriteriaSearch.Size = new System.Drawing.Size(1217, 59);
+            this.tlpCriteriaSearch.Size = new System.Drawing.Size(1049, 59);
             this.tlpCriteriaSearch.TabIndex = 2;
             // 
             // lblMainTaskStatusSearch
@@ -279,7 +348,7 @@
             // cmdCriteriaSearch
             // 
             this.cmdCriteriaSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdCriteriaSearch.Location = new System.Drawing.Point(965, 33);
+            this.cmdCriteriaSearch.Location = new System.Drawing.Point(972, 33);
             this.cmdCriteriaSearch.Name = "cmdCriteriaSearch";
             this.cmdCriteriaSearch.Size = new System.Drawing.Size(74, 23);
             this.cmdCriteriaSearch.TabIndex = 3;
@@ -327,75 +396,15 @@
             this.cboPackage.FormattingEnabled = true;
             this.cboPackage.Location = new System.Drawing.Point(877, 3);
             this.cboPackage.Name = "cboPackage";
-            this.cboPackage.Size = new System.Drawing.Size(162, 21);
+            this.cboPackage.Size = new System.Drawing.Size(169, 21);
             this.cboPackage.TabIndex = 15;
             this.cboPackage.KeyDown += new System.Windows.Forms.KeyEventHandler(this.cboPackage_KeyDown);
-            // 
-            // fraMainTaskSearch
-            // 
-            this.fraMainTaskSearch.Controls.Add(this.tlpMainTaskSearch);
-            this.fraMainTaskSearch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fraMainTaskSearch.Location = new System.Drawing.Point(3, 3);
-            this.fraMainTaskSearch.Name = "fraMainTaskSearch";
-            this.fraMainTaskSearch.Size = new System.Drawing.Size(231, 78);
-            this.fraMainTaskSearch.TabIndex = 8;
-            this.fraMainTaskSearch.TabStop = false;
-            this.fraMainTaskSearch.Text = "Rechercher une tâche";
-            // 
-            // tlpMainTaskSearch
-            // 
-            this.tlpMainTaskSearch.ColumnCount = 2;
-            this.tlpMainTaskSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 63F));
-            this.tlpMainTaskSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMainTaskSearch.Controls.Add(this.lblMainTaskId, 0, 0);
-            this.tlpMainTaskSearch.Controls.Add(this.txtMaintaskId, 1, 0);
-            this.tlpMainTaskSearch.Controls.Add(this.cmdMainTaskSearch, 1, 1);
-            this.tlpMainTaskSearch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpMainTaskSearch.Location = new System.Drawing.Point(3, 16);
-            this.tlpMainTaskSearch.Name = "tlpMainTaskSearch";
-            this.tlpMainTaskSearch.RowCount = 2;
-            this.tlpMainTaskSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50.84746F));
-            this.tlpMainTaskSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 49.15254F));
-            this.tlpMainTaskSearch.Size = new System.Drawing.Size(225, 59);
-            this.tlpMainTaskSearch.TabIndex = 0;
-            // 
-            // lblMainTaskId
-            // 
-            this.lblMainTaskId.AutoSize = true;
-            this.lblMainTaskId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblMainTaskId.Location = new System.Drawing.Point(3, 0);
-            this.lblMainTaskId.Name = "lblMainTaskId";
-            this.lblMainTaskId.Size = new System.Drawing.Size(57, 30);
-            this.lblMainTaskId.TabIndex = 0;
-            this.lblMainTaskId.Text = "N° Tâche";
-            this.lblMainTaskId.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // txtMaintaskId
-            // 
-            this.txtMaintaskId.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.txtMaintaskId.Location = new System.Drawing.Point(66, 3);
-            this.txtMaintaskId.Name = "txtMaintaskId";
-            this.txtMaintaskId.Size = new System.Drawing.Size(156, 20);
-            this.txtMaintaskId.TabIndex = 5;
-            this.txtMaintaskId.ValueType = Library.Control.UserControls.ucTextBox.TextBoxTypeEnum.IntegerPositiveOnly;
-            this.txtMaintaskId.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtMaintaskId_KeyDown);
-            // 
-            // cmdMainTaskSearch
-            // 
-            this.cmdMainTaskSearch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.cmdMainTaskSearch.Location = new System.Drawing.Point(135, 33);
-            this.cmdMainTaskSearch.Name = "cmdMainTaskSearch";
-            this.cmdMainTaskSearch.Size = new System.Drawing.Size(87, 23);
-            this.cmdMainTaskSearch.TabIndex = 4;
-            this.cmdMainTaskSearch.Text = "Rechercher";
-            this.cmdMainTaskSearch.UseVisualStyleBackColor = true;
-            this.cmdMainTaskSearch.Click += new System.EventHandler(this.cmdMainTaskSearch_Click);
             // 
             // sptMain
             // 
             this.sptMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.sptMain.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
-            this.sptMain.Location = new System.Drawing.Point(3, 93);
+            this.sptMain.Location = new System.Drawing.Point(3, 111);
             this.sptMain.Name = "sptMain";
             this.sptMain.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -409,8 +418,8 @@
             this.sptMain.Panel2.Controls.Add(this.fraProjectTasks);
             this.sptMain.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptMain.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.sptMain.Size = new System.Drawing.Size(1466, 804);
-            this.sptMain.SplitterDistance = 504;
+            this.sptMain.Size = new System.Drawing.Size(1212, 786);
+            this.sptMain.SplitterDistance = 474;
             this.sptMain.SplitterWidth = 10;
             this.sptMain.TabIndex = 9;
             // 
@@ -421,7 +430,7 @@
             this.fraMainTasks.Location = new System.Drawing.Point(0, 0);
             this.fraMainTasks.Name = "fraMainTasks";
             this.fraMainTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.fraMainTasks.Size = new System.Drawing.Size(1466, 504);
+            this.fraMainTasks.Size = new System.Drawing.Size(1212, 474);
             this.fraMainTasks.TabIndex = 5;
             this.fraMainTasks.TabStop = false;
             this.fraMainTasks.Text = "Tâches";
@@ -443,8 +452,8 @@
             this.sptTasks.Panel2.Controls.Add(this.fraMainTask);
             this.sptTasks.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.sptTasks.Size = new System.Drawing.Size(1460, 485);
-            this.sptTasks.SplitterDistance = 1120;
+            this.sptTasks.Size = new System.Drawing.Size(1206, 455);
+            this.sptTasks.SplitterDistance = 854;
             this.sptTasks.SplitterWidth = 10;
             this.sptTasks.TabIndex = 0;
             // 
@@ -453,7 +462,7 @@
             this.ucMainTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucMainTaskManager.Location = new System.Drawing.Point(0, 0);
             this.ucMainTaskManager.Name = "ucMainTaskManager";
-            this.ucMainTaskManager.Size = new System.Drawing.Size(1120, 485);
+            this.ucMainTaskManager.Size = new System.Drawing.Size(854, 455);
             this.ucMainTaskManager.TabIndex = 4;
             // 
             // fraMainTask
@@ -462,7 +471,7 @@
             this.fraMainTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraMainTask.Location = new System.Drawing.Point(0, 0);
             this.fraMainTask.Name = "fraMainTask";
-            this.fraMainTask.Size = new System.Drawing.Size(330, 485);
+            this.fraMainTask.Size = new System.Drawing.Size(342, 455);
             this.fraMainTask.TabIndex = 4;
             this.fraMainTask.TabStop = false;
             this.fraMainTask.Text = "Tâche";
@@ -472,7 +481,7 @@
             this.ucMainTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucMainTaskEdit.Location = new System.Drawing.Point(3, 16);
             this.ucMainTaskEdit.Name = "ucMainTaskEdit";
-            this.ucMainTaskEdit.Size = new System.Drawing.Size(324, 466);
+            this.ucMainTaskEdit.Size = new System.Drawing.Size(336, 436);
             this.ucMainTaskEdit.TabIndex = 3;
             // 
             // fraProjectTasks
@@ -481,7 +490,7 @@
             this.fraProjectTasks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTasks.Location = new System.Drawing.Point(0, 0);
             this.fraProjectTasks.Name = "fraProjectTasks";
-            this.fraProjectTasks.Size = new System.Drawing.Size(1466, 290);
+            this.fraProjectTasks.Size = new System.Drawing.Size(1212, 302);
             this.fraProjectTasks.TabIndex = 6;
             this.fraProjectTasks.TabStop = false;
             this.fraProjectTasks.Text = "Sous tâches";
@@ -503,8 +512,8 @@
             this.sptSubTasks.Panel2.Controls.Add(this.fraProjectTask);
             this.sptSubTasks.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptSubTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.sptSubTasks.Size = new System.Drawing.Size(1460, 271);
-            this.sptSubTasks.SplitterDistance = 1119;
+            this.sptSubTasks.Size = new System.Drawing.Size(1206, 283);
+            this.sptSubTasks.SplitterDistance = 853;
             this.sptSubTasks.SplitterWidth = 10;
             this.sptSubTasks.TabIndex = 0;
             // 
@@ -513,7 +522,7 @@
             this.ucSubTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucSubTaskManager.Location = new System.Drawing.Point(0, 0);
             this.ucSubTaskManager.Name = "ucSubTaskManager";
-            this.ucSubTaskManager.Size = new System.Drawing.Size(1119, 271);
+            this.ucSubTaskManager.Size = new System.Drawing.Size(853, 283);
             this.ucSubTaskManager.TabIndex = 3;
             // 
             // fraProjectTask
@@ -523,7 +532,7 @@
             this.fraProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTask.Location = new System.Drawing.Point(0, 0);
             this.fraProjectTask.Name = "fraProjectTask";
-            this.fraProjectTask.Size = new System.Drawing.Size(331, 271);
+            this.fraProjectTask.Size = new System.Drawing.Size(343, 283);
             this.fraProjectTask.TabIndex = 4;
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâche";
@@ -534,7 +543,7 @@
             this.ucSubTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucSubTaskEdit.Location = new System.Drawing.Point(3, 16);
             this.ucSubTaskEdit.Name = "ucSubTaskEdit";
-            this.ucSubTaskEdit.Size = new System.Drawing.Size(325, 252);
+            this.ucSubTaskEdit.Size = new System.Drawing.Size(337, 264);
             this.ucSubTaskEdit.TabIndex = 4;
             // 
             // ucTaskManager
@@ -543,16 +552,17 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tlpMain);
             this.Name = "ucTaskManager";
-            this.Size = new System.Drawing.Size(1472, 900);
+            this.Size = new System.Drawing.Size(1218, 900);
             this.tlpMain.ResumeLayout(false);
             this.tlpHeader.ResumeLayout(false);
             this.tlpHeader.PerformLayout();
-            this.fraCriteriaSearch.ResumeLayout(false);
-            this.tlpCriteriaSearch.ResumeLayout(false);
-            this.tlpCriteriaSearch.PerformLayout();
             this.fraMainTaskSearch.ResumeLayout(false);
             this.tlpMainTaskSearch.ResumeLayout(false);
             this.tlpMainTaskSearch.PerformLayout();
+            this.fraCriteriaSearch.ResumeLayout(false);
+            this.panel2.ResumeLayout(false);
+            this.tlpCriteriaSearch.ResumeLayout(false);
+            this.tlpCriteriaSearch.PerformLayout();
             this.sptMain.Panel1.ResumeLayout(false);
             this.sptMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.sptMain)).EndInit();
@@ -610,5 +620,6 @@
         private System.Windows.Forms.SplitContainer sptMain;
         private System.Windows.Forms.SplitContainer sptTasks;
         private System.Windows.Forms.SplitContainer sptSubTasks;
+        private System.Windows.Forms.Panel panel2;
     }
 }

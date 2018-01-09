@@ -49,7 +49,7 @@ namespace Service.Release.Front
         private Service.DBPool.Data.DataService _DBPoolDataService;
         private Service.DBProduct.Data.DataService _DBProductDataService;
         private Service.DBRelease.Data.DataService _DBReleaseDataService;
-        private Service.DBSpecification.Data.DataService _DBSpecificationDataService;
+        private Service.DBRecord.Data.DataService _DBRecordDataService;
 
 
         private Service.DBLog.Data.DataService DBLogDataService
@@ -92,13 +92,13 @@ namespace Service.Release.Front
             }
         }
 
-        private Service.DBSpecification.Data.DataService DBSpecificationDataService
+        private Service.DBRecord.Data.DataService DBRecordDataService
         {
             get
             {
-                if (_DBSpecificationDataService == null)
-                    _DBSpecificationDataService = new Service.DBSpecification.Data.DataService(_ConnectionString);
-                return _DBSpecificationDataService;
+                if (_DBRecordDataService == null)
+                    _DBRecordDataService = new Service.DBRecord.Data.DataService(_ConnectionString);
+                return _DBRecordDataService;
             }
         }
 
@@ -108,7 +108,7 @@ namespace Service.Release.Front
             var init2 = DBProductDataService;
             var init3 = DBPoolDataService;
             var init4 = DBLogDataService;
-            var init5 = DBSpecificationDataService;
+            var init5 = DBRecordDataService;
         }
         #endregion
     }

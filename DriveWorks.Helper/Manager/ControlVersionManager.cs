@@ -288,7 +288,7 @@ namespace DriveWorks.Helper.Manager
                     }
                     if (deletedItem.Message.IsNotNullAndNotEmpty())
                     {
-                        messageList.Add(deletedItem.Message);
+                        messageList.Add(deletedItem.ControlDescription + " => " + deletedItem.Message);
                     }
                     iOriginalList.Remove(theControlState);
                 }

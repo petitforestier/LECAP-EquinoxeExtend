@@ -1,5 +1,4 @@
-﻿using DriveWorks.Helper.Object;
-using EquinoxeExtend.Shared.Enum;
+﻿using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Log;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
@@ -54,7 +53,7 @@ namespace Service.Log.Front
         private Service.DBPool.Data.DataService _DBPoolDataService;
         private Service.DBProduct.Data.DataService _DBProductDataService;
         private Service.DBRelease.Data.DataService _DBReleaseDataService;
-        private Service.DBSpecification.Data.DataService _DBSpecificationDataService;
+        private Service.DBRecord.Data.DataService _DBRecordDataService;
         #endregion
 
         #region Private PROPERTIES
@@ -99,13 +98,13 @@ namespace Service.Log.Front
             }
         }
 
-        private Service.DBSpecification.Data.DataService DBSpecificationDataService
+        private Service.DBRecord.Data.DataService DBRecordDataService
         {
             get
             {
-                if (_DBSpecificationDataService == null)
-                    _DBSpecificationDataService = new Service.DBSpecification.Data.DataService(_ConnectionString);
-                return _DBSpecificationDataService;
+                if (_DBRecordDataService == null)
+                    _DBRecordDataService = new Service.DBRecord.Data.DataService(_ConnectionString);
+                return _DBRecordDataService;
             }
         }
 
@@ -115,7 +114,7 @@ namespace Service.Log.Front
             var init2 = DBProductDataService;
             var init3 = DBPoolDataService;
             var init4 = DBLogDataService;
-            var init5 = DBSpecificationDataService;
+            var init5 = DBRecordDataService;
         }
 
         #endregion

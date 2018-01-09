@@ -14,15 +14,35 @@ using System.Text;
 using System.Threading.Tasks;
 using DriveWorks.Helper.Object;
 using DriveWorks.Specification;
+using Library.Tools.Tasks;
+using DriveWorks.Hosting;
+
 namespace EquinoxeExtendPlugin.Tools
 {
-    public static class Tools
+    public class Tools
     {
         #region Public METHODS
 
+        public Tools(Action<string> iNotifierAction)
+        {
+            notifierAction = iNotifierAction;
+        }
+
+        public Tools()
+        {
+        }
+
+        private Action<string> notifierAction;
+
+        private void ReportProgress(string iMessage)
+        {
+            if (notifierAction != null)
+                notifierAction(iMessage);
+        }
+
         public static void ReleaseProjectsRights(Group iGroup)
         {
-            using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 var devSubTasks = releaseService.GetDevSubTasks();
 
@@ -47,52 +67,65 @@ namespace EquinoxeExtendPlugin.Tools
             return (iGroup.CurrentUser.LoginName == iGroup.GetEnvironment().GetLoginPassword().Item1);
         }
 
-        public static List<Tuple<string, ProjectDetails, ImportedDataTable>> GetImportedDataTableFromPackage(IApplication iApplication, Package iPackageDeployToStaging)
+        public List<Tuple<string, ProjectDetails, ImportedDataTable>> GetImportedDataTableFromPackage(IApplication iApplication, Package iPackageDeployToStaging)
         {
             var result = new List<Tuple<string, ProjectDetails, ImportedDataTable>>();
 
-            var groupService = iApplication.ServiceManager.GetService<IGroupService>();
-            var devgroup = groupService.ActiveGroup;
+            var host = new EngineHost(HostEnvironment.CreateDefaultEnvironment(false));
+            var devGroupManager = host.CreateGroupManager();
+            var devProjectManager = host.CreateProjectManager();
+            var devGroup = devGroupManager.OpenGroup(EnvironmentEnum.Developpement);
 
             var packageDistinctProjectGUIDList = iPackageDeployToStaging.SubTasks.Where(x => x.ProjectGUID != null).GroupBy(x => x.ProjectGUID).Select(x => (Guid?)x.First().ProjectGUID).ToList();
             var packageDistinctProjectDetailsList = new List<ProjectDetails>();
             foreach (var item in packageDistinctProjectGUIDList)
             {
                 if (item != null)
-                    packageDistinctProjectDetailsList.Add(devgroup.Projects.GetProject((Guid)item));
+                    packageDistinctProjectDetailsList.Add(devGroup.Projects.GetProject((Guid)item));                   
             }
 
             //Bouclage sur les projets en dev inclus dans le package
+            var projectDevCounter = 1;
             foreach (var projectItem in packageDistinctProjectDetailsList.Enum())
             {
-                var projectService = iApplication.ServiceManager.GetService<IProjectService>();
-                projectService.OpenProject(projectItem.Name);
+                var message = "Récupération des tables dev du package, Projet {0}/{1} : {2}".FormatString(projectDevCounter, packageDistinctProjectDetailsList.Count(), projectItem.Name);
+                ReportProgress(message);
+                devProjectManager.OpenProject(devGroup, projectItem);
+                var project = devProjectManager.Project;
 
-                var project = projectService.ActiveProject;
                 var importedDataTables = project.GetImportedDataTableList();
                 foreach (var tableItem in importedDataTables.Enum())
                     result.Add(new Tuple<string, ProjectDetails, ImportedDataTable>(EnvironmentEnum.Developpement.GetName("FR"), projectItem, tableItem));
-                projectService.CloseProject();
+
+                devProjectManager.CloseProject(false);
+                projectDevCounter++;
             }
 
             //Récupère les projets de préprod non impacté par le package
-            var stagingGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
+            var stagingGroupManager = host.CreateGroupManager();
+            var stagingProjectManager = host.CreateProjectManager();
+            var stagingGroup = stagingGroupManager.OpenGroup(EnvironmentEnum.Staging);
+
             var openedStagingProjectlist = stagingGroup.GetOpenedProjectList();
             if (openedStagingProjectlist.IsNotNullAndNotEmpty())
                 throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(stagingGroup.Name) + Environment.NewLine + Environment.NewLine + openedStagingProjectlist.Select(x => x.Name).Concat(Environment.NewLine));
 
             var projectStagingComparator = new ListComparator<ProjectDetails, ProjectDetails>(stagingGroup.GetProjectList(), x => x.Name, packageDistinctProjectDetailsList, x => x.Name);
 
+            var projetPreprodCounter = 1;
             foreach (var projectItem in projectStagingComparator.RemovedList.Enum())
             {
-                var projectService = iApplication.ServiceManager.GetService<IProjectService>();
-                projectService.OpenProject(projectItem.Name);
+                var message = "Récupération des tables préprod du package, Projet {0}/{1} : {2}".FormatString(projetPreprodCounter, projectStagingComparator.RemovedList.Count(), projectItem.Name);
+                ReportProgress(message);
 
-                var project = projectService.ActiveProject;
+                stagingProjectManager.OpenProject(stagingGroup, projectItem);
+                var project = stagingProjectManager.Project;
+
                 var importedDataTables = project.GetImportedDataTableList();
                 foreach (var tableItem in importedDataTables.Enum())
                     result.Add(new Tuple<string, ProjectDetails, ImportedDataTable>(EnvironmentEnum.Staging.GetName("FR"), projectItem, tableItem));
-                projectService.CloseProject();
+                stagingProjectManager.CloseProject(false);
+                projetPreprodCounter++;
             }
 
             return result;
@@ -132,9 +165,9 @@ namespace EquinoxeExtendPlugin.Tools
                     if (controlStateItem.Value != null)
                     {
                         if (controlState.Value != controlStateItem.Value)
-                            errorControlState.Add(controlState);
+                            errorControlState.Add(controlStateItem);
                         else if (controlState.Value2 != controlStateItem.Value2)
-                            errorControlState.Add(controlState);
+                            errorControlState.Add(controlStateItem);
                     }
                 }
                 catch (Exception ex)

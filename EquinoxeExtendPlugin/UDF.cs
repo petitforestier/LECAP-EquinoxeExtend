@@ -1,16 +1,16 @@
 ﻿using DriveWorks.Extensibility;
 using DriveWorks.Helper;
 using Library.Tools.Extensions;
+using DriveWorks.Helper.Manager;
+using EquinoxeExtend.Shared.Enum;
 using Service.Pool.Front;
-using Service.Specification.Front;
+using Service.Record.Front;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Titan.Rules.Execution;
-using EquinoxeExtend.Shared.Enum;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin
 {
@@ -41,7 +41,6 @@ namespace EquinoxeExtendPlugin
             [ParamInfo("Liste des items", "Texte des items séparé par '|'")] string iSearchItem,
             [ParamInfo("Sensible à la case", "Sensible à case")] bool iCaseSensible = true)
         {
-
             if (iList.IsNullOrEmpty())
                 return false;
 
@@ -62,7 +61,6 @@ namespace EquinoxeExtendPlugin
             [ParamInfo("Liste des items", "Texte des items séparé par '|'")] string iSearchText,
             [ParamInfo("Sensible à la case", "Sensible à case")] bool iCaseSensible = true)
         {
-
             if (iText.IsNullOrEmpty())
                 return false;
 
@@ -74,7 +72,6 @@ namespace EquinoxeExtendPlugin
             else
                 return iText.ToLower().Contains(iSearchText.ToLower());
         }
-
 
         [Udf]
         [FunctionInfo("Retourne un tableau avec les éléments séparé par '|'")]
@@ -94,7 +91,7 @@ namespace EquinoxeExtendPlugin
             catch (Exception ex)
             {
                 return "#Error! " + ex.Message;
-            }           
+            }
         }
 
         [Udf]
@@ -111,7 +108,7 @@ namespace EquinoxeExtendPlugin
                 if (iSeparator.IsNullOrEmpty())
                     throw new Exception("Le séparateur est null ou vide");
 
-                if(iOccurenceIndex == 0)
+                if (iOccurenceIndex == 0)
                     throw new Exception("L'index d'occurence doit être différent de 0");
 
                 var integerIndex = (int)iOccurenceIndex;
@@ -121,16 +118,69 @@ namespace EquinoxeExtendPlugin
                 var list = iText.Split(iSeparator);
 
                 if (iOccurenceIndex > 0)
-                    return list[integerIndex-1];
+                    return list[integerIndex - 1];
                 else
-                    return list[list.Count()+ integerIndex];
+                    return list[list.Count() + integerIndex];
             }
             catch (Exception ex)
             {
                 return "#Error! " + ex.Message;
-            }          
+            }
         }
 
+        [Udf]
+        [FunctionInfo("Retourne un tableau sans les ID de chaque item")]
+        public string UDFGetArrayWithoutID([ParamInfo("List source", "Texte des items séparé par '|'")] string iList)
+        {
+            try
+            {
+                if (iList.IsNullOrEmpty())
+                    throw new Exception("Le texte d'entrée est null ou vide");
+
+                var listItems = iList.Split(Consts.Consts.ItemSeparator);
+
+                var resultList = new List<string>();
+
+                foreach (var item in listItems.Enum())
+                    resultList.Add(GetStringWithoutID(item));
+
+                return resultList.Concat(Consts.Consts.ItemSeparator);
+            }
+            catch (Exception ex)
+            {
+                return "#Error! " + ex.Message;
+            }
+        }
+
+        [Udf]
+        [FunctionInfo("Retourne le texte sans l'ID")]
+        public string UDFGetStringWithoutID([ParamInfo("Texte à transformer", "Texte à transformer")] string iText)
+        {
+            try
+            {
+                return GetStringWithoutID(iText);
+            }
+            catch (Exception ex)
+            {
+                return "#Error! " + ex.Message;
+            }
+        }
+
+        #endregion
+
+        #region Private METHODS
+
+        private string GetStringWithoutID(string iText)
+        {
+            if (iText.IsNullOrEmpty())
+                throw new Exception("Le texte d'entrée est null ou vide");
+
+            var splitList = iText.Split(Consts.Consts.IDSeparator);
+            if (splitList.Count() != 2)
+                throw new Exception("L'item '{0}' est invalide".FormatString(iText));
+
+            return splitList.First();
+        }
 
         #endregion
     }
@@ -360,13 +410,16 @@ namespace EquinoxeExtendPlugin
         #region Public METHODS
 
         [Udf]
-        [FunctionInfo("Incrémente un compteur préfixé et retourne la nouvelle valeur. Si le compteur n'existe pas il sera créé automatiquement et commencera à 1. Si le préfix change le compteur est réinitilisé")]
-        public string UDFGetPoolCursorWithPrefix([ParamInfo("PoolName", "Nom du compteur")] string iPoolName, [ParamInfo("Préfixe", "Valeur du préfixe")] double iPrefix, [ParamInfo("Longueur", "Nombre fixe de digit du compteur")] double iLenght)
+        [FunctionInfo("Incrémente un compteur et retourne la nouvelle valeur. Si le compteur n'existe pas il sera créé automatiquement et commencera à 1. Des 0 seront ajouté devant pour obtenir la longueur")]
+        public string UDFGetPoolCursorWithLenght([ParamInfo("PoolName", "Nom du compteur")] string iPoolName, [ParamInfo("Longueur", "Nombre fixe de digit du compteur")] double iLenght)
         {
             try
             {
-                using (var poolService = new PoolService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
-                    return poolService.GetPoolCursorWithPrefix(iPoolName, Convert.ToInt32(iLenght), Convert.ToInt32(iPrefix));
+                using (var poolService = new PoolService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    var shortCounter = poolService.GetPoolCursor(iPoolName);
+                    return shortCounter.PadLeft(7, '0');
+                }
             }
             catch (Exception ex)
             {
@@ -380,7 +433,7 @@ namespace EquinoxeExtendPlugin
         {
             try
             {
-                using (var poolService = new PoolService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
+                using (var poolService = new PoolService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
                     return poolService.GetPoolCursor(iPoolName);
             }
             catch (Exception ex)
@@ -464,32 +517,16 @@ namespace EquinoxeExtendPlugin
 
         [Udf]
         [FunctionInfo("Retourne du modèle depuis la spécification")]
-        public string UDFGetDisplayNameOfTemplate([ParamInfo("Nom specification", "Nom de la spécification")]string iSpecificationName)
+        public bool UDFIsTemplateNameExists([ParamInfo("Nom modèle", "Nom modèle")]string iTemplateName)
         {
             try
             {
-                using (var specificationService = new SpecificationService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
+                using (var recordService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
-                    var theSpecification = specificationService.GetSpecificationByName(iSpecificationName);
-                    return theSpecification.DisplayName;
-                }
-            }
-            catch (Exception ex)
-            {
-                return "#Error!" + ex.Message;
-            }
-        }
-
-        [Udf]
-        [FunctionInfo("Retourne si une spécification est modèle")]
-        public bool UDFIsSpecificationTemplate([ParamInfo("Nom specification", "Nom de la spécification")]string iSpecificationName)
-        {
-            try
-            {
-                using (var specificationService = new SpecificationService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
-                {
-                    var theSpecification = specificationService.GetSpecificationByName(iSpecificationName);
-                    return theSpecification.IsTemplate;
+                    if (recordService.GetDossierByTemplateName(iTemplateName, false) != null)
+                        return true;
+                    else
+                        return false;
                 }
             }
             catch (Exception)
@@ -499,20 +536,26 @@ namespace EquinoxeExtendPlugin
         }
 
         [Udf]
-        [FunctionInfo("Retourne si la version actuelle de la spécification")]
-        public string UDFSpecificationCurrentVersion([ParamInfo("Nom specification", "Nom de la spécification")]string iSpecificationName)
+        [FunctionInfo("Retourne la liste des états existant sur un projet")]
+        public string UDFGetStateNameListOfProject([ParamInfo("Nom Projet", "Nom projet")]string iProjectName)
         {
             try
             {
-                using (var specificationService = new SpecificationService(this.Project.Group.GetEnvironment().GetExtendConnectionString()))
-                {
-                    var theSpecification = specificationService.GetSpecificationByName(iSpecificationName);
-                    return theSpecification.SpecificationVersion.ToString();
-                }
+                if (iProjectName.IsNullOrEmpty())
+                    throw new Exception("Le nom du projet est invalide");
+                
+                //Récupère le projet depuis son nom
+                var project = DriveWorks.Helper.GroupHelper.GetProjectList(this.Project.Group).Enum().SingleOrDefault(x => x.Name == iProjectName);
+
+                //Récupére la liste des états
+                var dataBaseQuery = new DataBaseQuery(this.Project.Group.GetEnvironment().GetSQLConnectionString());
+                var stateList = dataBaseQuery.GetStateNameListOfProject(project.Id.ToString());
+
+                return stateList.Enum().Concat("|");
             }
             catch (Exception ex)
             {
-                return "#Error!" + ex.Message;
+                return null;
             }
         }
 

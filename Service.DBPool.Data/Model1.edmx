@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="PoolModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Equinoxe_SandBox_ExtendModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="T_E_Pool">
           <Key>
             <PropertyRef Name="PoolId" />
@@ -18,14 +18,14 @@
         <Function Name="P_D_StepPool" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="S_Pool">
           <Parameter Name="PoolName" Type="nvarchar" Mode="In" />
         </Function>
-        <EntityContainer Name="PoolModelStoreContainer">
+        <EntityContainer Name="Equinoxe_SandBox_ExtendModelStoreContainer">
           <EntitySet Name="T_E_Pool" EntityType="Self.T_E_Pool" Schema="S_Pool" store:Type="Tables" />
         </EntityContainer>
       </Schema>
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="PoolModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="Equinoxe_SandBox_ExtendModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="T_E_Pool">
           <Key>
             <PropertyRef Name="PoolId" />
@@ -47,17 +47,17 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="PoolModelStoreContainer" CdmEntityContainer="PoolDBContext">
+        <EntityContainerMapping StorageEntityContainer="Equinoxe_SandBox_ExtendModelStoreContainer" CdmEntityContainer="PoolDBContext">
           <EntitySetMapping Name="T_E_Pool">
-            <EntityTypeMapping TypeName="PoolModel.T_E_Pool">
+            <EntityTypeMapping TypeName="Equinoxe_SandBox_ExtendModel.T_E_Pool">
               <MappingFragment StoreEntitySet="T_E_Pool">
                 <ScalarProperty Name="PoolId" ColumnName="PoolId" />
                 <ScalarProperty Name="Cursor" ColumnName="Cursor" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <FunctionImportMapping FunctionImportName="P_D_CreatePoolIfNotExists" FunctionName="PoolModel.Store.P_D_CreatePoolIfNotExists" />
-          <FunctionImportMapping FunctionImportName="P_D_StepPool" FunctionName="PoolModel.Store.P_D_StepPool" />
+          <FunctionImportMapping FunctionImportName="P_D_CreatePoolIfNotExists" FunctionName="Equinoxe_SandBox_ExtendModel.Store.P_D_CreatePoolIfNotExists" />
+          <FunctionImportMapping FunctionImportName="P_D_StepPool" FunctionName="Equinoxe_SandBox_ExtendModel.Store.P_D_StepPool" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>

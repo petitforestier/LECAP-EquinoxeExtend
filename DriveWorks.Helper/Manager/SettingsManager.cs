@@ -37,12 +37,30 @@ namespace DriveWorks.Helper.Manager
             }
 
             result = new ProjectSettings();
-            result.ProjectVersion = Convert.ToDecimal(tableDic[PROJECTVERSION]);
-            result.TagIgnore = tableDic[TAGIGNORE];
-            result.ErrorColorName = tableDic[ERRORCOLORNAME];
-            result.NoErrorColorName = tableDic[NOERRORCOLORNAME];
-            result.UserDebugControlName = tableDic[USERDEBUGCONTROLNAME];
-            result.ErrorConstantName = tableDic[ERRORCONSTANTNAME];
+            string projectVersion;
+            tableDic.TryGetValue(PROJECTVERSION, out projectVersion);
+            result.ProjectVersion = projectVersion.IsNotNullAndNotEmpty() ? Convert.ToDecimal(projectVersion) : 0;
+
+            string tagIgnore;
+            tableDic.TryGetValue(TAGIGNORE, out tagIgnore);
+            result.TagIgnore = tagIgnore;
+
+            string errorColorName;
+            tableDic.TryGetValue(ERRORCOLORNAME, out errorColorName);
+            result.ErrorColorName = errorColorName;
+
+            string noErrorColorName;
+            tableDic.TryGetValue(NOERRORCOLORNAME, out noErrorColorName);
+            result.NoErrorColorName = noErrorColorName;
+
+            string userDebugControlName;
+            tableDic.TryGetValue(USERDEBUGCONTROLNAME, out userDebugControlName);
+            result.UserDebugControlName = userDebugControlName;
+
+            string errorConstantName;
+            tableDic.TryGetValue(ERRORCONSTANTNAME, out errorConstantName);
+            result.ErrorConstantName = errorConstantName;
+
             result.ProjectName = iProject.Name;
 
             return result;
@@ -53,6 +71,55 @@ namespace DriveWorks.Helper.Manager
             var result = new List<string>();
             result.Add(PROJECTSETTINGSDATATABLENAME);
             return result;
+        }
+
+        public static void UpdateProjectVersionNumber(this Project iProject, decimal iNewVersionNumber)
+        {
+            //Récupération des settings actuels
+            var currentProjectSettings = GetProjectSettings(iProject);
+
+            //Incrémentation de la version
+            currentProjectSettings.ProjectVersion = iNewVersionNumber;              
+
+            //Génération de la table
+            var flatDataList = new List<List<string>>();
+
+            var projectVersionList = new List<string>();
+            projectVersionList.Add(PROJECTVERSION);
+            projectVersionList.Add(currentProjectSettings.ProjectVersion.ToString());
+            flatDataList.Add(projectVersionList);
+
+            var tagList = new List<string>();
+            tagList.Add(TAGIGNORE);
+            tagList.Add(currentProjectSettings.TagIgnore);
+            flatDataList.Add(tagList);
+
+            var errorColorNameList = new List<string>();
+            errorColorNameList.Add(ERRORCOLORNAME);
+            errorColorNameList.Add(currentProjectSettings.ErrorColorName);
+            flatDataList.Add(errorColorNameList);
+
+            var noErrorColorNameList = new List<string>();
+            noErrorColorNameList.Add(NOERRORCOLORNAME);
+            noErrorColorNameList.Add(currentProjectSettings.NoErrorColorName);
+            flatDataList.Add(noErrorColorNameList);
+
+            var userDebugControlNameList = new List<string>();
+            userDebugControlNameList.Add(USERDEBUGCONTROLNAME);
+            userDebugControlNameList.Add(currentProjectSettings.UserDebugControlName);
+            flatDataList.Add(userDebugControlNameList);
+
+            var errorConstantNameList = new List<string>();
+            errorConstantNameList.Add(ERRORCONSTANTNAME);
+            errorConstantNameList.Add(currentProjectSettings.ErrorConstantName);
+            flatDataList.Add(errorConstantNameList);
+
+            //Réinjection de la table
+            var projectTable = iProject.DataTables.SingleOrDefault(x => x.DisplayName == PROJECTSETTINGSDATATABLENAME);
+            if (projectTable == null)
+                throw new Exception("La table de projet : " + PROJECTSETTINGSDATATABLENAME + " est inexistante");
+
+            DataTableHelper.ReplaceCompleteDataToSimpleDateTable((DriveWorks.SimpleDataTable)projectTable, flatDataList);
         }
 
         public static Dictionary<string, string> GetProjectAliasDic(this Group iGroup)

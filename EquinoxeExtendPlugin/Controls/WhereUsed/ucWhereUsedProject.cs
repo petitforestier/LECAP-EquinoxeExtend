@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DriveWorks.Helper.Manager;
+using Library.Tools.Tasks;
 
 namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 {
@@ -142,7 +143,8 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             }
             else
             {
-                tupleTables = Tools.Tools.GetImportedDataTableFromPackage(_Application, iPackage);
+                var tools = new Tools.Tools();
+                tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
             }
 
             var treeNodeCollection = new List<TreeNode>();

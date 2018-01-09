@@ -224,7 +224,7 @@ namespace EquinoxeExtendPlugin
             {
                 //Création des services
                 var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                var OpenedProjectName = projectService.ActiveProject;
+                var OpenedProject = projectService.ActiveProject;
 
                 var ucControlVersionControl = new ucControlVersion(_Application);
                 using (var controlVersionForm = new frmUserControl(ucControlVersionControl, "Gestion des versions de controls", true, false))
@@ -237,7 +237,7 @@ namespace EquinoxeExtendPlugin
                     controlVersionForm.ShowDialog();
 
                     if (ucControlVersionControl.SaveNeeded)
-                        MessageBox.Show("Veuillez sauvegarder le projet pour conserver les modifications sur les contrôles");
+                        MessageBox.Show("Veuillez sauvegarder le projet pour conserver les modifications sur les contrôles");                       
                 }
             }
             catch (Exception ex)

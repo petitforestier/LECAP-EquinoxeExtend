@@ -9,7 +9,9 @@ namespace EquinoxeExtendPlugin.Consts
 {
     public static class Consts
     {
+        public const string IDSeparator = "<<>>";
+        public const string ItemSeparator = "|";
         public static BoolLock DontShowCheckTaskOnStartup = new BoolLock();
-
     }
+ 
 }

@@ -2,6 +2,7 @@
 using DriveWorks.Applications;
 using DriveWorks.Helper;
 using DriveWorks.Helper.Manager;
+using DriveWorks.Hosting;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
@@ -19,6 +20,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Library.Tools.Tasks;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -117,14 +119,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 LoadPackageDataGridView(null);
             }
-        }
-
-        private void UcPackageEdit_Close(object sender, EventArgs e)
-        {
-            DisplaySelectionMode();
-
-            if (ucPackageEdit.DialogResult == DialogResult.OK)
-                LoadPackageDataGridView(GetSelectedPackage().PackageId);
         }
 
         #endregion
@@ -484,17 +478,32 @@ namespace EquinoxeExtendPlugin.Controls.Task
         #region Private FIELDS
 
         private const int DATAGRIDVIEWROWHEIGTH = 35;
+
         private BindingSource bdsPackage = new BindingSource();
+
         private BindingSource bdsMainTask = new BindingSource();
+
         private BindingSource bdsSubTask = new BindingSource();
+
         private BindingSource bdsDeployement = new BindingSource();
+
         private IApplication _Application;
+
         private BoolLock _IsLoading = new BoolLock();
+
         private Group _Group;
 
         #endregion
 
         #region Private METHODS
+
+        private void UcPackageEdit_Close(object sender, EventArgs e)
+        {
+            DisplaySelectionMode();
+
+            if (ucPackageEdit.DialogResult == DialogResult.OK)
+                LoadPackageDataGridView(GetSelectedPackage().PackageId);
+        }
 
         private void cmdPackageSearch_Click(object sender, System.EventArgs e)
         {
@@ -514,7 +523,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private void LoadPackageDataGridView(long? iPackageId)
         {
-            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboStatus.SelectedValue, (PackageOrderByEnum)cboOrderBy.SelectedValue);
                 bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
@@ -591,7 +600,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.AddPackage();
                         LoadPackageDataGridView(null);
@@ -622,7 +631,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (MessageBox.Show("Etes-sûr de vouloir supprimer le package {0} ?".FormatString(selectedPackage.PackageIdString), "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.DeletePackage(selectedPackage);
                         LoadPackageDataGridView(null);
@@ -649,7 +658,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     //Admin obligatoire
                     Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         var thePackage = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
                         if (thePackage.IsLocked != selectedPackage.IsLocked)
@@ -688,7 +697,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     //Admin obligatoire
                     Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         var thePackage = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
 
@@ -716,244 +725,58 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private void cmdDeployToStaging_Click(object sender, System.EventArgs e)
         {
-            var groupService = _Application.ServiceManager.GetService<IGroupService>();
-            var activeEnvironment = groupService.ActiveGroup.GetEnvironment();
-
             try
             {
+                var sourceEnvironnement = EnvironmentEnum.Developpement;
+                var destinationEnvironnement = EnvironmentEnum.Staging;
+
+                //Admin obligatoire
+                Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
+
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
                     using (var projectOpenLocker = new BoolLocker(ref Consts.Consts.DontShowCheckTaskOnStartup))
                     {
-                        var loadingControl = new ucMessageBox("Démarrage déploiement vers PréProd...");
-                        using (var loadingForm = new frmUserControl(loadingControl, "Déploiement PréProd", false, false))
+                        var selectedPackage = GetSelectedPackage();
+                        if (selectedPackage == null)
+                            return;
+
+                        using (var releaseService = new Service.Release.Front.ReleaseService(sourceEnvironnement.GetSQLExtendConnectionString()))
                         {
-                            loadingForm.Show();
-                            loadingForm.Refresh();
+                            //Récupération package en full
+                            var packageToDeploy = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
 
-                            var selectedPackage = GetSelectedPackage();
-                            if (selectedPackage == null)
-                                return;
+                            //Vérification du statut de toutes les tâches
+                            if (!packageToDeploy.MainTasks.Any(x => x.Status == MainTaskStatusEnum.Staging))
+                                throw new Exception("Ce package est déjà en 'PréProd");
+                            if (packageToDeploy.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Dev))
+                                throw new Exception("Toutes les tâches doivent être en cours");
 
-                            //Admin obligatoire
-                            Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
-
-                            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
-                            {
-                                loadingControl.SetMessage("Vérifications en cours...");
-
-                                var packageToDeployInQuality = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
-                                var devgroup = groupService.ActiveGroup;
-                                DriveWorks.Group qualityGroup = null;
-
-                                //vérification du bon groupe
-                                if (devgroup.Name != EnvironmentEnum.Developpement.GetName("FR"))
-                                    throw new Exception("Le groupe actuel doit être celui de développement");
-
-                                //Vérification que le package contient des tâches et des sous tâches
-                                if (packageToDeployInQuality.MainTasks.IsNullOrEmpty())
-                                    throw new Exception("Le package ne contient aucune tâche");
-
-                                if (packageToDeployInQuality.SubTasks.IsNullOrEmpty())
-                                    throw new Exception("Le package ne contient aucune sous tâche");
-
-                                if (!packageToDeployInQuality.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Staging))
-                                    throw new Exception("Ce package est déjà en 'PréProd");
-
-                                //Vérification du statut de toutes les tâches
-                                if (packageToDeployInQuality.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Dev))
-                                    throw new Exception("Toutes les tâches doivent être en cours");
-
-                                //Vérification que toutes les sous tâches soient à 100%
-                                if (packageToDeployInQuality.SubTasks.Any(x => x.Progression != 100))
-                                    throw new Exception("Toutes les sous tâches doivent être à 100% d'avancement");
-
-                                //Confirmation
-                                if (MessageBox.Show("Etes-sûr de vouloir déployer le package '{0}' vers PréProd ?".FormatString(selectedPackage.PackageIdString), "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                                    return;
-
-                                //Vérification que l'autopilot ou le web ne fonctionne pas sur le group préprod
-                                //Mettre message pour demander la fermeture de l'autopilot et de solidworks.
-                                MessageBox.Show("Merci de fermer complètement les applications connectées au groupe PréProd (Solidworks, DW Administrator, DW DataManagement, Autopilot) et cliquer sur OK une fois terminé", "Fermeture des connexions", MessageBoxButtons.OK);
-
-                                //Vérification qu'aucun projet à copier dans le groupe dev est ouvert
-                                var openedDevProjectlist = devgroup.GetOpenedProjectList();
-
-                                var packageDistinctProjectGUIDList = packageToDeployInQuality.SubTasks.Where(x => x.ProjectGUID != null).GroupBy(x => x.ProjectGUID).Select(x => (Guid?)x.First().ProjectGUID).ToList();
-                                var packageDistinctProjectDetailsList = new List<ProjectDetails>();
-                                foreach (var item in packageDistinctProjectGUIDList)
-                                {
-                                    if (item != null)
-                                        packageDistinctProjectDetailsList.Add(devgroup.Projects.GetProject((Guid)item));
-                                }
-
-                                var projectDevComparator = new ListComparator<ProjectDetails, ProjectDetails>(openedDevProjectlist, x => x.Id, packageDistinctProjectDetailsList, x => x.Id);
-                                if (projectDevComparator.CommonList.IsNotNullAndNotEmpty())
-                                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(devgroup.Name) + Environment.NewLine + Environment.NewLine + projectDevComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));
-
-                                //PLUGING
-                                if (MessageBox.Show("Voulez-vous effectuer les différentes vérifications (Projet ouvert, cohérence des tables, ...) ?", "Vérifications", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                {
-                                    loadingControl.SetMessage("Vérification des projets ouverts en cours...");
-
-                                    //Vérification que les tables à source commune et entre différent projets sont bien identique
-                                    var tupleTables = new List<Tuple<string, ProjectDetails, ImportedDataTable>>();
-
-                                    loadingControl.SetMessage("Vérification des différences entre tables de projets en cours...");
-
-                                    tupleTables = Tools.Tools.GetImportedDataTableFromPackage(_Application, packageToDeployInQuality);
-
-                                    var invalideDataTables = new List<string>();
-                                    //Bouclage sur les fichiers
-                                    foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item3.FileLocation).Enum())
-                                    {
-                                        //Bouclage sur les feuilles excels
-                                        foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item3.SheetName).Enum())
-                                        {
-                                            var projectList = sheetItem.ToList();
-                                            if (projectList.Count > 1)
-                                            {
-                                                var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
-                                                if (differenceList.IsNotNullAndNotEmpty())
-                                                    invalideDataTables.AddRange(differenceList);
-                                            }
-                                        }
-                                    }
-
-                                    if (invalideDataTables.IsNotNullAndNotEmpty())
-                                        throw new Exception("Des tables de projet excel suivantes utilisent le même fichier source et ne sont pas identiques." + Environment.NewLine + invalideDataTables.Concat(Environment.NewLine));
-
-                                    //Vérification qu'aucun projet de destination dans le groupe préprod est ouvert
-                                    qualityGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
-                                    var openedQualityProjectlist = qualityGroup.GetOpenedProjectList();
-                                    var projectQualityComparator = new ListComparator<ProjectDetails, SubTask>(openedQualityProjectlist, x => x.Id, packageToDeployInQuality.SubTasks, x => x.ProjectGUID);
-                                    if (projectQualityComparator.CommonList.IsNotNullAndNotEmpty())
-                                        throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(qualityGroup.Name) + Environment.NewLine + Environment.NewLine + projectQualityComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));
-                                }
-
-                                devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
-
-                                //Enleve les droits
-                                loadingControl.SetMessage("Modification des droits...");
-                                devgroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
-
-                                //PLUGING
-                                if (MessageBox.Show("Voulez-vous appliquer les  plugins ?", "Pluging", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                                {
-                                    loadingControl.SetMessage("Application des plugings...");
-                                    //Vérifier qu'il n'y a pas de nouveau dossier de pluging
-                                    var stagingPluginDirectory = new DirectoryInfo(EnvironmentEnum.Staging.GetPluginDirectory());
-                                    var devPluginDirectory = new DirectoryInfo(EnvironmentEnum.Developpement.GetPluginDirectory());
-                                    var directoryComparator = new ListComparator<DirectoryInfo, DirectoryInfo>(devPluginDirectory.GetDirectories().Enum().ToList(), x => x.Name, stagingPluginDirectory.GetDirectories().Enum().ToList(), y => y.Name);
-
-                                    var newPluging = directoryComparator.NewList;
-                                    var removePluging = directoryComparator.RemovedList;
-
-                                    //Importation de la totalité des plugins
-                                    if (!Library.Tools.IO.MyDirectory.IsDirectoryEmpty(EnvironmentEnum.Staging.GetPluginDirectory()))
-                                    {
-                                        var directoryName = DateTime.Now.ToStringYMDHMS();
-                                        //Archive le dossier actuel de plugin de préprod sans prendre le dossier archives
-                                        foreach (var directoryItem in stagingPluginDirectory.GetDirectories().Enum())
-                                        {
-                                            if (directoryItem.FullName + "\\" != EnvironmentEnum.Staging.GetPluginDirectoryArchive())
-                                            {
-                                                var archivePackageDirectoryName = EnvironmentEnum.Staging.GetPluginDirectoryArchive() + packageToDeployInQuality.PackageIdString + "_" + directoryName;
-                                                Library.Tools.IO.MyDirectory.Cut(directoryItem.FullName, archivePackageDirectoryName + "\\" + directoryItem.Name);
-                                            }
-                                        }
-
-                                        //Copy de dev vers préprod sans prendre le dossier archives
-                                        foreach (var directoryItem in devPluginDirectory.GetDirectories().Enum())
-                                        {
-                                            if (directoryItem.FullName + "\\" != EnvironmentEnum.Developpement.GetPluginDirectoryArchive())
-                                                Library.Tools.IO.MyDirectory.Copy(directoryItem.FullName, EnvironmentEnum.Staging.GetPluginDirectory() + directoryItem.Name);
-                                        }
-                                    }
-
-                                    //Affichage du message des plugings à installer
-                                    if (newPluging.Any())
-                                        MessageBox.Show("Attention, des nouveaux plugings ont été ajoutés {0}. Il est nécessaire installer ces plugings sur les machines préprod".FormatString(newPluging.Select(x => x.Name).Concat(",")));
-
-                                    //Affichage du message des plugings à supprimer
-                                    if (removePluging.Any())
-                                        MessageBox.Show("Attention, des plugings ont été supprimés {0}. Il est nécessaire de désintaller ces plugings sur les machines préprod".FormatString(newPluging.Select(x => x.Name).Concat(",")));
-                                }
-
-                                //IMPORTATION DES PROJECTS
-                                loadingControl.SetMessage("Importation des projets...");
-                                qualityGroup = groupService.OpenGroup(EnvironmentEnum.Staging);
-                                foreach (var projectItem in packageDistinctProjectDetailsList)
-                                {
-                                    var answer = MessageBox.Show("Voulez-vous importer le projet '{0}' ? Cliquer sur annuler pour annuler complètement le déploiement".FormatString(projectItem.Name), "Confirmation importation", MessageBoxButtons.YesNoCancel);
-                                    if (answer == DialogResult.Cancel)
-                                    {
-                                        MessageBox.Show("Annulation du déploiement en l'état");
-                                        return;
-                                    }
-                                    else if (answer == DialogResult.Yes)
-                                    {
-                                        var qualityProjectDirectory = EnvironmentEnum.Staging.GetProjectDirectory() + projectItem.Name;
-                                        var projectService = _Application.ServiceManager.GetService<IProjectService>();
-                                        projectService.CloseProject();
-
-                                        //Archivage du dossier de destination si existant
-                                        if (qualityGroup.Projects.GetProjects().Any(x => x.Name == projectItem.Name))
-                                        {
-                                            projectService.OpenProject(projectItem.Name);
-                                            var activeProject = projectService.ActiveProject;
-                                            var activeProjectId = activeProject.Id;
-                                            if (activeProject == null)
-                                                throw new Exception("Le projet n'est pas ouvert");
-                                            var activeProjectDirectory = activeProject.BaseDirectory;
-                                            projectService.CloseProject();
-                                            Directory.Move(activeProjectDirectory, EnvironmentEnum.Staging.GetProjectDirectoryArchive() + packageToDeployInQuality.PackageIdString + "_" + projectItem.Name + DateTime.Now.ToStringYMDHMS());
-
-                                            //Suppression du projet qui n'existe plus dans Data management
-                                            qualityGroup.Projects.DeleteProjectById(activeProjectId);
-                                        }
-
-                                        //Importation du nouveau projet
-                                        MessageBox.Show("Importer manuellement le projet '{0}' de Equinoxe_Dev vers Equinoxe_PréProd".FormatString(projectItem.Name), "Opération manuelle", MessageBoxButtons.OK);
-
-                                        //Reconstruction forcée
-                                        MessageBox.Show("Forcer la reconstruction de l'assemblage de tête");
-                                    }
-                                }
-                                devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
-
-                                releaseService.MovePackageToStaging(selectedPackage);
-
-                                MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, EnvironmentEnum.Staging.GetName("FR")));
-
-                                //Applications des droits sur dev
-                                Tools.Tools.ReleaseProjectsRights(devgroup);
-                            }
-
-                            //Rechargement de l'ensemble
-                            LoadPackageDataGridView(null);
+                            deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy);
+                            releaseService.MovePackageToStaging(selectedPackage);
                         }
+                        MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, destinationEnvironnement.GetName("FR")));
                     }
+
+                    //Rechargement de l'ensemble
+                    LoadPackageDataGridView(null);
                 }
             }
             catch (Exception ex)
             {
                 ex.ShowInMessageBox();
             }
-            finally
-            {
-                groupService.OpenGroup(activeEnvironment);
-            }
         }
 
         private void cmdDeployToProduction_Click(object sender, System.EventArgs e)
-        {
-            var groupService = _Application.ServiceManager.GetService<IGroupService>();
-            var activeEnvironment = groupService.ActiveGroup.GetEnvironment();
-
+        {          
             try
             {
+                var sourceEnvironnement = EnvironmentEnum.Staging;
+                var destinationEnvironnement = EnvironmentEnum.Production;
+                var backupEnvironnement = EnvironmentEnum.Backup;
+
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
@@ -968,16 +791,25 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (MessageBox.Show("Etes-sûr de vouloir déployer ce package vers l'environnement de production ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
-                        var devgroup = groupService.OpenGroup(EnvironmentEnum.Developpement);
+                        var packageToDeploy = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
 
+                        //Vérification du statut de toutes les tâches
+                        if (packageToDeploy.MainTasks.Any(x => x.Status == MainTaskStatusEnum.Completed))
+                            throw new Exception("Certaines tâches sont déjà terminées 'Production");
+                        if (packageToDeploy.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Staging))
+                            throw new Exception("Toutes les tâches doivent être phase de test");
+
+                        //déploiement prod => backup
+                        deployPackageToOtherGroup(destinationEnvironnement, backupEnvironnement, packageToDeploy);
+                        //déploiement préprod => prod
+                        deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy);
+
+                        //Déploiement vers production
                         releaseService.MovePackageToProduction(selectedPackage);
 
-                        MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, EnvironmentEnum.Production.GetName("FR")));
-
-                        //Applications des droits sur dev
-                        Tools.Tools.ReleaseProjectsRights(devgroup);
+                        MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, destinationEnvironnement.GetName("FR")));
                     }
 
                     //Rechargement de l'ensemble
@@ -987,10 +819,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             catch (Exception ex)
             {
                 ex.ShowInMessageBox();
-            }
-            finally
-            {
-                groupService.OpenGroup(activeEnvironment);
             }
         }
 
@@ -1037,7 +865,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (selectedPackage == null)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         if (selectedPackage.Priority == null)
                             if (MessageBox.Show("Etes-vous sûr de vouloir placer ce package en priorité 1 et de décaler tous les autres ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
@@ -1067,7 +895,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (selectedPackage == null)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.MoveDownPackagePriority(selectedPackage);
                     }
@@ -1105,6 +933,198 @@ namespace EquinoxeExtendPlugin.Controls.Task
         private void dgvPackage_DoubleClick(object sender, EventArgs e)
         {
             cmdUpdate_Click(sender, e);
+        }
+
+        private void deployPackageToOtherGroup(EnvironmentEnum iSourceEnvironnement, EnvironmentEnum iDestinationEnvironnement, EquinoxeExtend.Shared.Object.Release.Package iPackage )
+        {
+            if (iPackage == null)
+                throw new Exception("Le package n'est pas défini");
+
+            var host = new EngineHost(HostEnvironment.CreateDefaultEnvironment(false));
+            var sourceGroupManager = host.CreateGroupManager();
+            var sourceGroup = sourceGroupManager.OpenGroup(iSourceEnvironnement);
+            var sourceGroupName = sourceGroup.Name;
+
+            var destinationGroupManager = host.CreateGroupManager();
+            var destinationGroup = destinationGroupManager.OpenGroup(iDestinationEnvironnement);
+            var destinationGroupName = destinationGroup.Name;
+
+            var loadingControl = new ucMessageBox("Démarrage déploiement de '{0}' vers '{1}'...".FormatString(sourceGroupName, destinationGroupName));
+            using (var loadingForm = new frmUserControl(loadingControl, "Déploiement vers '{0}'".FormatString(sourceGroupName), false, false))
+            {
+                loadingForm.Show();
+                loadingForm.Refresh();
+
+                loadingControl.SetMessage("Vérifications en cours...");
+
+                //Vérification que le package contient des tâches et des sous tâches
+                if (iPackage.MainTasks.IsNullOrEmpty())
+                    throw new Exception("Le package ne contient aucune tâche");
+
+                if (iPackage.SubTasks.IsNullOrEmpty())
+                    throw new Exception("Le package ne contient aucune sous tâche");
+
+                //Vérification que toutes les sous tâches soient à 100%
+                if (iPackage.SubTasks.Any(x => x.Progression != 100))
+                    throw new Exception("Toutes les sous tâches doivent être à 100% d'avancement");
+
+                //Confirmation
+                if (MessageBox.Show("Etes-sûr de vouloir déployer le package '{0}' vers '{1}' ?".FormatString(iPackage.PackageIdString, destinationGroupName), "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    return;
+
+                //Vérification que l'autopilot ou le web ne fonctionne pas sur le group préprod
+                //Mettre message pour demander la fermeture de l'autopilot et de solidworks.
+                MessageBox.Show("Merci de fermer complètement les applications connectées au groupe '{0}' (Solidworks, DW Administrator, DW DataManagement, Autopilot) et cliquer sur OK une fois terminé".FormatString(destinationGroupName), "Fermeture des connexions", MessageBoxButtons.OK);
+
+                //Vérification qu'aucun projet à copier dans le groupe dev est ouvert
+                var openedDevProjectlist = sourceGroup.GetOpenedProjectList();
+
+                var packageDistinctProjectGUIDList = iPackage.SubTasks.Where(x => x.ProjectGUID != null).GroupBy(x => x.ProjectGUID).Select(x => (Guid?)x.First().ProjectGUID).ToList();
+                var packageDistinctProjectDetailsList = new List<ProjectDetails>();
+                foreach (var item in packageDistinctProjectGUIDList.Enum())
+                {
+                    if (item != null)
+                    {
+                        ProjectDetails project = null;
+                        try
+                        {
+                            project = sourceGroup.Projects.GetProject((Guid)item);
+                        }
+                        catch(Exception)
+                        { }
+                        if(project != null)
+                            packageDistinctProjectDetailsList.Add(project);
+                    }      
+                }
+
+                var projectDevComparator = new ListComparator<ProjectDetails, ProjectDetails>(openedDevProjectlist, x => x.Id, packageDistinctProjectDetailsList, x => x.Id);
+                if (projectDevComparator.CommonList.IsNotNullAndNotEmpty())
+                    throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(sourceGroupName) + Environment.NewLine + Environment.NewLine + projectDevComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));
+
+                //VERIFICATIONS
+                if (MessageBox.Show("Voulez-vous effectuer les différentes vérifications (Projet ouvert, cohérence des tables, ...) ?", "Vérifications", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    loadingControl.SetMessage("Vérification des projets ouverts en cours...");
+
+                    //Vérification que les tables à source commune et entre différent projets sont bien identique
+                    var tupleTables = new List<Tuple<string, ProjectDetails, ImportedDataTable>>();
+
+                    loadingControl.SetMessage("Vérification des différences entre tables de projets en cours...");
+
+                    //Importation table
+                    Action<string> progressAction = (value) => { loadingControl.SetMessage(value); loadingForm.Refresh(); Application.DoEvents(); };
+
+                    var tools = new Tools.Tools(progressAction);
+                    tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
+
+                    var invalideDataTables = new List<string>();
+                    //Bouclage sur les fichiers
+                    foreach (var excelFileLocationItem in tupleTables.GroupBy(x => x.Item3.FileLocation).Enum())
+                    {
+                        //Bouclage sur les feuilles excels
+                        foreach (var sheetItem in excelFileLocationItem.GroupBy(x => x.Item3.SheetName).Enum())
+                        {
+                            var projectList = sheetItem.ToList();
+                            if (projectList.Count > 1)
+                            {
+                                var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
+                                if (differenceList.IsNotNullAndNotEmpty())
+                                    invalideDataTables.AddRange(differenceList);
+                            }
+                        }
+                    }
+
+                    if (invalideDataTables.IsNotNullAndNotEmpty())
+                        throw new Exception("Des tables de projet excel suivantes utilisent le même fichier source et ne sont pas identiques." + Environment.NewLine + invalideDataTables.Concat(Environment.NewLine));
+
+                    //Vérification qu'aucun projet de destination dans le groupe destination est ouvert
+                    var openedDestinationProjectlist = destinationGroup.GetOpenedProjectList();
+                    var projectDestinationComparator = new ListComparator<ProjectDetails, SubTask>(openedDestinationProjectlist, x => x.Id, iPackage.SubTasks, x => x.ProjectGUID);
+                    if (projectDestinationComparator.CommonList.IsNotNullAndNotEmpty())
+                        throw new Exception("Certains projets du groupe '{0}' sont ouverts. L'analyse n'est donc pas possible.".FormatString(destinationGroupName) + Environment.NewLine + Environment.NewLine + projectDestinationComparator.CommonPairList.Select(x => x.Key.Name).Concat(Environment.NewLine));
+                }
+
+                //Enleve les droits
+                loadingControl.SetMessage("Modification des droits...");
+                sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
+
+                //PLUGING
+                if (MessageBox.Show("Voulez-vous appliquer les  plugins ?", "Pluging", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                {
+                    loadingControl.SetMessage("Application des plugings...");
+                    //Vérifier qu'il n'y a pas de nouveau dossier de pluging
+                    var destinationPluginDirectory = new DirectoryInfo(iDestinationEnvironnement.GetPluginDirectory());
+                    var sourcePluginDirectory = new DirectoryInfo(iSourceEnvironnement.GetPluginDirectory());
+                    var directoryComparator = new ListComparator<DirectoryInfo, DirectoryInfo>(sourcePluginDirectory.GetDirectories().Enum().ToList(), x => x.Name, destinationPluginDirectory.GetDirectories().Enum().ToList(), y => y.Name);
+
+                    var newPluging = directoryComparator.NewList;
+                    var removePluging = directoryComparator.RemovedList;
+
+                    //Importation de la totalité des plugins
+                    if (!Library.Tools.IO.MyDirectory.IsDirectoryEmpty(iDestinationEnvironnement.GetPluginDirectory()))
+                    {
+                        var directoryName = DateTime.Now.ToStringYMDHMS();
+                        //Archive le dossier actuel de plugin de préprod sans prendre le dossier archives
+                        foreach (var directoryItem in destinationPluginDirectory.GetDirectories().Enum())
+                        {
+                            if (directoryItem.FullName + "\\" != iDestinationEnvironnement.GetPluginDirectoryArchive())
+                            {
+                                var archivePackageDirectoryName = iDestinationEnvironnement.GetPluginDirectoryArchive() + iPackage.PackageIdString + "_" + directoryName;
+                                Library.Tools.IO.MyDirectory.Cut(directoryItem.FullName, archivePackageDirectoryName + "\\" + directoryItem.Name);
+                            }
+                        }
+
+                        //Copy de dev vers destination sans prendre le dossier archives
+                        foreach (var directoryItem in sourcePluginDirectory.GetDirectories().Enum())
+                        {
+                            if (directoryItem.FullName + "\\" != iSourceEnvironnement.GetPluginDirectoryArchive())
+                                Library.Tools.IO.MyDirectory.Copy(directoryItem.FullName, iDestinationEnvironnement.GetPluginDirectory() + directoryItem.Name);
+                        }
+                    }
+
+                    //Affichage du message des plugings à installer
+                    if (newPluging.Any())
+                        MessageBox.Show("Attention, des nouveaux plugings ont été ajoutés {0}. Il est nécessaire installer ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
+
+                    //Affichage du message des plugings à supprimer
+                    if (removePluging.Any())
+                        MessageBox.Show("Attention, des plugings ont été supprimés {0}. Il est nécessaire de désintaller ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
+                }
+
+                //IMPORTATION DES PROJECTS
+                loadingControl.SetMessage("Importation des projets...");
+
+                foreach (var projectItem in packageDistinctProjectDetailsList.Enum())
+                {
+                    var answer = MessageBox.Show("Voulez-vous importer le projet '{0}' ? Cliquer sur annuler pour annuler complètement le déploiement".FormatString(projectItem.Name), "Confirmation importation", MessageBoxButtons.YesNoCancel);
+                    if (answer == DialogResult.Cancel)
+                    {
+                        MessageBox.Show("Annulation du déploiement en l'état");
+                        return;
+                    }
+                    else if (answer == DialogResult.Yes)
+                    {
+                        if (destinationGroup.Projects.GetProjects().Any(x => x.Name == projectItem.Name))
+                        {
+                            var existingProject = destinationGroup.Projects.GetProjects().Single(x => x.Name == projectItem.Name);
+                            var existingProjectDirectory = existingProject.Directory;
+                            Directory.Move(existingProjectDirectory, iDestinationEnvironnement.GetProjectDirectoryArchive() + iPackage.PackageIdString + "_" + projectItem.Name + DateTime.Now.ToStringYMDHMS());
+
+                            //Suppression du projet qui n'existe plus dans Data management
+                            destinationGroup.Projects.DeleteProjectById(existingProject.Id);
+                        }
+
+                        //Importation du nouveau projet
+                        sourceGroup.CopyProjetToOtherGroup(projectItem.Name, iDestinationEnvironnement);
+
+                        //Reconstruction forcée
+                        MessageBox.Show("Forcer la reconstruction de l'assemblage de tête du projet '{0}'".FormatString(projectItem.Name));
+                    }
+                }
+
+                //Applications des droits sur le groupe source
+                Tools.Tools.ReleaseProjectsRights(sourceGroup);
+            }
         }
 
         #endregion

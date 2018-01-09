@@ -4,6 +4,11 @@ using Library.Tools.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DriveWorks.GroupMaintenance;
+using System.IO;
+using DriveWorks.Hosting;
+using EquinoxeExtend.Shared.Enum;
+using DriveWorks.Helper.Manager;
 
 namespace DriveWorks.Helper
 {
@@ -106,6 +111,11 @@ namespace DriveWorks.Helper
                 iGroup.Security.TryAddProjectPermissionToTeam(iTeam.Id, item, StandardProjectPermissions.EditPermission);
         }
 
+        /// <summary>
+        /// Retourne la liste des projets ouvert dans un groupe
+        /// </summary>
+        /// <param name="iGroup"></param>
+        /// <returns></returns>
         public static List<ProjectDetails> GetOpenedProjectList(this Group iGroup)
         {
             if (iGroup == null)
@@ -120,7 +130,56 @@ namespace DriveWorks.Helper
             return resultList;
         }
 
-       
+        /// <summary>
+        /// Copie un projet d'un groupe vers un autre groupe
+        /// </summary>
+        /// <param name="iSourceGroup"></param>
+        /// <param name="iProjectNameToCopy"></param>
+        /// <param name="iSourceProjectPath"></param>
+        /// <param name="iDestinationProjectPath"></param>
+        public static void CopyProjetToOtherGroup(this Group iSourceGroup, string iProjectNameToCopy, EnvironmentEnum iDestinationGroupEnum)
+        {
+            var destinationProjectPath = iDestinationGroupEnum.GetProjectDirectory() + iProjectNameToCopy;
+
+            if (!Directory.Exists(destinationProjectPath))
+                Directory.CreateDirectory(destinationProjectPath);
+
+            //Définition destination
+            var options = new CopyGroupOptions();
+            options.TargetFolder = destinationProjectPath;
+
+            var projectToCopy = iSourceGroup.Projects.GetProject(iProjectNameToCopy);
+            if (projectToCopy == null)
+                throw new Exception("Le projet '{0}' est inexistant dans le groupe '{1}'".FormatString(iProjectNameToCopy, iSourceGroup.Name));
+            
+            //Ajout du projet à copier
+            options.Projects.Add(projectToCopy);
+            var fileOptions =  new FilePickingOptions(projectToCopy.Directory);
+            options.FileOptions = fileOptions;
+
+            //Ouverture de l'autre groupe via un host
+            var host = new EngineHost(HostEnvironment.CreateDefaultEnvironment(false));
+            var groupManager = host.CreateGroupManager();
+            var destinationGroup = groupManager.OpenGroup(iDestinationGroupEnum);
+
+            //Process de copie
+            using (var copyProcess = CopyGroupProcess.CreateCopyGroupProcess(iSourceGroup,destinationGroup,options))
+            {
+                try
+                {
+                    if (!copyProcess.Start())
+                        throw new Exception("Erreur lors de l'importation du projet '{0}' dans le groupe '{1}'".FormatString(iProjectNameToCopy, destinationGroup.Name));
+                }
+                catch( Exception ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    groupManager.CloseGroup();
+                }
+            }
+        }
 
         public static ProjectDetails GetProjectFromGUID(this Group iGroup, Guid iProjectGUID)
         {

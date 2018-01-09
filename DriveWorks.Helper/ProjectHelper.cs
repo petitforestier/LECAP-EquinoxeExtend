@@ -71,7 +71,7 @@ namespace DriveWorks.Helper
             return result;
         }
 
-        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue)
+        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue, List<double> iColumnWidthList = null)
         {
             var tableControl = (DataTableControl)iProject.Navigation.GetControl(iControlName);
 
@@ -79,7 +79,11 @@ namespace DriveWorks.Helper
                 throw new Exception("Le controle datatable nommé '{0}' est introuvable");
 
             tableControl.Items = iTableValue;
+
+            if(iColumnWidthList.IsNotNullAndNotEmpty())
+                tableControl.ColumnWidths = iColumnWidthList;
         }
+
 
         #endregion
     }

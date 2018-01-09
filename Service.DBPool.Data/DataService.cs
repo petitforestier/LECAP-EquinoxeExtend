@@ -36,43 +36,37 @@ namespace Service.DBPool.Data
 
         #region Public METHODS
 
-        public string GetPoolCursor(string iPoolName, int? iLenght = null, int? iPrefix = null)
+        public string GetPoolCursor(string iPoolName)
         {
             if (iPoolName.IsNullOrEmpty())
                 throw new Exception("Le pool name n'est pas valide");
 
-            if (iLenght == null && iPrefix != null)
-                throw new Exception("La longueur du compteur est requis quand un préfixe est demandé");
+            var entity = DBContext.T_E_Pool.SingleOrDefault(x => x.PoolId == iPoolName);
 
-            if (iLenght != null && iPrefix == null)
-                throw new Exception("Le prefixe est requis si une longueur est demandée");
-
-            if (iLenght <= iPrefix.ToString().Length)
-                throw new Exception("La longeur du préfixe ne pas être supérieur ou égal à la longeur demandé");
-
-            if (iLenght != null)
-                if (iLenght < 1)
-                    throw new Exception("La longueur ne peut pas être inférieur à 1");
-
-            //Vérification du préfixe, si pas correcte alors réinitilisation
-            if (iPrefix != null)
+            //Création du compteur si n'existe pas.
+            if (entity == null)
             {
-                var entity = DBContext.T_E_Pool.Single(x => x.PoolId == iPoolName);
-                if (!entity.Cursor.ToString().StartsWith(iPrefix.ToString()))
-                {
-                    var cursorString = iPrefix.ToString();
-
-                    for (int a = 1; a <= iLenght - iPrefix.ToString().Length - 1; a++)
-                        cursorString += 0.ToString();
-
-                    cursorString += "1";
-                    entity.Cursor = Convert.ToInt64(cursorString);
-                    DBContext.SaveChanges();
-                }
+                entity = new T_E_Pool();
+                entity.PoolId = iPoolName;
+                entity.Cursor = 1;
+                DBContext.T_E_Pool.Add(entity);
+                DBContext.SaveChanges();
+                return 1.ToString();
             }
+            else
+            {
+                try
+                {
+                    //Incrémentation atomic du compteur
+                    return DBContext.P_D_StepPool(iPoolName).Single().Value.ToString();
+                }
+                catch (Exception ex)
+                {
 
-            //Incrémentation atomic du compteur
-            return DBContext.P_D_StepPool(iPoolName).Single().Value.ToString();
+                    throw ex;
+                }
+               
+            }
         }
 
         #endregion

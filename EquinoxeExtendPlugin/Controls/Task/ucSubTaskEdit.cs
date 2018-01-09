@@ -184,7 +184,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             long projectTaskId = 0;
 
-            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 if (!ControlValidator())
                 {

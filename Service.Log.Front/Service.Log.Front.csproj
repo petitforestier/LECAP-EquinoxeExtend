@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Service.Log.Front</RootNamespace>
     <AssemblyName>Service.Log.Front</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -31,22 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DriveWorks.Applications, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Applications.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.Engine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.Scripting.API, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Scripting.API.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.SolidWorks, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.SolidWorks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -69,10 +53,6 @@
     <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
       <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
       <Name>Library.Tools</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\DriveWorks.Helper\DriveWorks.Helper.csproj">
-      <Project>{a310cc19-68e0-4553-8c35-cfaa42f3323a}</Project>
-      <Name>DriveWorks.Helper</Name>
     </ProjectReference>
     <ProjectReference Include="..\EquinoxeExtend.Shared.Enum\EquinoxeExtend.Shared.Enum.csproj">
       <Project>{7747c8bf-0211-4a51-bab1-4836a7a36f2c}</Project>
@@ -98,9 +78,9 @@
       <Project>{125ea7c9-2f73-4b36-bad6-5f49dde22458}</Project>
       <Name>Service.DBRelease.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Service.DBSpecification.Data\Service.DBSpecification.Data.csproj">
+    <ProjectReference Include="..\Service.DBRecord.Data\Service.DBRecord.Data.csproj">
       <Project>{8fae8c3d-0987-4b76-843b-ffc1065b5a14}</Project>
-      <Name>Service.DBSpecification.Data</Name>
+      <Name>Service.DBRecord.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

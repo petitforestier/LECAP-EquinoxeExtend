@@ -415,7 +415,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         {
             var firstDisplayIndex = dgvMain.FirstDisplayedScrollingRowIndex;
 
-            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 var skip = (iShowFirstPage) ? 0 : ucNavigator.Skip;
 
@@ -582,7 +582,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     var selectedMainTask = GetSelectedMainTask();
                     if (selectedMainTask == null)
                         return;
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.AcceptMainTaskRequest(selectedMainTask.MainTaskId);
                         InternalReLoadControl();
@@ -611,7 +611,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (MessageBox.Show("Etes-vous sûr de vouloir annuler cette tâche ?", "Annulation tâche", MessageBoxButtons.YesNo) != DialogResult.Yes)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.CancelMainTask(selectedMainTask.MainTaskId);
                         InternalReLoadControl();
@@ -640,7 +640,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (selectedMainTask == null)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         if (selectedMainTask.Priority == null)
                             if (MessageBox.Show("Etes-vous sûr de vouloir placer cette tâche en priorité 1 et de décaler tous les autres ?", "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
@@ -675,7 +675,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (selectedMainTask == null)
                         return;
 
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.MoveDownMainTaskPriority(selectedMainTask);
                         InternalReLoadControl();

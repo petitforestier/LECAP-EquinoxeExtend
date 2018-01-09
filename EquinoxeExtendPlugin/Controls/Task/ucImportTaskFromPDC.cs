@@ -194,7 +194,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     using (var messageBoxForm = new frmUserControl(ucMessageBox, "Traitement", false, false))
                     {
                         messageBoxForm.Show();
-                        using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                        using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                         {
                             releaseService.AddAndUpdateExternalProjectFromFile();
                             LoadDatagridview();
@@ -211,7 +211,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private void LoadDatagridview()
         {
-            using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 var statusSearch = (ExternalProjectStatusSearchEnum)cboExternalProjectSearch.SelectedValue;
                 var list = releaseService.GetExternalProjectList(statusSearch).Enum().Select(x => ExternalProjectView.ConvertTo(x)).Enum().ToList();
@@ -246,7 +246,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     var selectedExternalProject = GetSelectedExternalProject();
                     if (selectedExternalProject != null)
                     {
-                        using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                        using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                         {
                             releaseService.ProcessedExternalProject(selectedExternalProject);
                             LoadDatagridview();
@@ -283,7 +283,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             if (ucMainTaskEditControl.DialogResult == DialogResult.OK)
                             {
                                 //traite le projet pour ne plus qu'il soit visible
-                                using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                                using (var releaseService = new ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                                     releaseService.ProcessedExternalProject(selectedExternalProject);
 
                                 LoadDatagridview();

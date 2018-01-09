@@ -21,22 +21,31 @@ namespace EquinoxeExtend.Shared.Enum
             return value != null ? new Tuple<string, string>(value.Login, value.Password) : null;
         }
 
-        public static string GetConnectionString(this EnvironmentEnum iValue)
+        public static string GetDWConnectionString(this EnvironmentEnum iValue)
         {
             Type type = iValue.GetType();
             FieldInfo fieldInfo = type.GetField(iValue.ToString());
-            ConnectionStringAttribute[] attrs = fieldInfo.GetCustomAttributes(typeof(ConnectionStringAttribute), false) as ConnectionStringAttribute[];
-            ConnectionStringAttribute value = (ConnectionStringAttribute)attrs.FirstOrDefault();
-            return value != null ? value.ConnectionString : null;
+            DWConnectionStringAttribute[] attrs = fieldInfo.GetCustomAttributes(typeof(DWConnectionStringAttribute), false) as DWConnectionStringAttribute[];
+            DWConnectionStringAttribute value = (DWConnectionStringAttribute)attrs.FirstOrDefault();
+            return value != null ? value.DWConnectionString : null;
         }
 
-        public static string GetExtendConnectionString(this EnvironmentEnum iValue)
+        public static string GetSQLConnectionString(this EnvironmentEnum iValue)
         {
             Type type = iValue.GetType();
             FieldInfo fieldInfo = type.GetField(iValue.ToString());
-            ExtendConnectionStringAttribute[] attrs = fieldInfo.GetCustomAttributes(typeof(ExtendConnectionStringAttribute), false) as ExtendConnectionStringAttribute[];
-            ExtendConnectionStringAttribute value = (ExtendConnectionStringAttribute)attrs.FirstOrDefault();
-            return value != null ? value.ExtendConnectionString : null;
+            SQLConnectionStringAttribute[] attrs = fieldInfo.GetCustomAttributes(typeof(SQLConnectionStringAttribute), false) as SQLConnectionStringAttribute[];
+            SQLConnectionStringAttribute value = (SQLConnectionStringAttribute)attrs.FirstOrDefault();
+            return value != null ? value.SQLConnectionString : null;
+        }
+
+        public static string GetSQLExtendConnectionString(this EnvironmentEnum iValue)
+        {
+            Type type = iValue.GetType();
+            FieldInfo fieldInfo = type.GetField(iValue.ToString());
+            SQLExtendConnectionStringAttribute[] attrs = fieldInfo.GetCustomAttributes(typeof(SQLExtendConnectionStringAttribute), false) as SQLExtendConnectionStringAttribute[];
+            SQLExtendConnectionStringAttribute value = (SQLExtendConnectionStringAttribute)attrs.FirstOrDefault();
+            return value != null ? value.SQLExtendConnectionString : null;
         }
 
         public static string GetSpecificationPrefix(this EnvironmentEnum iValue)
@@ -116,41 +125,64 @@ namespace EquinoxeExtend.Shared.Enum
         #endregion
     }
 
-    public class ConnectionStringAttribute : Attribute
+    public class SQLConnectionStringAttribute : Attribute
     {
         #region Public PROPERTIES
 
-        public string ConnectionString { get; protected set; }
+        public string SQLConnectionString { get; protected set; }
 
         #endregion
 
         #region Public CONSTRUCTORS
 
-        public ConnectionStringAttribute(string iValue)
+        public SQLConnectionStringAttribute(string iValue)
         {
-            this.ConnectionString = iValue;
+            this.SQLConnectionString = iValue;
+            //var entityConnectionStringBuilder = new EntityConnectionStringBuilder();
+            //entityConnectionStringBuilder.Provider = "System.Data.SqlClient";
+            //entityConnectionStringBuilder.ProviderConnectionString = iValue;
+            //entityConnectionStringBuilder.Metadata = "res://*";
+            //this.SQLConnectionString = entityConnectionStringBuilder.ToString();
         }
 
         #endregion
     }
 
-    public class ExtendConnectionStringAttribute : Attribute
+    public class DWConnectionStringAttribute : Attribute
     {
         #region Public PROPERTIES
 
-        public string ExtendConnectionString { get; protected set; }
+        public string DWConnectionString { get; protected set; }
 
         #endregion
 
         #region Public CONSTRUCTORS
 
-        public ExtendConnectionStringAttribute(string iValue)
+        public DWConnectionStringAttribute(string iValue)
+        {
+            this.DWConnectionString = iValue;
+        }
+
+        #endregion
+    }
+
+    public class SQLExtendConnectionStringAttribute : Attribute
+    {
+        #region Public PROPERTIES
+
+        public string SQLExtendConnectionString { get; protected set; }
+
+        #endregion
+
+        #region Public CONSTRUCTORS
+
+        public SQLExtendConnectionStringAttribute(string iValue)
         {
             var entityConnectionStringBuilder = new EntityConnectionStringBuilder();
             entityConnectionStringBuilder.Provider = "System.Data.SqlClient";
             entityConnectionStringBuilder.ProviderConnectionString = iValue;
             entityConnectionStringBuilder.Metadata = "res://*";
-            this.ExtendConnectionString = entityConnectionStringBuilder.ToString();
+            this.SQLExtendConnectionString = entityConnectionStringBuilder.ToString();
         }
 
         #endregion

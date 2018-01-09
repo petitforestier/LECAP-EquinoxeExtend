@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace DriveWorks.Helper.Manager
 {
@@ -48,26 +49,33 @@ namespace DriveWorks.Helper.Manager
             var formList = iProject.Navigation.GetForms(true, true);
 
             //Bouclage sur les forms
-            foreach (var item in formList)
+            foreach (var formItem in formList.Enum())
             {
                 //Ignore les formes si besoin
-                if (item.Form.Tag.ToLower().Trim().Contains(SettingsManager.GetProjectSettings(iProject).TagIgnore))
+                if (formItem.Form.Tag.ToLower().Trim().Contains(SettingsManager.GetProjectSettings(iProject).TagIgnore))
                     continue;
 
-                var formControlList = item.Form.Controls;
+                var formControlList = formItem.Form.Controls;
                 //Bouclage sur les controls
-                foreach (var controlItem in formControlList)
+                foreach (var controlItem in formControlList.Enum())
                 {
                     if (controlItem.Enabled == false)
                         continue;
 
                     var errorMessage = iProject.GetErrorMessageFromControlBase(controlItem, SettingsManager.GetProjectSettings(iProject).ErrorColorName);
                     if (errorMessage.IsNotNullAndNotEmpty())
-                        result.Add(errorMessage);
+                        result.Add("{0} -> {1} : {2}".FormatString(SplitCamelCase(formItem.Name.Remove(0,3)), SplitCamelCase(controlItem.Name.Remove(0, 3)),errorMessage));
                 }
             }
             return result;
         }
 
+        private static string SplitCamelCase(string iText)
+        {
+            if (iText.IsNullOrEmpty())
+                return iText;
+
+            return Regex.Replace(iText, "(\\B[A-Z])", " $1");
+        }
     }
 }

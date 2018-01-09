@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Service.Release.Front</RootNamespace>
     <AssemblyName>Service.Release.Front</AssemblyName>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,22 +31,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DriveWorks.Applications, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Applications.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.Engine, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.Scripting.API, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.Scripting.API.dll</HintPath>
-    </Reference>
-    <Reference Include="DriveWorks.SolidWorks, Version=12.0.0.0, Culture=neutral, PublicKeyToken=6a7b6697bc4ff5ec, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>C:\Program Files (x86)\DriveWorks\12.0\SDK\ReferenceAssemblies\DriveWorks.SolidWorks.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -104,9 +89,9 @@
       <Project>{125ea7c9-2f73-4b36-bad6-5f49dde22458}</Project>
       <Name>Service.DBRelease.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Service.DBSpecification.Data\Service.DBSpecification.Data.csproj">
+    <ProjectReference Include="..\Service.DBRecord.Data\Service.DBRecord.Data.csproj">
       <Project>{8fae8c3d-0987-4b76-843b-ffc1065b5a14}</Project>
-      <Name>Service.DBSpecification.Data</Name>
+      <Name>Service.DBRecord.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Service.PDCExcelFile.Data\Service.PDCExcelFile.Data.csproj">
       <Project>{f1e65bad-b90e-454b-81c9-9231eabcb035}</Project>

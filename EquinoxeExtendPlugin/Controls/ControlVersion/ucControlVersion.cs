@@ -28,6 +28,8 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
         public bool SaveNeeded { get; private set; }
 
+        public decimal NewVersionNumber { get; private set; }
+
         #endregion
 
         #region Public CONSTRUCTORS
@@ -38,6 +40,13 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             _Application = iApplication;
 
+            var projectService = _Application.ServiceManager.GetService<IProjectService>();
+            _Project = projectService.ActiveProject;
+
+            //incrémentation de la version de projet.
+            NewVersionNumber = DriveWorks.Helper.Manager.SettingsManager.GetProjectSettings(_Project).ProjectVersion + 0.0001m;
+
+            //Chargement controles
             dgvNewConstant.MultiSelect = false;
             dgvNewConstant.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             dgvNewConstant.ReadOnly = false;
@@ -74,7 +83,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
             dgvOldControl.AllowUserToResizeColumns = true;
             dgvOldControl.AllowUserToOrderColumns = false;
 
-            LoadData();
+            LoadData();   
         }
 
         #endregion
@@ -355,15 +364,28 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
         private void LoadData()
         {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
-
-            var projectService = _Application.ServiceManager.GetService<IProjectService>();
-            _Project = projectService.ActiveProject;
+          
             var tupleValues = _Project.GetAddedDeletedControlConstant();
 
             _AddedControlManaged = tupleValues.Item1;
+            //bouclage pour définir la bonne version
+            foreach (var item in _AddedControlManaged.Enum())
+                item.ProjectVersion = NewVersionNumber;
+
             _DeletedControlManaged = tupleValues.Item2;
+            //bouclage pour définir la bonne version
+            foreach (var item in _DeletedControlManaged.Enum())
+                item.ProjectVersion = NewVersionNumber;
+
             _AddedConstantManaged = tupleValues.Item3;
+            //bouclage pour définir la bonne version
+            foreach (var item in _AddedConstantManaged.Enum())
+                item.ProjectVersion = NewVersionNumber;
+
             _DeletedConstantManaged = tupleValues.Item4;
+            //bouclage pour définir la bonne version
+            foreach (var item in _DeletedConstantManaged.Enum())
+                item.ProjectVersion = NewVersionNumber;
 
             dgvNewControl.DataSource = _AddedControlManaged.Enum().Select(x => AddedControlView.ConvertTo(x)).ToList();
             dgvNewControl.FormatColumns<AddedControlView>("FR");
@@ -412,6 +434,9 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                             newControls.Add(AddedControlView.GetFromRow(item));
 
                         _Project.AddToAddedControlProjectDataTable(newControls);
+
+                        //modification de la version du projet
+                        DriveWorks.Helper.Manager.SettingsManager.UpdateProjectVersionNumber(_Project, NewVersionNumber);
 
                         LoadData();
 
@@ -465,6 +490,9 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
                         _Project.AddToDeletedControlProjectDataTable(oldControls);
 
+                        //modification de la version du projet
+                        DriveWorks.Helper.Manager.SettingsManager.UpdateProjectVersionNumber(_Project, NewVersionNumber);
+
                         LoadData();
                         SaveNeeded = true;
 
@@ -494,6 +522,9 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                             newConstants.Add(AddedConstantView.GetFromRow(item));
 
                         _Project.AddToAddedConstantProjectDataTable(newConstants);
+
+                        //modification de la version du projet
+                        DriveWorks.Helper.Manager.SettingsManager.UpdateProjectVersionNumber(_Project, NewVersionNumber);
 
                         LoadData();
                         SaveNeeded = true;
@@ -535,6 +566,9 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                         }
 
                         _Project.AddToDeletedConstantProjectDataTable(oldConstants);
+
+                        //modification de la version du projet
+                        DriveWorks.Helper.Manager.SettingsManager.UpdateProjectVersionNumber(_Project, NewVersionNumber);
 
                         LoadData();
                         SaveNeeded = true;

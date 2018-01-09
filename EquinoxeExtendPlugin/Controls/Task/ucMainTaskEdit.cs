@@ -75,7 +75,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 cboTaskType = cboTaskType.FillByDictionary(new MainTaskTypeEnum().ToDictionary("FR"));
 
-                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
                     _ProductLineList = releaseService.GetProductLineList().Enum().OrderBy(x => x.Name).Enum().ToList();
                     foreach (var item in _ProductLineList.Enum())
@@ -353,7 +353,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private void LoadPackageCombo()
         {
-            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
                 cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
@@ -386,7 +386,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         if (!ControlValidator())
                         {

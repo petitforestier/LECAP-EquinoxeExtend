@@ -70,6 +70,7 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.dgvPackage = new System.Windows.Forms.DataGridView();
             this.fraPackage = new System.Windows.Forms.GroupBox();
+            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
             this.tlpRight = new System.Windows.Forms.TableLayoutPanel();
@@ -77,7 +78,6 @@
             this.dgvSubTask = new System.Windows.Forms.DataGridView();
             this.fraDeployement = new System.Windows.Forms.GroupBox();
             this.dgvDeployement = new System.Windows.Forms.DataGridView();
-            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.tlpMain.SuspendLayout();
             this.fraSearch.SuspendLayout();
             this.tlpHeader.SuspendLayout();
@@ -455,6 +455,15 @@
             this.fraPackage.TabStop = false;
             this.fraPackage.Text = "Package";
             // 
+            // ucPackageEdit
+            // 
+            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
+            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucPackageEdit.Name = "ucPackageEdit";
+            this.ucPackageEdit.Size = new System.Drawing.Size(255, 192);
+            this.ucPackageEdit.TabIndex = 5;
+            // 
             // fraMainTask
             // 
             this.fraMainTask.Controls.Add(this.dgvMainTask);
@@ -601,15 +610,6 @@
             this.dgvDeployement.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
             this.dgvDeployement.Size = new System.Drawing.Size(380, 217);
             this.dgvDeployement.TabIndex = 7;
-            // 
-            // ucPackageEdit
-            // 
-            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
-            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucPackageEdit.Name = "ucPackageEdit";
-            this.ucPackageEdit.Size = new System.Drawing.Size(255, 192);
-            this.ucPackageEdit.TabIndex = 5;
             // 
             // ucPackageManagement
             // 

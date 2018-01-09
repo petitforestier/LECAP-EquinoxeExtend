@@ -49,16 +49,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Record\Lock.cs" />
     <Compile Include="Log\Log.cs" />
     <Compile Include="Pool\Pool.cs" />
     <Compile Include="Product\ProductLine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Record\Dossier.cs" />
     <Compile Include="Release1\Deployement.cs" />
     <Compile Include="Release1\ExternalProject.cs" />
     <Compile Include="Release1\SubTask.cs" />
     <Compile Include="Release1\Package.cs" />
     <Compile Include="Release1\MainTask.cs" />
-    <Compile Include="Specification\Specification.cs" />
+    <Compile Include="Record\Specification.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -86,9 +88,9 @@
       <Project>{125ea7c9-2f73-4b36-bad6-5f49dde22458}</Project>
       <Name>Service.DBRelease.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Service.DBSpecification.Data\Service.DBSpecification.Data.csproj">
+    <ProjectReference Include="..\Service.DBRecord.Data\Service.DBRecord.Data.csproj">
       <Project>{8fae8c3d-0987-4b76-843b-ffc1065b5a14}</Project>
-      <Name>Service.DBSpecification.Data</Name>
+      <Name>Service.DBRecord.Data</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -333,7 +333,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         var selectedProjectTask = GetSelectedSubTask();
 

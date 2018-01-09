@@ -76,7 +76,7 @@ namespace Service.DBLog.Data
 
         public T_E_Log GetLogById(long iLog)
         {
-            if (iLog < 1) throw new ArgumentException("L'id de la tâche est invalide");
+            if (iLog < 1) throw new ArgumentException("L'id du log est invalide");
             return GetSingleOrDefault<T_E_Log>(x => x.LogId == iLog);
         }
 

@@ -10,6 +10,7 @@ namespace DriveWorks.Helper
 {
     public static class DataTableHelper
     {
+
         public static List<string> GetProjectDataTableDifference(List<Tuple<string, ProjectDetails, ImportedDataTable>> iProjectDataTableList)
         {
             var result = new List<string>();
@@ -26,7 +27,7 @@ namespace DriveWorks.Helper
             //Bouclage sur toutes les tables pour comparer à la première, suffisant pour détecter les erreurs
             foreach (var projectTableItem in iProjectDataTableList)
             {
-                var difference = DataTableDifference(projectTableItem.Item3, firstProjectTableData.Item3);
+                var difference = DataTableDifference(projectTableItem.Item2.Name, projectTableItem.Item3, firstProjectTableData.Item2.Name, firstProjectTableData.Item3);
                 if (difference.IsNotNullAndNotEmpty())
                     result.Add("Le projet '{0} => {1}' et '{2} => {3}' ont respectivement une différence de table '{4}' et '{5}'. La différence est : {6}"
                         .FormatString(firstProjectTableData.Item1, firstProjectTableData.Item2.Name, projectTableItem.Item1, projectTableItem.Item2.Name, firstProjectTableData.Item3.DisplayName, projectTableItem.Item3.DisplayName, difference));
@@ -34,13 +35,31 @@ namespace DriveWorks.Helper
             return result;
         }
 
-        private static string DataTableDifference(ImportedDataTable iImportedDataTable1, ImportedDataTable iImportedDataTable2)
+        private static string DataTableDifference(string iProjectName1, ImportedDataTable iImportedDataTable1, string iProjectName2, ImportedDataTable iImportedDataTable2)
         {
-            var tableData1 = iImportedDataTable1.GetCachedTableData();
-            var tableData2 = iImportedDataTable2.GetCachedTableData();
+            object[,] tableData1;
+            object[,] tableData2;
 
-            tableData1 = RemoveEmptyRowColumnDataTable(iImportedDataTable1);
-            tableData2 = RemoveEmptyRowColumnDataTable(iImportedDataTable2);
+            //Importation des données des tables
+            try
+            {
+                tableData1 = iImportedDataTable1.GetCachedTableData();
+                tableData1 = RemoveLastEmptyRowColumnDataTable(iImportedDataTable1);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erreur lors de l'importation des données de la table {0}, projet {1}".FormatString(iImportedDataTable1.DisplayName, iProjectName1), ex);
+            }
+
+            try
+            {
+                tableData2 = iImportedDataTable2.GetCachedTableData();
+                tableData2 = RemoveLastEmptyRowColumnDataTable(iImportedDataTable2);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Erreur lors de l'importation des données de la table {0}, projet {1}".FormatString(iImportedDataTable1.DisplayName, iProjectName2), ex);
+            }
 
             //Bouclage sur les lignes
             for (int rowIndex = 0; rowIndex <= tableData1.GetLength(0) - 1; rowIndex++)
@@ -55,7 +74,12 @@ namespace DriveWorks.Helper
             return null;
         }
 
-        private static string[,] RemoveEmptyRowColumnDataTable(ImportedDataTable iImportedDataTable)
+        /// <summary>
+        /// Supprime les éventuelles dernières lignes et colonnes vides 
+        /// </summary>
+        /// <param name="iImportedDataTable"></param>
+        /// <returns></returns>
+        private static string[,] RemoveLastEmptyRowColumnDataTable(ImportedDataTable iImportedDataTable)
         {
             var rowIndexMax = 0;
             var columnIndexMax = 0;
@@ -68,10 +92,13 @@ namespace DriveWorks.Helper
                 //Bouclage sur les celulles de la ligne
                 for (int columnIndex = 0; columnIndex <= tableData.GetLength(1) - 1; columnIndex++)
                 {
-                    if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
+                    if (tableData[rowIndex, columnIndex] != null)
                     {
-                        rowIndexMax = rowIndex;
-                        break;
+                        if (tableData[rowIndex, columnIndex].ToString() != string.Empty)
+                        {
+                            rowIndexMax = rowIndex;
+                            break;
+                        }
                     }
                 }
                 if (rowIndexMax != 0)
@@ -84,10 +111,13 @@ namespace DriveWorks.Helper
                 //Bouclage sur les celulles de la ligne
                 for (int rowIndex = 0; rowIndex <= tableData.GetLength(0) - 1; rowIndex++)
                 {
-                    if (tableData[rowIndex, columnIndex].ToString().IsNotNullAndNotEmpty())
+                    if (tableData[rowIndex, columnIndex] != null)
                     {
-                        columnIndexMax = columnIndex;
-                        break;
+                        if (tableData[rowIndex, columnIndex].ToString() != string.Empty)
+                        {
+                            columnIndexMax = columnIndex;
+                            break;
+                        }
                     }
                 }
                 if (columnIndexMax != 0)
@@ -100,7 +130,12 @@ namespace DriveWorks.Helper
             for (int rowIndex = 0; rowIndex <= rowIndexMax; rowIndex++)
             {
                 for (int columnIndex = 0; columnIndex <= columnIndexMax; columnIndex++)
-                    resultArray[rowIndex, columnIndex] = tableData[rowIndex, columnIndex].ToString();
+                {
+                    if (tableData[rowIndex, columnIndex] != null)
+                        resultArray[rowIndex, columnIndex] = tableData[rowIndex, columnIndex].ToString();
+                    else
+                        resultArray[rowIndex, columnIndex] = null;
+                }
             }
 
             return resultArray;
@@ -128,10 +163,10 @@ namespace DriveWorks.Helper
             var mergeData = new object[iNewDataList.Count + originalData.GetLength(0), columnCount];
 
             //Ajout données existant dans le tableau
-            for (int j = 0; j <= originalData.GetLength(0)-1; j++)
+            for (int j = 0; j <= originalData.GetLength(0) - 1; j++)
             {
-                for (int i = 0; i <= originalData.GetLength(1)-1; i++)
-                    mergeData[j, i] = originalData[j,i];
+                for (int i = 0; i <= originalData.GetLength(1) - 1; i++)
+                    mergeData[j, i] = originalData[j, i];
             }
 
             //Ajout des nouvelles données
@@ -147,6 +182,35 @@ namespace DriveWorks.Helper
                 rowIndex++;
             }
 
+            iSimpleDataTable.SetTableData(mergeData);
+        }
+
+        /// <summary>
+        /// Remplace la totalité des données dans le tableau
+        /// </summary>
+        /// <param name="iSimpleDataTable"></param>
+        /// <param name="iNewDataList"></param>
+        public static void ReplaceCompleteDataToSimpleDateTable(SimpleDataTable iSimpleDataTable, List<List<string>> iNewDataList)
+        {
+            if (iNewDataList.IsNullOrEmpty())
+                throw new Exception("La nouvelle liste est vide ou null");
+
+            var mergeData = new object[iNewDataList.Count, iNewDataList.First().Count];
+
+            //Création du tableau
+            int rowIndex = 0;
+            foreach (var iRowItem in iNewDataList.Enum())
+            {
+                var columnIndex = 0;
+                foreach (var iColumnItem in iRowItem.Enum())
+                {
+                    mergeData[rowIndex, columnIndex] = iColumnItem;
+                    columnIndex++;
+                }
+                rowIndex++;
+            }
+
+            //Ecriture des données dans le tableau
             iSimpleDataTable.SetTableData(mergeData);
         }
 

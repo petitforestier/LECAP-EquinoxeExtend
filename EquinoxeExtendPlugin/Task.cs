@@ -3,17 +3,21 @@ using DriveWorks.Helper.Manager;
 using DriveWorks.Helper.Object;
 using DriveWorks.Specification;
 using EquinoxeExtend.Shared.Enum;
+using EquinoxeExtend.Shared.Object.Record;
+using EquinoxeExtendPlugin.Object;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using Service.Log.Front;
-using Service.Specification.Front;
-using Service.Specification.Front.Enum;
+using Service.Record.Front;
+using Service.Record.Front.Enum;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Control.Datagridview;
+using Library.Control.UserControls;
 
 namespace EquinoxeExtendPlugin
 {
@@ -24,7 +28,7 @@ namespace EquinoxeExtendPlugin
 
         public DeleteTemplate()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom specification modèle", "Nom de la spécification modèle à supprimer");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier modèle", "Nom du dossier modèle à supprimer");
         }
 
         #endregion
@@ -33,20 +37,17 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
-                    if (SpecificationNameProperty.Value.IsNullOrEmpty())
+                    if (DossierNameProperty.Value.IsNullOrEmpty())
                         throw new Exception("Le nom de la spécification est invalide");
 
                     //Suppression Base de données
-                    specificationService.DeleteSpecification(SpecificationNameProperty.Value);
+                    recordService.DeleteDossier(DossierNameProperty.Value);
 
-                    //Suppression DW
-                    ctx.Group.DeleteSpecification(SpecificationNameProperty.Value);
-
-                    ctx.Project.AddMessage("Modèle '{0}' a été supprimé avec succès".FormatString(SpecificationNameProperty.Value));
+                    ctx.Project.AddMessage("Modèle '{0}' a été supprimé avec succès".FormatString(DossierNameProperty.Value));
                 }
                 catch (Exception ex)
                 {
@@ -59,7 +60,7 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
-        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<string> DossierNameProperty;
 
         #endregion
     }
@@ -71,7 +72,7 @@ namespace EquinoxeExtendPlugin
 
         public RenameTemplate()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom spécification", "Nom de la spécification à renommer");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Nom du dossier à renommer");
             NewTemplateNameProperty = Properties.RegisterStringProperty("Nouveau nom modèle", "Nouveau nom du modèle");
         }
 
@@ -81,7 +82,7 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
@@ -89,9 +90,9 @@ namespace EquinoxeExtendPlugin
                     if (newName.IsNullOrEmpty())
                         throw new Exception("Le nouveau nom n'est pas valide");
 
-                    specificationService.UpdateDisplayName(SpecificationNameProperty.Value, newName);
+                    recordService.UpdateTemplateName(DossierNameProperty.Value, newName);
 
-                    ctx.Project.AddMessage("La spécification '{0}' a été renommé en '{1}' avec succès".FormatString(SpecificationNameProperty.Value, newName));
+                    ctx.Project.AddMessage("Le dossier modèle '{0}' a été renommé en '{1}' avec succès".FormatString(DossierNameProperty.Value, newName));
                 }
                 catch (Exception ex)
                 {
@@ -104,7 +105,7 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
-        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<string> NewTemplateNameProperty;
 
         #endregion
@@ -117,7 +118,7 @@ namespace EquinoxeExtendPlugin
 
         public UpdateTemplateDescription()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom spécification", "Nom de la spécification à renommer");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Nom de la spécification à renommer");
             NewDescriptionProperty = Properties.RegisterStringProperty("Description du modèle", "Description du modèle");
         }
 
@@ -127,13 +128,13 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
                     var newDescription = NewDescriptionProperty.Value;
-                    specificationService.UpdateDescription(SpecificationNameProperty.Value, newDescription);
-                    ctx.Project.AddMessage("La description de la spécification '{0}'a été modifiée avec succès".FormatString(SpecificationNameProperty.Value, newDescription));
+                    recordService.UpdateDescription(DossierNameProperty.Value, newDescription);
+                    ctx.Project.AddMessage("La description de la spécification '{0}'a été modifiée avec succès".FormatString(DossierNameProperty.Value, newDescription));
                 }
                 catch (Exception ex)
                 {
@@ -146,23 +147,25 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
-        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<string> NewDescriptionProperty;
 
         #endregion
     }
 
-    [Task("SPECMGT:NewSpecification", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class NewSpecification : DriveWorks.Specification.Task
+    [Task("SPECMGT:NewDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class NewDossier : DriveWorks.Specification.Task
     {
         #region Public CONSTRUCTORS
 
-        public NewSpecification()
+        public NewDossier()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom spécification", "Nom de la spécification à créer");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier à créer");
             CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
-            TemplateDisplayNameProperty = Properties.RegisterStringProperty("Nom du modèle", "Nom textuel d'affichage pour différentier les modèles autrement que le numéro de spécification");
             TemplateDescriptionProperty = Properties.RegisterStringProperty("Description du modèle", "Description du modèle");
+            IsTemplateProperty = Properties.RegisterBooleanProperty("Est un Modèle", "Est un Modèle");
+            TemplateNameProperty = Properties.RegisterStringProperty("Nom du modèle", "Nom textuel d'affichage pour différentier les modèles autrement que le numéro du Dossier");
+            SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification à Créer");
         }
 
         #endregion
@@ -171,7 +174,7 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
@@ -183,23 +186,36 @@ namespace EquinoxeExtendPlugin
                     //Vérification que tous les controls et constantes sont renseignés dans les tables
                     ctx.Project.CheckControlConstantManagement();
 
-                    var newSpecification = new EquinoxeExtend.Shared.Object.Specification.Specification();
+                    //Creation du Dossier
+                    var newDossier = new EquinoxeExtend.Shared.Object.Record.Dossier();
 
-                    newSpecification.SpecificationName = SpecificationNameProperty.Value;
-                    newSpecification.IsTemplate = (TemplateDisplayNameProperty.Value.IsNullOrEmpty()) ? false : true;
-                    newSpecification.DisplayName = (TemplateDisplayNameProperty.Value.IsNullOrEmpty()) ? null : TemplateDisplayNameProperty.Value;
-                    newSpecification.Description = TemplateDescriptionProperty.Value;
-                    newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+                    newDossier.DossierId = -1;
+                    newDossier.Name = DossierNameProperty.Value;
+                    newDossier.IsTemplate = IsTemplateProperty.Value;
+                    newDossier.TemplateDescription = TemplateDescriptionProperty.Value;
+                    newDossier.TemplateName = (TemplateNameProperty.Value.IsNullOrEmpty()) ? null : TemplateNameProperty.Value;
+                    newDossier.ProjectName = ctx.Project.Name;
+
+                    //Creation de la Specification
+                    newDossier.Specifications = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
+
+                    var newSpecification = new EquinoxeExtend.Shared.Object.Record.Specification();
+
+                    newSpecification.SpecificationId = -1;
                     newSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
                     newSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
+                    newSpecification.CreationDate = DateTime.Now;
+                    newSpecification.Name = newDossier.Name;
+                    newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+                    newSpecification.Name = SpecificationNameProperty.Value;
 
-                    newSpecification.SpecificationVersion = 1;
+                    newDossier.Specifications.Add(newSpecification);
 
-                    specificationService.NewSpecification(newSpecification);
+                    dossierService.NewDossier(newDossier);
                 }
                 catch (Exception ex)
                 {
-                    ctx.Project.AddErrorMessage("Erreur lors de la création de la spécification", ex);
+                    ctx.Project.AddErrorMessage("Erreur lors de la création du Dossier", ex);
                 }
             }
         }
@@ -208,79 +224,26 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
-        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<bool> CheckErrorProperty;
-        private FlowProperty<string> TemplateDisplayNameProperty;
         private FlowProperty<string> TemplateDescriptionProperty;
+        private FlowProperty<bool> IsTemplateProperty;
+        private FlowProperty<string> TemplateNameProperty;
 
-        #endregion
-    }
-
-    [Task("SPECMGT:UpdateSpecification", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class UpdateSpecification : DriveWorks.Specification.Task
-    {
-        #region Public CONSTRUCTORS
-
-        public UpdateSpecification()
-        {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom spécification", "Nom de la spécification à modifier");
-            CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
-        }
-
-        #endregion
-
-        #region Protected METHODS
-
-        protected override void Execute(SpecificationContext ctx)
-        {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
-            {
-                try
-                {
-                    if (SpecificationNameProperty.Value.IsNullOrEmpty())
-                        throw new Exception("Aucune spécification n'a été chargée");
-
-                    var theSpecification = specificationService.GetSpecificationByName(SpecificationNameProperty.Value);
-
-                    decimal projectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
-
-                    if (theSpecification.ProjectVersion > projectVersion)
-                        throw new Exception("La spécification est à la version '{0}', elle ne peut être supérieure à la version du projet '{1}'".FormatString(theSpecification.ProjectVersion, projectVersion));
-
-                    //Ajout des valeurs
-                    theSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
-                    theSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
-                    theSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
-
-                    theSpecification.SpecificationVersion ++;
-
-                    specificationService.UpdateSpecification(theSpecification);
-                }
-                catch (Exception ex)
-                {
-                    ctx.Project.AddErrorMessage("Erreur lors de la création de la spécification", ex);
-                }
-            }
-        }
-
-        #endregion
-
-        #region Private FIELDS
-
+        //private FlowProperty<string> LockDateProperty;
         private FlowProperty<string> SpecificationNameProperty;
-        private FlowProperty<bool> CheckErrorProperty;
 
         #endregion
     }
 
-    [Task("SPECMGT:LoadSpecification", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class LoadSpecification : DriveWorks.Specification.Task
+    [Task("SPECMGT:LoadDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class LoadDossier : DriveWorks.Specification.Task
     {
         #region Public CONSTRUCTORS
 
-        public LoadSpecification()
+        public LoadDossier()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom spécification", "Nom de la spécification");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier");
         }
 
         #endregion
@@ -289,24 +252,27 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
-                    var theSpecification = specificationService.GetSpecificationByName(SpecificationNameProperty.Value);
-                    if (theSpecification == null)
-                        throw new Exception("La spécification '{0}' n'existe pas".FormatString(SpecificationNameProperty.Value));
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+                    if (theDossier == null)
+                        throw new Exception("Le Dossier '{0}' n'existe pas".FormatString(DossierNameProperty.Value));
 
                     var errorList = new List<string>();
                     var projectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
 
+                    //récupère la dernière specification
+                    var lastSpecification = theDossier.Specifications.OrderBy(x => x.CreationDate).Last();
+
                     //Controle de Version
-                    if (theSpecification.ProjectVersion > projectVersion)
-                        throw new Exception("La version du projet de la sauvegarde '{0}', ne peut pas être supérieur à la version du projet actuellement ouvert '{1}'".FormatString(theSpecification.ProjectVersion, projectVersion));
+                    if (lastSpecification.ProjectVersion > projectVersion)
+                        throw new Exception("La version du projet de la sauvegarde '{0}', ne peut pas être supérieure à la version du projet actuellement ouvert '{1}'".FormatString(lastSpecification.ProjectVersion, projectVersion));
 
                     //Constant
-                    var specificationConstantStateList = theSpecification.Constants.DeserializeList<ConstantState>();
-                    var constantBuildResult = ctx.Project.BuildConstantListFromVersion(specificationConstantStateList, theSpecification.ProjectVersion);
+                    var specificationConstantStateList = lastSpecification.Constants.DeserializeList<ConstantState>();
+                    var constantBuildResult = ctx.Project.BuildConstantListFromVersion(specificationConstantStateList, lastSpecification.ProjectVersion);
 
                     //Constantes
                     foreach (var item in constantBuildResult.Enum())
@@ -319,19 +285,22 @@ namespace EquinoxeExtendPlugin
                     }
 
                     //Control
-                    var specificationControlStateList = theSpecification.Controls.DeserializeList<ControlState>();
-                    var controlBuildResult = ctx.Project.BuildControlListFromVersion(specificationControlStateList, theSpecification.ProjectVersion);
+                    var specificationControlStateList = lastSpecification.Controls.DeserializeList<ControlState>();
+                    var controlBuildResult = ctx.Project.BuildControlListFromVersion(specificationControlStateList, lastSpecification.ProjectVersion);
 
                     specificationControlStateList = controlBuildResult.Item1;
                     var deletedMessageList = controlBuildResult.Item2;
+
+                    var addedMessageList = specificationControlStateList.Enum().Where(x => x.Message.IsNotNullAndNotEmpty()).Enum().ToList();
 
                     var errorCount = -1;
 
                     var specificationRestControlStateList = specificationControlStateList;
 
+                    //Bouclage pour définir la valeur des controles. L'écriture en une seule fois n'est pas possible car certaines valeures sont dépendantes d'autres valeurs. Il est normale que le nombre d'erreur diminue à chaque itération.
                     while (errorCount != 0)
                     {
-                        specificationRestControlStateList = Tools.Tools.SetControlValueListToSpecification(ctx, specificationRestControlStateList);
+                        specificationRestControlStateList = Tools.Tools.SetControlValueListToSpecification(ctx, specificationControlStateList);
 
                         if (specificationRestControlStateList.Count() == errorCount)
                         {
@@ -347,7 +316,10 @@ namespace EquinoxeExtendPlugin
                                     errorList.Add("Controle '{0}' la valeur 2 est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value2, controlStateItem.Value2));
                             }
 
-                            throw new Exception(errorList.Concat(Environment.NewLine));
+                            if (errorList.IsNullOrEmpty())
+                                throw new Exception("Conctacter l'administrateur, Erreur dans l'écriture des valeurs de contrôles");
+
+                            break;
                         }
                         else
                         {
@@ -355,27 +327,23 @@ namespace EquinoxeExtendPlugin
                         }
                     }
 
-                    //Vérification des valeurs de tous les controls
-                    foreach (var controlStateItem in specificationControlStateList)
-                    {
-                        var theControl = ctx.Project.Navigation.GetControl(controlStateItem.Name);
-                        var controlState = ctx.Project.GetControlStateFormControlBase(theControl);
+                    //Création du message Utilisateur
+                    var endMessage = "Chargement effectué";
 
-                        if (controlState.Value != controlStateItem.Value)
-                            errorList.Add("Controle '{0}' la valeur est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value, controlStateItem.Value));
+                    if (errorList.IsNotNullAndNotEmpty())
+                        endMessage += Environment.NewLine + Environment.NewLine + "ERREUR(S) A CORRIGER :" + Environment.NewLine + errorList.Concat(Environment.NewLine);
 
-                        if (controlState.Value2 != controlStateItem.Value2)
-                            errorList.Add("Controle '{0}' la valeur 2 est de '{1}' au lieu de '{2}', contacter l'administrateur.".FormatString(theControl.Name, controlState.Value2, controlStateItem.Value2));
-                    }
+                    if (addedMessageList.IsNotNullAndNotEmpty())
+                        endMessage += Environment.NewLine + Environment.NewLine + "CONTROLE(S) AJOUTE(S) :" + Environment.NewLine + addedMessageList.Select(x=>x.Message).ToList().Concat(Environment.NewLine);
 
-                    if(errorList.IsNotNullAndNotEmpty())
-                        throw new Exception(errorList.Concat(Environment.NewLine));
+                    if (deletedMessageList.IsNotNullAndNotEmpty())
+                        endMessage += Environment.NewLine + Environment.NewLine + "CONTROLE(S) SUPPRIME(S) :" + Environment.NewLine + deletedMessageList.Concat(Environment.NewLine);
 
-                    ctx.Project.AddMessage("Chargement effectué".FormatString(SpecificationNameProperty.Value));
+                    ctx.Project.AddMessage(endMessage);
                 }
                 catch (Exception ex)
                 {
-                    ctx.Project.AddErrorMessage("Erreur lors de la création de la spécification", ex);
+                    ctx.Project.AddErrorMessage("Erreur lors du chargement du dossier", ex);
                 }
             }
         }
@@ -384,7 +352,77 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
+        private FlowProperty<string> DossierNameProperty;
+
+        #endregion
+    }
+
+    [Task("SPECMGT:UpdateDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class UpdateDossier : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public UpdateDossier()
+        {
+            DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier à modifier");
+            CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
+            SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification à Créer");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                try
+                {
+                    // Vérification des erreurs
+                    if (CheckErrorProperty.Value)
+                        if (ctx.Project.GetErrorMessageList().IsNotNullAndNotEmpty())
+                            throw new Exception("La création n'est pas possible car contient des erreurs");
+                    if (DossierNameProperty.Value.IsNullOrEmpty())
+                        throw new Exception("Aucun nom de dossier n'a été renseigné");
+
+                    if (SpecificationNameProperty.Value.IsNullOrEmpty())
+                        throw new Exception("Aucun nom de spécification n'a été renseigné");
+
+                    //récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+
+                    decimal projectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+
+                    //Creation de la Specification
+                    theDossier.Specifications = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
+
+                    var newSpecification = new EquinoxeExtend.Shared.Object.Record.Specification();
+
+                    newSpecification.SpecificationId = -1;
+                    newSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
+                    newSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
+                    newSpecification.CreationDate = DateTime.Now;
+                    newSpecification.DossierId = theDossier.DossierId;
+                    newSpecification.Name = SpecificationNameProperty.Value;
+                    newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+
+                    dossierService.NewSpecification(newSpecification);
+                }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur lors de la mise à jour du dossier", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<bool> CheckErrorProperty;
 
         #endregion
     }
@@ -449,7 +487,7 @@ namespace EquinoxeExtendPlugin
                 if ((TypeProperty.Value % 1) != 0 || !(TypeProperty.Value >= 1 && TypeProperty.Value <= 3))
                     throw new Exception("Le type est invalide");
 
-                using (var logService = new LogService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+                using (var logService = new LogService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
                     var newLog = new EquinoxeExtend.Shared.Object.Log.Log();
                     newLog.Message = MessageProperty.Value;
@@ -478,18 +516,17 @@ namespace EquinoxeExtendPlugin
         #endregion
     }
 
-    [Task("SPECMGT:FillSpecificationTable", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class FillSpecificationTable : DriveWorks.Specification.Task
+    [Task("SPECMGT:FillDossierTable", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class FillDossierTable : DriveWorks.Specification.Task
     {
         #region Public CONSTRUCTORS
 
-        public FillSpecificationTable()
+        public FillDossierTable()
         {
-            SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Facultatif, Nom complet ou partiel à rechercher");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Facultatif, Nom complet ou partiel à rechercher");
             UserNameProperty = Properties.RegisterStringProperty("Nom utilisateur", "Facultatif, Nom de l'utilisateur créateur ou modificateur à rechercher");
             StateNameProperty = Properties.RegisterStringProperty("Etat", "Nom de état à afficher");
-            SpecificationTableControlNameProperty = Properties.RegisterStringProperty("Nom controle Datatable sortie", "Définir le nom du controle où les données seront retournées");
-            TemplateProperty = Properties.RegisterBooleanProperty("Montrer modèle", "True pour voir exclusivement les modèles, False pour ne voir aucun modèle");
+            DossierTableControlNameProperty = Properties.RegisterStringProperty("Nom controle Datatable sortie", "Définir le nom du controle où les données seront retournées");
             ThrowErrorProperty = Properties.RegisterBooleanProperty("Lever erreur", "Lever une erreur si une erreur à lieu");
         }
 
@@ -499,105 +536,157 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var specificationService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
                     var userList = ctx.Group.GetUserList();
-                    var projectDic = ctx.Group.GetProjectAliasDic();
-
-                    var resultList = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Specification.Specification, SpecificationDetails>>();
+                    var resultList = new List<EquinoxeExtendPlugin.Object.Dossier>();
 
                     //Recherche sur le nom
-                    if (SpecificationNameProperty.Value.IsNotNullAndNotEmpty())
+                    if (DossierNameProperty.Value.IsNotNullAndNotEmpty())
                     {
-                        var specification = specificationService.GetSpecificationByName(SpecificationNameProperty.Value);
-                        var specificationDetail = ctx.Group.Specifications.GetSpecification(SpecificationNameProperty.Value);
+                        var simpleDossier = specificationService.GetDossierByName(DossierNameProperty.Value);
+                        if (simpleDossier != null)
+                        {
+                            var fullDossier = simpleDossier.ConvertFull();
+                            fullDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
 
-                        if (specification != null && specification != null)
-                            resultList.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Specification.Specification, SpecificationDetails>(specification, specificationDetail));
+                            foreach (var item in fullDossier.Specifications.Enum())
+                            {
+                                var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(item.Name);
+                                if (theSpecificationDetails == null)
+                                    throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(item.Name));
+
+                                fullDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(item, theSpecificationDetails));
+                            }
+                            resultList.Add(fullDossier);
+                        }
                     }
+
                     //Autres
                     else
                     {
-                        var specifications = specificationService.GetSpecifications(TemplateProperty.Value);
-                        var specificationDetails = ctx.Group.Specifications.GetSpecificationsByModifiedDate(true);
-
-                        var listComparator = new Library.Tools.Comparator.ListComparator<EquinoxeExtend.Shared.Object.Specification.Specification, SpecificationDetails>(specifications, x => x.SpecificationName, specificationDetails, x => x.Name);
-
-                        var commonList = listComparator.CommonPairList;
+                        List<DriveWorks.Helper.Object.Specification> dataBaseSpecifications = null;
+                        var dataBaseQuery = new DriveWorks.Helper.DataBaseQuery(ctx.Group.GetEnvironment().GetSQLConnectionString());
 
                         //State
                         if (StateNameProperty.Value.IsNotNullAndNotEmpty())
-                            commonList = commonList.Enum().Where(x => x.Value.StateName == StateNameProperty.Value).Enum().ToList();
+                        {
+                            dataBaseSpecifications = dataBaseQuery.GetSpecificationsByStateName(StateNameProperty.Value);
+                        }   
 
                         //User
                         if (UserNameProperty.Value.IsNotNullAndNotEmpty())
                         {
-                            var userId = ctx.Group.GetUserList().Single(x => x.DisplayName == UserNameProperty.Value);
-                            commonList = commonList.Enum().Where(x => x.Value.CreatorId == userId.Id || x.Value.EditorId == userId.Id).Enum().ToList();
+                            var UserDetails = userList.Enum().SingleOrDefault(x => x.LoginName == UserNameProperty.Value);
+                            if (UserDetails == null)
+                                throw new Exception("Le nom de l'utilisateur n'existe pas");
+
+                            if (StateNameProperty.Value.IsNotNullAndNotEmpty())
+                                dataBaseSpecifications = dataBaseSpecifications.Where(x => x.CreatorID == UserDetails.Id.ToString()).Enum().ToList();
+                            else
+                                dataBaseSpecifications = dataBaseQuery.GetSpecificationsByCreatorId(UserDetails.Id.ToString());
                         }
-                        resultList = commonList;
+
+                        var tempDossiers = new List<EquinoxeExtend.Shared.Object.Record.Dossier>();
+
+                        //Bouclage sur chaque spécification pour enrichir et filtrer
+                        foreach(var specificationItem in dataBaseSpecifications.Enum())
+                        {
+                            //Récupére la spécification en base extend
+                            var specification = specificationService.GetSpecificationByName(specificationItem.Name);
+
+                            if (specification == null)
+                                continue;
+                            //Récupère le dossier en base extend
+                            var parentDossier = specificationService.GetDossierById(specification.DossierId);
+
+                            if (parentDossier == null)
+                                continue;
+
+                            //Pour l'état ne garder 
+                            if (StateNameProperty.Value.IsNotNullAndNotEmpty())
+                            {
+                                var lastestSpecification = parentDossier.Specifications.OrderByDescending(x => x.CreationDate).First();
+                                if(lastestSpecification.SpecificationId == specification.SpecificationId)
+                                    tempDossiers.Add(parentDossier);
+                            }
+                            else
+                            {
+                                tempDossiers.Add(parentDossier);
+                            }
+                        }
+
+                        //Enrichissement des objets
+                        foreach (var dossierItem in tempDossiers.Enum())
+                        {
+                            var fullDossier = dossierItem.ConvertFull();
+                            fullDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
+
+                            foreach (var item in fullDossier.Specifications.Enum())
+                            {
+                                var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(item.Name);
+                                if (theSpecificationDetails == null)
+                                    throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(item.Name));
+
+                                fullDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(item, theSpecificationDetails));
+                            }
+                            resultList.Add(fullDossier);
+                        }
                     }
 
-                    //Ne garde pas les spécifications locké
-                    resultList = resultList.Enum().Where(x => x.Value.StateType != StateType.Running).Enum().OrderByDescending(x => x.Value.Name).ToList();
+                    //enlève les templates
+                    resultList = resultList.Where(x => x.IsTemplate == false).Enum().ToList();
+
+                    //var viewList = resultList.Select(x=>)
 
                     //Mise en forme
-                    var arraySize = (TemplateProperty.Value) ? 9 : 8;
+                    var arraySize = 8;
                     var objectArray = new object[resultList.Count + 1, arraySize];
 
-                    if (TemplateProperty.Value)
-                    {
-                        objectArray[0, 0] = "Nom spécification";
-                        objectArray[0, 1] = "Nom modèle";
-                        objectArray[0, 2] = "Gamme";
-                        objectArray[0, 3] = "Statut";
-                        objectArray[0, 4] = "Créateur";
-                        objectArray[0, 5] = "Date création";
-                        objectArray[0, 6] = "Modificateur";
-                        objectArray[0, 7] = "Date modification";
-                        objectArray[0, 8] = "ProjectName";
-                    }
-                    else
-                    {
-                        objectArray[0, 0] = "Nom spécification";
-                        objectArray[0, 1] = "Gamme";
-                        objectArray[0, 2] = "Statut";
-                        objectArray[0, 3] = "Créateur";
-                        objectArray[0, 4] = "Date création";
-                        objectArray[0, 5] = "Modificateur";
-                        objectArray[0, 6] = "Date modification";
-                        objectArray[0, 7] = "ProjectName";
-                    }
+                    objectArray[0, 0] = "Nom dossier";
+                    objectArray[0, 1] = "Configurateur";
+                    objectArray[0, 2] = "Statut";
+                    objectArray[0, 3] = "Créateur";
+                    objectArray[0, 4] = "Date création";
+                    objectArray[0, 5] = "Modificateur";
+                    objectArray[0, 6] = "Date modification";
+                    objectArray[0, 7] = "Verrouillé";
 
                     //Mise en forme
                     int rowCounter = 1;
-                    foreach (var specItem in resultList.Enum())
+                    foreach (var dossierItem in resultList.Enum())
                     {
-                        if (TemplateProperty.Value)
-                        {
-                            objectArray[rowCounter, 0] = specItem.Value.Name;
-                            objectArray[rowCounter, 1] = specItem.Key.DisplayName;
-                            objectArray[rowCounter, 2] = projectDic[specItem.Value.ProjectId.ToString()];
-                            objectArray[rowCounter, 3] = specItem.Value.StateName;
-                            objectArray[rowCounter, 4] = userList.Single(x => x.Id == specItem.Value.CreatorId).DisplayName;
-                            objectArray[rowCounter, 5] = specItem.Value.DateCreated.ToStringDMY();
-                            objectArray[rowCounter, 6] = userList.Single(x => x.Id == specItem.Value.EditorId).DisplayName;
-                            objectArray[rowCounter, 7] = specItem.Value.DateEdited.ToStringDMY();
-                            objectArray[rowCounter, 8] = specItem.Value.OriginalProjectName;
-                        }
-                        else
-                        {
-                            objectArray[rowCounter, 0] = specItem.Value.Name;
-                            objectArray[rowCounter, 1] = projectDic[specItem.Value.ProjectId.ToString()];
-                            objectArray[rowCounter, 2] = specItem.Value.StateName;
-                            objectArray[rowCounter, 3] = userList.Single(x => x.Id == specItem.Value.CreatorId).DisplayName;
-                            objectArray[rowCounter, 4] = specItem.Value.DateCreated.ToStringDMY();
-                            objectArray[rowCounter, 5] = userList.Single(x => x.Id == specItem.Value.EditorId).DisplayName;
-                            objectArray[rowCounter, 6] = specItem.Value.DateEdited.ToStringDMY();
-                            objectArray[rowCounter, 7] = specItem.Value.OriginalProjectName;
-                        }
+                        var creationSpecPair = dossierItem.SpecificationPairs.OrderBy(y => y.Value.DateCreated).First();
+                        Nullable<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>> modificationSpecPair = null;
+
+                        if (dossierItem.SpecificationPairs.Count != 1)
+                            modificationSpecPair = dossierItem.SpecificationPairs.OrderBy(y => y.Value.DateCreated).Last();
+
+                        //Nom dossier
+                        objectArray[rowCounter, 0] = dossierItem.Name;
+
+                        //Configurateur
+                        objectArray[rowCounter, 1] = dossierItem.ProjectName;
+
+                        //Statut
+                        objectArray[rowCounter, 2] = dossierItem.SpecificationPairs.OrderBy(x => x.Value.DateCreated).Last().Value.StateName;
+
+                        //Créateur
+                        objectArray[rowCounter, 3] = userList.Single(x => x.Id == creationSpecPair.Value.CreatorId).DisplayName;
+
+                        //Date création
+                        objectArray[rowCounter, 4] = creationSpecPair.Value.DateCreated.ToStringDMY();
+
+                        //Modificateur
+                        objectArray[rowCounter, 5] = modificationSpecPair != null ? userList.Single(x => x.Id == modificationSpecPair.Value.Value.CreatorId).DisplayName : null;
+
+                        //Date modification
+                        objectArray[rowCounter, 6] = modificationSpecPair != null ? modificationSpecPair.Value.Value.DateCreated.ToStringDMY() : null;
+
+                        //Verrouillé
+                        objectArray[rowCounter, 7] = dossierItem.SpecificationPairs.OrderBy(y => y.Value.DateCreated).Last().Value.StateType == StateType.Running ? "Oui" : "Non";
 
                         rowCounter++;
                     }
@@ -605,11 +694,13 @@ namespace EquinoxeExtendPlugin
                     var tableValue = new TableValue();
                     tableValue.Data = objectArray;
 
-                    ctx.Project.SetTableControlItems(SpecificationTableControlNameProperty.Value, tableValue);
+                    ctx.Project.SetTableControlItems(DossierTableControlNameProperty.Value, tableValue);
                 }
                 catch (Exception ex)
                 {
-                    ctx.Project.AddErrorMessage("Erreur lors de l'ajout d'un log", ex);
+                    ctx.Project.SetTableControlItems(DossierTableControlNameProperty.Value, null);
+
+                    ctx.Project.AddErrorMessage("Erreur lors de la recherche de dossier", ex);
                     if (ThrowErrorProperty.Value)
                         throw ex;
                 }
@@ -620,15 +711,71 @@ namespace EquinoxeExtendPlugin
 
         #region Private FIELDS
 
-        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<string> UserNameProperty;
         private FlowProperty<string> StateNameProperty;
-        private FlowProperty<string> SpecificationTableControlNameProperty;
-        private FlowProperty<bool> TemplateProperty;
+        private FlowProperty<string> DossierTableControlNameProperty;
         private FlowProperty<bool> ThrowErrorProperty;
 
         #endregion
+
+        protected class TemplateView
+        {
+            #region Public PROPERTIES
+
+            [Name("FR", "Nom modèle")]
+            [WidthColumn(30)]
+            public string TemplateName { get; set; }
+
+            [Name("FR", "Nom dossier")]
+            [WidthColumn(30)]
+            public string DossierName { get; set; }
+
+            [Name("FR", "Statut")]
+            [WidthColumn(30)]
+            public string State { get; set; }
+
+            [Name("FR", "Configurateur")]
+            [WidthColumn(30)]
+            public string ProjectName { get; set; }
+
+            [Name("FR", "Description")]
+            [WidthColumn(30)]
+            public string Description { get; set; }
+
+            [Name("FR", "Verrou")]
+            [WidthColumn(30)]
+            public string Lock { get; set; }
+
+            public EquinoxeExtend.Shared.Object.Record.Dossier Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static TemplateView ConvertTo(EquinoxeExtend.Shared.Object.Record.Dossier iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new TemplateView();
+                newView.Object = iObj;
+
+                newView.Description = iObj.TemplateDescription;
+                newView.DossierName = iObj.Name;
+                newView.Lock = iObj.Lock != null ? "Oui" : "Non";
+                newView.ProjectName = iObj.ProjectName;
+                newView.State = iObj.State.GetName("FR");
+                newView.TemplateName = iObj.TemplateName;
+
+                return newView;
+            }
+
+            #endregion
+        }
     }
+
+    
 
     [Task("SPECMGT:FillTemplateTable", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class FillTemplateTable : DriveWorks.Specification.Task
@@ -647,35 +794,54 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            try
             {
-                try
+                using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
-                    var projectDic = ctx.Group.GetProjectAliasDic();
+                    //Récupération des templates
+                    var dossierList = dossierService.GetDossiers(false);
+                    var resultList = new List<EquinoxeExtendPlugin.Object.Dossier>();
 
-                    List<EquinoxeExtend.Shared.Object.Specification.Specification> dbSpecifications = specificationService.GetSpecifications(true);
+                    //Bouclage sur les dossiers modèles
+                    foreach (var dossierItem in dossierList.Enum())
+                    {
+                        var newDossier = new EquinoxeExtendPlugin.Object.Dossier();
+                        newDossier = dossierItem.ConvertFull();
 
-                    var dwSpecifications = ctx.Group.Specifications.GetSpecificationsByModifiedDate(true);
+                        newDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
 
-                    var listComparator = new Library.Tools.Comparator.ListComparator<EquinoxeExtend.Shared.Object.Specification.Specification, SpecificationDetails>(dbSpecifications, x => x.SpecificationName, dwSpecifications, x => x.Name);
+                        //Bouclage sur les spécifications du dossier
+                        foreach (var specificationItem in dossierItem.Specifications.Enum())
+                        {
+                            var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(specificationItem.Name);
+                            if (theSpecificationDetails == null)
+                                throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(specificationItem.Name));
 
-                    var commonList = listComparator.CommonPairList.Enum().ToList();
+                            newDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(specificationItem, theSpecificationDetails));
+                        }
+                        resultList.Add(newDossier);
+                    }
 
-                    var objectArray = new object[commonList.Count + 1, 4];
+                    var viewList = resultList.Enum().Select(x => TemplateView.ConvertTo(x)).Enum().ToList();
 
-                    objectArray[0, 0] = "Nom Modèle";
-                    objectArray[0, 1] = "Nom spécification";
-                    objectArray[0, 2] = "Gamme";
-                    objectArray[0, 3] = "Description";
+                    //Alimentation de la table
+                    var objectArray = new object[viewList.Count + 1, 5];
+
+                    objectArray[0, 0] = "Nom modèle";
+                    objectArray[0, 1] = "Nom dossier";
+                    objectArray[0, 2] = "Statut";
+                    objectArray[0, 3] = "Configurateur";
+                    objectArray[0, 4] = "Description";
 
                     //Mise en forme
                     int rowCounter = 1;
-                    foreach (var specItem in commonList.Enum())
+                    foreach (var dossierItem in resultList.Enum())
                     {
-                        objectArray[rowCounter, 0] = specItem.Key.DisplayName;
-                        objectArray[rowCounter, 1] = specItem.Key.SpecificationName;
-                        objectArray[rowCounter, 2] = projectDic[specItem.Value.ProjectId.ToString()];
-                        objectArray[rowCounter, 3] = specItem.Key.Description;
+                        objectArray[rowCounter, 0] = dossierItem.TemplateName;
+                        objectArray[rowCounter, 1] = dossierItem.Name;
+                        objectArray[rowCounter, 2] = dossierItem.SpecificationPairs.OrderBy(x => x.Value.DateCreated).Last().Value.StateName;
+                        objectArray[rowCounter, 3] = dossierItem.ProjectName;
+                        objectArray[rowCounter, 4] = dossierItem.TemplateDescription;
 
                         rowCounter++;
                     }
@@ -684,12 +850,12 @@ namespace EquinoxeExtendPlugin
 
                     ctx.Project.SetTableControlItems(TemplateTableControlNameProperty.Value, tableValue);
                 }
-                catch (Exception ex)
-                {
-                    ctx.Project.AddErrorMessage("Erreur chargement des templates", ex);
-                    if (ThrowErrorProperty.Value)
-                        throw ex;
-                }
+            }
+            catch (Exception ex)
+            {
+                ctx.Project.AddErrorMessage("Erreur chargement des templates", ex);
+                if (ThrowErrorProperty.Value)
+                    throw ex;
             }
         }
 
@@ -701,6 +867,61 @@ namespace EquinoxeExtendPlugin
         private FlowProperty<bool> ThrowErrorProperty;
 
         #endregion
+
+        protected class TemplateView
+        {
+            #region Public PROPERTIES
+
+            [Name("FR", "Nom modèle")]
+            [WidthColumn(30)]
+            public string TemplateName { get; set; }
+
+            [Name("FR", "Nom dossier")]
+            [WidthColumn(30)]
+            public string DossierName { get; set; }
+
+            [Name("FR", "Statut")]
+            [WidthColumn(30)]
+            public string State { get; set; }
+
+            [Name("FR", "Configurateur")]
+            [WidthColumn(30)]
+            public string ProjectName { get; set; }
+
+            [Name("FR", "Description")]
+            [WidthColumn(30)]
+            public string Description { get; set; }
+
+            [Name("FR", "Verrou")]
+            [WidthColumn(30)]
+            public string Lock { get; set; }
+
+            public EquinoxeExtend.Shared.Object.Record.Dossier Object { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static TemplateView ConvertTo(EquinoxeExtend.Shared.Object.Record.Dossier iObj)
+            {
+                if (iObj == null)
+                    return null;
+
+                var newView = new TemplateView();
+                newView.Object = iObj;
+
+                newView.Description = iObj.TemplateDescription;
+                newView.DossierName = iObj.Name;
+                newView.Lock = iObj.Lock != null ? "Oui" : "Non";
+                newView.ProjectName = iObj.ProjectName;
+                newView.State = iObj.State.GetName("FR");
+                newView.TemplateName = iObj.TemplateName;
+
+                return newView;
+            }
+
+            #endregion
+        }
     }
 
     [Task("SPECMGT:FillLogTable", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
@@ -722,7 +943,7 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var logService = new LogService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var logService = new LogService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
@@ -802,7 +1023,7 @@ namespace EquinoxeExtendPlugin
 
         protected override void Execute(SpecificationContext ctx)
         {
-            using (var specificationService = new SpecificationService(ctx.Group.GetEnvironment().GetExtendConnectionString()))
+            using (var specificationService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
                 try
                 {
@@ -886,4 +1107,6 @@ namespace EquinoxeExtendPlugin
 
         #endregion
     }
+
+   
 }

@@ -61,7 +61,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 cboProject.DataSource = _Group.Projects.GetProjects().ToList().Enum().OrderBy(x => x.Name).ToList();
                 cboProject.SelectedIndex = -1;
 
-                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
                     //Gamme
                     cboProductLine.DisplayMember = PropertyObserver.GetPropertyName<ProductLine>(x => x.Name);

@@ -103,7 +103,7 @@ namespace EquinoxeExtendPlugin.Controls.Package
                 {
                     DialogResult = System.Windows.Forms.DialogResult.OK;
                     _Package = FillFromControl();
-                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetExtendConnectionString()))
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.UpdatePackage(_Package);
                     }
