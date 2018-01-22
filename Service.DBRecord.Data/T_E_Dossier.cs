@@ -26,7 +26,6 @@ namespace Service.DBRecord.Data
         public bool IsTemplate { get; set; }
         public string TemplateDescription { get; set; }
         public string TemplateName { get; set; }
-        public short StateRef { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<T_E_Specification> T_E_Specification { get; set; }

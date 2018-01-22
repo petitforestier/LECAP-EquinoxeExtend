@@ -42,7 +42,7 @@ namespace EquinoxeExtendPlugin.Tools
 
         public static void ReleaseProjectsRights(Group iGroup)
         {
-            using (var releaseService = new Service.Release.Front.ReleaseService(iGroup.GetEnvironment().GetSQLExtendConnectionString()))
+            using (var releaseService = new Service.Release.Front.ReleaseService(EnvironmentEnum.Developpement.GetSQLExtendConnectionString()))
             {
                 var devSubTasks = releaseService.GetDevSubTasks();
 
@@ -52,7 +52,7 @@ namespace EquinoxeExtendPlugin.Tools
                 devProjects = devProjects.Enum().GroupBy(x => x).Enum().Select(x => x.First()).Enum().ToList();
 
                 //Applique les droits seulement sur ces projets ouverts
-                iGroup.SetExclusitivelyPermissionToTeam(iGroup.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), devProjects);
+                iGroup.SetExclusitivelyPermissionToTeam(iGroup.Security.GetTeams().Single(x => x.DisplayName == iGroup.GetEnvironment().GetDevelopperTeam()), devProjects);
             }
         }
 

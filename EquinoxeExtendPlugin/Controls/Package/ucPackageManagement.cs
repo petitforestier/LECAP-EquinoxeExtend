@@ -748,7 +748,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             var packageToDeploy = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
 
                             //Vérification du statut de toutes les tâches
-                            if (!packageToDeploy.MainTasks.Any(x => x.Status == MainTaskStatusEnum.Staging))
+                            if (packageToDeploy.MainTasks.Any(x => x.Status == MainTaskStatusEnum.Staging))
                                 throw new Exception("Ce package est déjà en 'PréProd");
                             if (packageToDeploy.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Dev))
                                 throw new Exception("Toutes les tâches doivent être en cours");
@@ -949,6 +949,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
             var destinationGroup = destinationGroupManager.OpenGroup(iDestinationEnvironnement);
             var destinationGroupName = destinationGroup.Name;
 
+            //Chargement de DEV groupe car c'est dans ce groupe que sont gérer les projets et les GUID d'un même projet sont différent d'un groupe à l'autre, la base c'est dev.
+            var devGroupManager = host.CreateGroupManager();
+            var devGroup = devGroupManager.OpenGroup(EnvironmentEnum.Developpement);
+
             var loadingControl = new ucMessageBox("Démarrage déploiement de '{0}' vers '{1}'...".FormatString(sourceGroupName, destinationGroupName));
             using (var loadingForm = new frmUserControl(loadingControl, "Déploiement vers '{0}'".FormatString(sourceGroupName), false, false))
             {
@@ -988,7 +992,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         ProjectDetails project = null;
                         try
                         {
-                            project = sourceGroup.Projects.GetProject((Guid)item);
+                            project = devGroup.Projects.GetProject((Guid)item);
                         }
                         catch(Exception)
                         { }
@@ -1046,7 +1050,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //Enleve les droits
                 loadingControl.SetMessage("Modification des droits...");
-                sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == EnvironmentEnum.Developpement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
+                if(iSourceEnvironnement == EnvironmentEnum.Developpement)
+                    sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == iSourceEnvironnement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
 
                 //PLUGING
                 if (MessageBox.Show("Voulez-vous appliquer les  plugins ?", "Pluging", MessageBoxButtons.YesNo) == DialogResult.Yes)
@@ -1123,7 +1128,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 }
 
                 //Applications des droits sur le groupe source
-                Tools.Tools.ReleaseProjectsRights(sourceGroup);
+                if (iSourceEnvironnement == EnvironmentEnum.Developpement)
+                    Tools.Tools.ReleaseProjectsRights(sourceGroup);
             }
         }
 

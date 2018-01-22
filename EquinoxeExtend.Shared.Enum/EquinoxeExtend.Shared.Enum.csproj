@@ -43,7 +43,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
-    <Compile Include="DossierStateEnum.cs" />
     <Compile Include="ExternalProjectStatusSearchEnum.cs" />
     <Compile Include="ExternalProjectTypeEnum.cs" />
     <Compile Include="PackageOrderByEnum.cs" />

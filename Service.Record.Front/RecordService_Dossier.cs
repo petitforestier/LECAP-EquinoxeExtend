@@ -105,19 +105,6 @@ namespace Service.Record.Front
             DBRecordDataService.Update(theEntity);
         }
 
-        public void UpdateState(string iDossierName, DossierStateEnum iState)
-        {
-            if (iDossierName.IsNullOrEmpty())
-                throw new Exception("Le nom du dossier est invalide");
-
-            var dossier = DBRecordDataService.GetSingle<T_E_Dossier>(x => x.Name == iDossierName).Convert();
-            dossier.State = iState;
-
-            var newEntity = new T_E_Dossier();
-            newEntity.Merge(dossier);
-            DBRecordDataService.Update(newEntity);
-        }
-
         public void DeleteDossier(string iDossierName)
         {
             if (iDossierName.IsNullOrEmpty())

@@ -23,12 +23,14 @@ namespace DriveWorks.Helper.Manager
 
             foreach (var item in iNewControlList)
             {
-                var newList = new List<string>();
+                var newList = new List<string>
+                {
 
-                //Attention ordre important
-                newList.Add(item.ControlName);
-                newList.Add(item.ProjectVersion.ToString());
-                newList.Add(item.Message);
+                    //Attention ordre important
+                    item.ControlName,
+                    item.ProjectVersion.ToString(),
+                    item.Message
+                };
 
                 addedControlFlattenList.Add(newList);
             }
@@ -51,14 +53,15 @@ namespace DriveWorks.Helper.Manager
 
             foreach (var item in iOldControlList)
             {
-                var newList = new List<string>();
-
-                //Attention ordre important
-                newList.Add(item.ControlName);
-                newList.Add(item.ControlDescription);
-                newList.Add(item.ProjectVersion.ToString());
-                newList.Add(item.TransfertControlName);
-                newList.Add(item.Message);
+                var newList = new List<string>
+                {
+                    //Attention ordre important
+                    item.ControlName,
+                    item.ControlDescription,
+                    item.ProjectVersion.ToString(),
+                    item.TransfertControlName,
+                    item.Message
+                };
 
                 deletedControlFlattenList.Add(newList);
             }
@@ -81,10 +84,11 @@ namespace DriveWorks.Helper.Manager
 
             foreach (var item in iAddedConstantList)
             {
-                var newList = new List<string>();
-
-                newList.Add(item.ConstantName);
-                newList.Add(item.ProjectVersion.ToString());
+                var newList = new List<string>
+                {
+                    item.ConstantName,
+                    item.ProjectVersion.ToString()
+                };
 
                 flattenList.Add(newList);
             }
@@ -107,11 +111,12 @@ namespace DriveWorks.Helper.Manager
 
             foreach (var item in iOldConstantList)
             {
-                var newList = new List<string>();
-
-                newList.Add(item.ConstantName);
-                newList.Add(item.ProjectVersion.ToString());
-                newList.Add(item.TransfertConstantName);
+                var newList = new List<string>
+                {
+                    item.ConstantName,
+                    item.ProjectVersion.ToString(),
+                    item.TransfertConstantName
+                };
 
                 flattenList.Add(newList);
             }
@@ -174,6 +179,39 @@ namespace DriveWorks.Helper.Manager
             return new Tuple<List<AddedControlManaged>, List<DeletedControlManaged>, List<AddedConstantManaged>, List<DeletedConstantManaged>>(addedControlManagedList, deletedControlManagedList, addedConstantManagedList, deletedConstantManagedList);
         }
 
+        public static List<AddedControlManaged> GetManagedControls(this Project iProject)
+        {
+            var deletedList = iProject.GetDeletedControlList().Enum().ToList().OrderBy(x => x.ProjectVersion).Enum().ToList();
+            var addedList = iProject.GetAddedControlList().Enum().ToList().OrderBy(x => x.ProjectVersion).Enum().ToList();
+
+            var versionList = new List<decimal>();
+            versionList.AddRange(addedList.Enum().Select(x => x.ProjectVersion).Enum().ToList());
+            versionList.AddRange(deletedList.Enum().Select(x => x.ProjectVersion).Enum().ToList());
+            versionList = versionList.Distinct().Enum().OrderBy(x=>x).Enum().ToList();
+
+            var finalAddedControlList = new List<AddedControlManaged>();
+
+            //Bouclage sur toutes les versions possibles
+            foreach (var versionItem in versionList.Enum())
+            {
+                //Suppression des deleted
+                var deletedControlForThisVersionList = deletedList.Where(x => x.ProjectVersion == versionItem).Enum().ToList();
+                foreach (var deletedItem in deletedControlForThisVersionList.Enum())
+                {
+                    var deletedControl = finalAddedControlList.Single(x => x.ControlName == deletedItem.ControlName);
+                    finalAddedControlList.Remove(deletedControl);
+                }
+
+                //Ajout des Added
+                var addedControlForThisVersionList = addedList.Where(x => x.ProjectVersion == versionItem).Enum().ToList();
+                foreach (var addedItem in addedControlForThisVersionList.Enum())
+                {
+                    finalAddedControlList.Add(addedItem);
+                }
+            }
+            return finalAddedControlList;
+        }
+
         /// <summary>
         /// Récupération des controls du projet ouvert en ignorant les form et controls à ignorer
         /// </summary>
@@ -221,9 +259,11 @@ namespace DriveWorks.Helper.Manager
             {
                 if (item.DisplayName.StartsWith("Parameter") == false)
                 {
-                    var newConstant = new ConstantState();
-                    newConstant.Name = item.DisplayName;
-                    newConstant.Value = item.Value.ToString();
+                    var newConstant = new ConstantState
+                    {
+                        Name = item.DisplayName,
+                        Value = item.Value.ToString()
+                    };
                 }
             }
 
@@ -265,9 +305,11 @@ namespace DriveWorks.Helper.Manager
                 {
                     if (iOriginalList.NotExists2(x => x.Name == addedItem.ControlName))
                     {
-                        var newControlState = new ControlState();
-                        newControlState.Name = addedItem.ControlName;
-                        newControlState.Message = addedItem.Message;
+                        var newControlState = new ControlState
+                        {
+                            Name = addedItem.ControlName,
+                            Message = addedItem.Message
+                        };
 
                         iOriginalList.Add(newControlState);
                     }
@@ -288,7 +330,7 @@ namespace DriveWorks.Helper.Manager
                     }
                     if (deletedItem.Message.IsNotNullAndNotEmpty())
                     {
-                        messageList.Add(deletedItem.ControlDescription + " => " + deletedItem.Message);
+                        messageList.Add("{0} : {1} => {2}".FormatString(MessageManager.SplitCamelCase(deletedItem.ControlName.Remove(0, 3)),deletedItem.ControlDescription,deletedItem.Message));
                     }
                     iOriginalList.Remove(theControlState);
                 }
@@ -323,8 +365,10 @@ namespace DriveWorks.Helper.Manager
                 {
                     if (iOriginalList.NotExists2(x => x.Name == addedItem.ConstantName))
                     {
-                        var newControlState = new ConstantState();
-                        newControlState.Name = addedItem.ConstantName;
+                        var newControlState = new ConstantState
+                        {
+                            Name = addedItem.ConstantName
+                        };
 
                         iOriginalList.Add(newControlState);
                     }
@@ -387,7 +431,7 @@ namespace DriveWorks.Helper.Manager
                 var newAddedControl = new AddedControlManaged();
 
                 var controlName = projectTableDataArray[rowIndex, 0];
-                newAddedControl.ControlName = (controlName != null) ? controlName.ToString() : null;
+                newAddedControl.ControlName = controlName?.ToString();
                 if (newAddedControl.ControlName.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' le nom du control est invalide".FormatString(PROJECTADDDEDCONTROLATATABLENAME, rowIndex + 1));
 
@@ -397,7 +441,7 @@ namespace DriveWorks.Helper.Manager
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' la version de projet est invalide".FormatString(PROJECTADDDEDCONTROLATATABLENAME, rowIndex + 1));
 
                 var message = projectTableDataArray[rowIndex, 2];
-                newAddedControl.Message = (message != null) ? message.ToString() : null;
+                newAddedControl.Message = message?.ToString();
 
                 result.Add(newAddedControl);
             }
@@ -420,12 +464,12 @@ namespace DriveWorks.Helper.Manager
                 var newDeletedControl = new DeletedControlManaged();
 
                 var controlName = projectTableDataArray[rowIndex, 0];
-                newDeletedControl.ControlName = (controlName != null) ? controlName.ToString() : null;
+                newDeletedControl.ControlName = controlName?.ToString();
                 if (newDeletedControl.ControlName.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' le nom du control est invalide".FormatString(PROJECTDELETEDCONTROLDATATABLENAME, rowIndex + 1));
 
                 var controlDescription = projectTableDataArray[rowIndex, 1];
-                newDeletedControl.ControlDescription = (controlDescription != null) ? controlDescription.ToString() : null;
+                newDeletedControl.ControlDescription = controlDescription?.ToString();
                 if (newDeletedControl.ControlDescription.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' la description du control est invalide".FormatString(PROJECTDELETEDCONTROLDATATABLENAME, rowIndex + 1));
 
@@ -435,10 +479,10 @@ namespace DriveWorks.Helper.Manager
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' la version de projet est invalide".FormatString(PROJECTDELETEDCONTROLDATATABLENAME, rowIndex + 1));
 
                 var transfertControlName = projectTableDataArray[rowIndex, 3];
-                newDeletedControl.TransfertControlName = (transfertControlName != null) ? transfertControlName.ToString() : null;
+                newDeletedControl.TransfertControlName = transfertControlName?.ToString();
 
                 var message = projectTableDataArray[rowIndex, 4];
-                newDeletedControl.Message = (message != null) ? message.ToString() : null;
+                newDeletedControl.Message = message?.ToString();
 
                 if(newDeletedControl.TransfertControlName.IsNullOrEmpty() && newDeletedControl.Message.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' le transfert ou le message est manquant. Un des deux est obligatoire".FormatString(PROJECTDELETEDCONTROLDATATABLENAME, rowIndex + 1));
@@ -464,7 +508,7 @@ namespace DriveWorks.Helper.Manager
                 var newAddedConstant = new AddedConstantManaged();
 
                 var constantName = projectTableDataArray[rowIndex, 0];
-                newAddedConstant.ConstantName = (constantName != null) ? constantName.ToString() : null;
+                newAddedConstant.ConstantName = constantName?.ToString();
                 if (newAddedConstant.ConstantName.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' le nom du control est invalide".FormatString(PROJECTADDEDCONSTANTDATATABLENAME, rowIndex + 1));
 
@@ -494,7 +538,7 @@ namespace DriveWorks.Helper.Manager
                 var newDeletedConstant = new DeletedConstantManaged();
 
                 var constantName = projectTableDataArray[rowIndex, 0];
-                newDeletedConstant.ConstantName = (constantName != null) ? constantName.ToString() : null;
+                newDeletedConstant.ConstantName = constantName?.ToString();
                 if (newDeletedConstant.ConstantName.IsNullOrEmpty())
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' le nom du control est invalide".FormatString(PROJECTDELETEDCONSTANTDATATABLENAME, rowIndex + 1));
 
@@ -504,7 +548,7 @@ namespace DriveWorks.Helper.Manager
                     throw new Exception("Dans la table de projet '{0}', ligne '{1}' la version majeure de projet est invalide".FormatString(PROJECTDELETEDCONSTANTDATATABLENAME, rowIndex + 1));
 
                 var transfertConstantName = projectTableDataArray[rowIndex, 2];
-                newDeletedConstant.TransfertConstantName = (transfertConstantName != null) ? transfertConstantName.ToString() : null;
+                newDeletedConstant.TransfertConstantName = transfertConstantName?.ToString();
 
                 result.Add(newDeletedConstant);
             }

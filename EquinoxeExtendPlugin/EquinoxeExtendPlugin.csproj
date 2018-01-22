@@ -143,6 +143,7 @@
     <Compile Include="Controls\WhereUsed\ucWhereUsedGroup.Designer.cs">
       <DependentUpon>ucWhereUsedGroup.cs</DependentUpon>
     </Compile>
+    <Compile Include="Object\Specification.cs" />
     <Compile Include="Object\Dossier.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -208,6 +209,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.resx">
       <DependentUpon>ucCheckTaskOnStartup.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\ReleaseManagement\ucRelease.resx">
       <DependentUpon>ucRelease.cs</DependentUpon>
@@ -226,6 +228,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Package\ucPackageManagement.resx">
       <DependentUpon>ucPackageManagement.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\Task\ucSubTaskEdit.resx">
       <DependentUpon>ucSubTaskEdit.cs</DependentUpon>

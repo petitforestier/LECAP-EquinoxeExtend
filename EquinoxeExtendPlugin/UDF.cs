@@ -553,7 +553,7 @@ namespace EquinoxeExtendPlugin
 
                 return stateList.Enum().Concat("|");
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return null;
             }

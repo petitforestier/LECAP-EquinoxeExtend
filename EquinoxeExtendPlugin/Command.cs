@@ -231,7 +231,7 @@ namespace EquinoxeExtendPlugin
                 {
                     ucControlVersionControl.Close += (s, d) => controlVersionForm.Close();
                     controlVersionForm.StartPosition = FormStartPosition.CenterParent;
-                    controlVersionForm.Width = 800;
+                    controlVersionForm.Width = 1200;
                     controlVersionForm.Height = 800;
 
                     controlVersionForm.ShowDialog();

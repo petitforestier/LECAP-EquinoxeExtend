@@ -80,8 +80,9 @@ namespace DriveWorks.Helper
 
             tableControl.Items = iTableValue;
 
-            if(iColumnWidthList.IsNotNullAndNotEmpty())
-                tableControl.ColumnWidths = iColumnWidthList;
+            //todo à remettre, trouver l'erreur
+            //if(iColumnWidthList.IsNotNullAndNotEmpty())
+            //    tableControl.ColumnWidths = iColumnWidthList;
         }
 
 

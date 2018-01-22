@@ -88,7 +88,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
             [Visible]
             [Name("FR", "N° Tâche")]
-            [WidthColumn(75)]
+            [WidthColumn(120)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             public string MainTaskId { get; set; }
 

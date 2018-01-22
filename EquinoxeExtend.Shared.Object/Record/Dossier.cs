@@ -24,7 +24,6 @@ namespace EquinoxeExtend.Shared.Object.Record
                 IsTemplate = iEntity.IsTemplate,
                 TemplateName = iEntity.TemplateName,
                 TemplateDescription = iEntity.TemplateDescription,
-                State = (DossierStateEnum)iEntity.StateRef,
             };
         }
 
@@ -36,7 +35,6 @@ namespace EquinoxeExtend.Shared.Object.Record
             iEntity.IsTemplate = iObj.IsTemplate;
             iEntity.TemplateName = iObj.TemplateName;
             iEntity.TemplateDescription = iObj.TemplateDescription;
-            iEntity.StateRef = (short)iObj.State;
         }
 
         #endregion
@@ -52,7 +50,6 @@ namespace EquinoxeExtend.Shared.Object.Record
         public bool IsTemplate { get; set; }
         public string TemplateName { get; set; }
         public string TemplateDescription { get; set; }
-        public DossierStateEnum State { get; set; }
 
         public List<Specification> Specifications { get; set; }
         public EquinoxeExtend.Shared.Object.Record.Lock Lock { get; set; }

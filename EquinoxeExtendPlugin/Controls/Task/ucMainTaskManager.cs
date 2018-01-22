@@ -109,7 +109,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 _Group = iGroup;
 
                 //Init
-                this.ucNavigator.Initialize(200, 1);
+                this.ucNavigator.Initialize(50, 1);
                 ucNavigator.LoadRequested += ucNavigator_LoadRequested;
 
                 dgvMain.MultiSelect = false;

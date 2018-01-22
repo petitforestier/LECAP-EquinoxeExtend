@@ -83,7 +83,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
             dgvOldControl.AllowUserToResizeColumns = true;
             dgvOldControl.AllowUserToOrderColumns = false;
 
-            LoadData();   
+            LoadData();
         }
 
         #endregion
@@ -176,7 +176,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
 
             [Visible]
             [Name("FR", "Contrôle à transférer")]
-            [WidthColumn(150)]
+            [WidthColumn(300)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             public string TransfertControlName { get; set; }
 
@@ -364,7 +364,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
         private void LoadData()
         {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
-          
+
             var tupleValues = _Project.GetAddedDeletedControlConstant();
 
             _AddedControlManaged = tupleValues.Item1;
@@ -463,7 +463,8 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                     {
                         var oldControls = new List<DeletedControlManaged>();
 
-                        var currentControlList = _Project.GetCurrentControlStateList();
+                        //Récupère la liste des controles géré (Différent des controls actuel, aux ajouts pas en fait près)
+                        var managedControlList = _Project.GetManagedControls();
 
                         //Ajout des nouvelles données
                         foreach (DataGridViewRow item in dgvOldControl.Rows)
@@ -473,7 +474,7 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                             //Validation du transfert
                             if (newDeletedControlManaged.TransfertControlName.IsNotNullAndNotEmpty())
                             {
-                                if (currentControlList.Any(x => x.Name == newDeletedControlManaged.TransfertControlName) == false)
+                                if (managedControlList.Any(x => x.ControlName == newDeletedControlManaged.TransfertControlName) == false)
                                     throw new Exception("Le transfert de {0} vers {1} est impossible car {1} est introuvable".FormatString(newDeletedControlManaged.ControlName, newDeletedControlManaged.TransfertControlName));
                             }
 
@@ -574,6 +575,39 @@ namespace EquinoxeExtendPlugin.Controls.ControlVersion
                         SaveNeeded = true;
 
                         MessageBox.Show("Les données sont maintenant ajoutées");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void dgvOldControl_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            try
+            {
+                if (e.ColumnIndex > -1)
+                {
+                    //Chargement de la combo dans la cellule
+                    var columnName = Library.Tools.Misc.PropertyObserver.GetPropertyName<DeletedControlView>(x => x.TransfertControlName);
+
+                    // Bind grid cell with combobox and than bind combobox with datasource.
+                    var l_objGridDropbox = new DataGridViewComboBoxCell();
+
+                    // Check the column  cell, in which it click.
+                    if (dgvOldControl.Columns[e.ColumnIndex].Name.Contains(columnName))
+                    {
+                        //Création de la liste des controls possibles
+                        var controlManagedList = _Project.GetManagedControls();
+                        var comboList = new List<string>();
+                        comboList.Add(string.Empty);
+                        comboList.AddRange(controlManagedList.Enum().Select(x => x.ControlName).ToList());
+
+                        // On click of datagridview cell, attched combobox with this click cell of datagridview
+                        dgvOldControl[e.ColumnIndex, e.RowIndex] = l_objGridDropbox;
+                        l_objGridDropbox.DataSource = comboList.Enum().OrderBy(x=>x).ToList();
                     }
                 }
             }

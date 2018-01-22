@@ -70,7 +70,7 @@ namespace DriveWorks.Helper.Manager
             return result;
         }
 
-        private static string SplitCamelCase(string iText)
+        public static string SplitCamelCase(string iText)
         {
             if (iText.IsNullOrEmpty())
                 return iText;
