@@ -466,6 +466,22 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
+        private void cmdDeleteProjectNumber_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    cboProjectNumber.SelectedIndex = -1;
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
         private void cmdDeletePackage_Click(object sender, System.EventArgs e)
         {
             try
@@ -508,6 +524,5 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         #endregion
 
-        
     }
 }

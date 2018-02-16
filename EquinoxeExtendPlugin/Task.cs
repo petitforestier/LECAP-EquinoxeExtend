@@ -16,7 +16,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DriveWorks.Helper.Manager;
+
 
 namespace EquinoxeExtendPlugin
 {
@@ -367,6 +367,8 @@ namespace EquinoxeExtendPlugin
             DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier à modifier");
             CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
             SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification à Créer");
+            SessionGUIDProperty = Properties.RegisterStringProperty("Code session", "GUID de la session de lock");
+            CommentProperty = Properties.RegisterStringProperty("Commentaire", "Commentaire de la modification");
         }
 
         #endregion
@@ -392,6 +394,13 @@ namespace EquinoxeExtendPlugin
                     //récupération du dossier
                     var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
 
+                    //Vérification de la session
+                    if (theDossier.Lock == null)
+                        throw new Exception("Erreur la session en modification n'est plus vérrouillé, contacter l'administrateur");
+
+                    if (theDossier.Lock.SessionGUID != SessionGUIDProperty.Value)
+                        throw new Exception("Erreur la session en modification est différente de la session de verrouillage");
+
                     decimal projectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
 
                     //Creation de la Specification
@@ -406,6 +415,7 @@ namespace EquinoxeExtendPlugin
                     newSpecification.DossierId = theDossier.DossierId;
                     newSpecification.Name = SpecificationNameProperty.Value;
                     newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+                    newSpecification.Comments = CommentProperty.Value;
 
                     dossierService.NewSpecification(newSpecification);
                 }
@@ -423,6 +433,8 @@ namespace EquinoxeExtendPlugin
         private FlowProperty<string> DossierNameProperty;
         private FlowProperty<string> SpecificationNameProperty;
         private FlowProperty<bool> CheckErrorProperty;
+        private FlowProperty<string> SessionGUIDProperty;
+        private FlowProperty<string> CommentProperty;
 
         #endregion
     }
@@ -517,15 +529,15 @@ namespace EquinoxeExtendPlugin
     }
 
 
-    [Task("SPECMGT:LockUnlockDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class LockUnlockDossier : DriveWorks.Specification.Task
+    [Task("SPECMGT:LockDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class LockDossier : DriveWorks.Specification.Task
     {
         #region Public CONSTRUCTORS
 
-        public LockUnlockDossier()
+        public LockDossier()
         {
             DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Nom du dossier à locker");
-            ActionProperty = Properties.RegisterBooleanProperty("Action", "True pour locker le dossier, et False pour délocker");
+            SessionGUIDProperty = Properties.RegisterStringProperty("Code session", "GUID de la session de lock");
             ThrowErrorProperty = Properties.RegisterBooleanProperty("Lever erreur", "Lever une erreur si une erreur à lieu");
         }
 
@@ -538,13 +550,34 @@ namespace EquinoxeExtendPlugin
             try
             {
                 if (DossierNameProperty.Value.IsNullOrEmpty())
-                    throw new Exception("Le titre du log est invalide");
+                    throw new Exception("Le nom du dossier est invalide");
+
+                if (SessionGUIDProperty.Value.IsNullOrEmpty())
+                    throw new Exception("Le GUID de session est invalide");
+
 
                 using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
-                    ////création du Lock
-                    //if(ActionProperty.Value)
-                    
+                    //Vérification si le dossier n'est pas déjà locké
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+                    if (theDossier == null)
+                        throw new Exception("Le dossier '{0}' est inextant");
+
+                    if(theDossier.Lock != null)
+                    {
+                        var theUser = DriveWorks.Helper.GroupHelper.GetUserById(ctx.Group, theDossier.Lock.UserId);
+                        throw new Exception("Le dossier est déjà verrouillé par l'utilisateur '{0}' avec la session '{1}' depuis '{2}'".FormatString(theUser.DisplayName, theDossier.Lock.SessionGUID, theDossier.Lock.LockDate.ToStringDMYHMS()));
+                    }
+
+                    //Création du Lock
+                    var newLock = new EquinoxeExtend.Shared.Object.Record.Lock();
+                    newLock.DossierId = theDossier.DossierId;
+                    newLock.LockDate = DateTime.Now;
+                    newLock.LockId = -1;
+                    newLock.SessionGUID = SessionGUIDProperty.Value;
+                    newLock.UserId = ctx.Group.CurrentUser.Id;
+
+                    dossierService.NewLock(newLock);
                 }
             }
             catch (Exception ex)
@@ -560,7 +593,61 @@ namespace EquinoxeExtendPlugin
         #region Private FIELDS
 
         private FlowProperty<string> DossierNameProperty;
-        private FlowProperty<bool> ActionProperty;
+        private FlowProperty<string> SessionGUIDProperty;
+        private FlowProperty<bool> ThrowErrorProperty;
+
+        #endregion
+    }
+
+    [Task("SPECMGT:UnlockDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class UnlockDossier : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public UnlockDossier()
+        {
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Nom du dossier à locker");
+            ThrowErrorProperty = Properties.RegisterBooleanProperty("Lever erreur", "Lever une erreur si une erreur à lieu");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            try
+            {
+                if (DossierNameProperty.Value.IsNullOrEmpty())
+                    throw new Exception("Le nom du dossier est invalide");
+
+                using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Vérification si le dossier n'est pas déjà locké
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+                    if (theDossier == null)
+                        throw new Exception("Le dossier '{0}' est inextant");
+
+                    if (theDossier.Lock == null)
+                        throw new Exception("Le dossier n'est déjà plus verrouillé");
+
+                    //Suppression du Lock
+                    dossierService.DeleteLock(theDossier.Lock.LockId);
+                }
+            }
+            catch (Exception ex)
+            {
+                ctx.Project.AddErrorMessage("Erreur lors de l'ajout d'un log", ex);
+                if (ThrowErrorProperty.Value)
+                    throw ex;
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<string> DossierNameProperty;
         private FlowProperty<bool> ThrowErrorProperty;
 
         #endregion
@@ -709,14 +796,14 @@ namespace EquinoxeExtendPlugin
                     Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
 
                     //Dimension des colonnes
-                    var widthList = new List<double>();
+                    var widthList = new List<string>();
                     foreach (var propertyItem in templateViewType.GetProperties().Enum())
                     {
                         var width = DossierView.GetWidth(propertyItem);
                         if (width != null)
-                            widthList.Add(Convert.ToDouble(width));
+                            widthList.Add(Convert.ToString(width));
                         else
-                            widthList.Add(120);
+                            widthList.Add("120");
                     }
 
                     //Remplissage tableau
@@ -743,12 +830,12 @@ namespace EquinoxeExtendPlugin
         {
             #region Public PROPERTIES
 
-            [Name("FR", "Nom dossier")]
-            [WidthColumn(100)]
+            [Name("FR", "N° dossier")]
+            [WidthColumn(70)]
             public string DossierName { get; set; }
 
             [Name("FR", "Configurateur")]
-            [WidthColumn(100)]
+            [WidthColumn(130)]
             public string ProjectName { get; set; }
 
             [Name("FR", "Statut")]
@@ -760,7 +847,7 @@ namespace EquinoxeExtendPlugin
             public string CreatorName { get; set; }
 
             [Name("FR", "Date création")]
-            [WidthColumn(100)]
+            [WidthColumn(80)]
             public string CreationDate { get; set; }
 
             [Name("FR", "Modificateur")]
@@ -768,7 +855,7 @@ namespace EquinoxeExtendPlugin
             public string ModificatorName { get; set; }
 
             [Name("FR", "Date modification")]
-            [WidthColumn(100)]
+            [WidthColumn(80)]
             public string ModificationDate { get; set; }
 
             [Name("FR", "Verrou")]
@@ -799,7 +886,7 @@ namespace EquinoxeExtendPlugin
                 newView.CreationDate = creationSpecPair.Value.DateCreated.ToStringDMY();
                 newView.ModificatorName = modificationSpecPair != null ? iListUser.Single(x => x.Id == modificationSpecPair.Value.Value.CreatorId).DisplayName : null;
                 newView.ModificationDate = modificationSpecPair != null ? modificationSpecPair.Value.Value.DateCreated.ToStringDMY() : null;
-                newView.Lock = iObj.SpecificationPairs.OrderBy(y => y.Value.DateCreated).Last().Value.StateType == StateType.Running ? "Oui" : "Non";
+                newView.Lock = iObj.Lock != null ? iListUser.Single(x => x.Id == iObj.Lock.UserId).DisplayName  : "Non";
 
                 return newView;
             }
@@ -855,8 +942,14 @@ namespace EquinoxeExtendPlugin
             {
                 using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
+                    if (SpecificationTableControlNameProperty.Value.IsNullOrEmpty())
+                        throw new Exception("Le nom du controle table est invalide");
+
                     if (DossierNameProperty.Value.IsNullOrEmpty())
-                        throw new Exception("Le nom dossier demandé est vide");
+                    {
+                        ctx.Project.SetTableControlItems(SpecificationTableControlNameProperty.Value, null);
+                        return;
+                    }                 
 
                     var userList = ctx.Group.GetUserList();
 
@@ -894,14 +987,14 @@ namespace EquinoxeExtendPlugin
                     Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
 
                     //Dimension des colonnes
-                    var widthList = new List<double>();
+                    var widthList = new List<string>();
                     foreach (var propertyItem in specificationViewType.GetProperties().Enum())
                     {
                         var width = SpecificationView.GetWidth(propertyItem);
                         if (width != null)
-                            widthList.Add(Convert.ToDouble(width));
+                            widthList.Add(Convert.ToString(width));
                         else
-                            widthList.Add(120);
+                            widthList.Add("120");
                     }
 
                     //Remplissage tableau
@@ -927,21 +1020,25 @@ namespace EquinoxeExtendPlugin
         {
             #region Public PROPERTIES
 
-            [Name("FR", "Nom specification")]
-            [WidthColumn(30)]
+            [Name("FR", "Nom spe.")]
+            [WidthColumn(80)]
             public string SpecificationName { get; set; }
 
             [Name("FR", "Créateur")]
-            [WidthColumn(30)]
+            [WidthColumn(100)]
             public string CreatorName { get; set; }
 
             [Name("FR", "Date création")]
-            [WidthColumn(30)]
+            [WidthColumn(120)]
             public string CreationDate { get; set; }
 
-            [Name("FR", "Version configurateur")]
-            [WidthColumn(30)]
+            [Name("FR", "V.")]
+            [WidthColumn(40)]
             public string ProjectVersion { get; set; }
+
+            [Name("FR", "Commentaires")]
+            [WidthColumn(300)]
+            public string Comments { get; set; }
 
             #endregion
 
@@ -958,6 +1055,7 @@ namespace EquinoxeExtendPlugin
                 newView.CreationDate = iObj.CreationDate.ToStringDMYHMS();
                 newView.CreatorName = iUserList.Single(x => x.Id == iObj.SpecificationDetails.CreatorId).DisplayName;
                 newView.ProjectVersion = iObj.ProjectVersion.ToString();
+                newView.Comments = iObj.Comments;
 
                 return newView;
             }
@@ -1054,14 +1152,14 @@ namespace EquinoxeExtendPlugin
                     Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
 
                     //Dimension des colonnes
-                    var widthList = new List<double>();
+                    var widthList = new List<string>();
                     foreach (var propertyItem in templateViewType.GetProperties().Enum())
                     {
                         var width = TemplateView.GetWidth(propertyItem);
                         if (width != null)
-                            widthList.Add(Convert.ToDouble(width));
+                            widthList.Add(Convert.ToString(width));
                         else
-                            widthList.Add(120);
+                            widthList.Add("120");
                     }
 
                     //Remplissage tableau
@@ -1089,27 +1187,27 @@ namespace EquinoxeExtendPlugin
             #region Public PROPERTIES
 
             [Name("FR", "Nom modèle")]
-            [WidthColumn(30)]
+            [WidthColumn(150)]
             public string TemplateName { get; set; }
 
-            [Name("FR", "Nom dossier")]
-            [WidthColumn(30)]
+            [Name("FR", "N° dossier")]
+            [WidthColumn(70)]
             public string DossierName { get; set; }
 
             [Name("FR", "Statut")]
-            [WidthColumn(30)]
+            [WidthColumn(100)]
             public string State { get; set; }
 
             [Name("FR", "Configurateur")]
-            [WidthColumn(30)]
+            [WidthColumn(100)]
             public string ProjectName { get; set; }
 
             [Name("FR", "Description")]
-            [WidthColumn(30)]
+            [WidthColumn(200)]
             public string Description { get; set; }
 
             [Name("FR", "Verrou")]
-            [WidthColumn(30)]
+            [WidthColumn(100)]
             public string Lock { get; set; }
 
             #endregion
@@ -1339,6 +1437,171 @@ namespace EquinoxeExtendPlugin
         private FlowProperty<double> CriteriaProperty;
         private FlowProperty<double> TakeProperty;
         private FlowProperty<bool> ThrowErrorProperty;
+
+        #endregion
+    }
+
+    [Task("SPECMGT:LoadFIDEV", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class LoadFIDEV : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public LoadFIDEV()
+        {
+            TableControlNameProperty = Properties.RegisterStringProperty("Nom controle Datatable sortie", "Définir le nom du controle où les données seront retournées");
+            FIDEVFilePathProperty = Properties.RegisterStringProperty("Chemin du FIDEV", "Définir le chemin du FIDEV à importer");
+        }
+
+        const int FIDEVSHEETINDEX = 1;
+        public static readonly int[] FIDEVLASTCOLUMNSINDEXARRAY = { 1, 3, 4, 5,6,7 };
+        const int FIDEVFIRSTROWINDEX = 18;
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                //try
+                //{
+                //    if (TableControlNameProperty.Value.IsNullOrEmpty())
+                //        throw new Exception("Le nom du controle de table n'est pas défini");
+
+                //    if (FIDEVFilePathProperty.Value.IsNullOrEmpty())
+                //        throw new Exception("Le chemin du FIDEV n'est pas définie");
+
+                //    var cancelToken = new System.Threading.CancellationTokenSource();
+                //    //var excelTools = new Library. .ExcelTools(cancelToken);
+
+                //    //Création de la
+                //    var columnIndexList = FIDEVLASTCOLUMNSINDEXARRAY.ToList();
+
+                //    //Récupération des données
+                //    //var resultList = excelTools.GetListFromExcelFile(FIDEVFilePathProperty.Value, columnIndexList, FIDEVSHEETINDEX, true, FIDEVFIRSTROWINDEX);
+
+                //    //Nettoyage des lignes inutiles
+                //    resultList = resultList.Where(x => (x[5] != null && x[5] != "FALSE" && x[5] != "0") || (x[6] != null && x[6] != "FALSE" && x[6] != "0")).ToList();
+
+                //    var finalResultList = new List<DevisView>();
+                //    string previousScreenValue = null;
+                //    foreach (var item in resultList.Enum())
+                //    {
+                //        var ScreenValue = item[1];
+                //        if (ScreenValue == previousScreenValue || previousScreenValue == null)
+                //        {
+                //            var newDevisView = new DevisView();
+                //            newDevisView = DevisView.ConvertTo(item);
+                //            finalResultList.Add(newDevisView);
+                //        }
+                //        else
+                //        {
+                //            finalResultList.Add(null);
+                //            previousScreenValue = null;
+                //        }
+                //    }
+
+                //    Type templateViewType = typeof(DevisView);
+
+                //    //Mise en forme du tableau et de l'entête via la classe DevisView
+                //    var arraySize = templateViewType.GetProperties().Count();
+                //    var objectArray = new object[finalResultList.Count + 1, arraySize];
+
+                //    var columnIndex = 0;
+                //    foreach (var propertyItem in templateViewType.GetProperties().Enum())
+                //    {
+                //        objectArray[0, columnIndex] = DevisView.GetName(propertyItem, "FR");
+                //        columnIndex++;
+                //    }
+
+                //    var dataArray = finalResultList.ToStringArray();
+                //    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
+
+                //    var tableValue = new TableValue();
+                //    tableValue.Data = objectArray;
+
+                //    ctx.Project.SetTableControlItems(TableControlNameProperty.Value, tableValue);
+                //}
+                //catch (Exception ex)
+                //{
+                //    ctx.Project.AddErrorMessage("Erreur lors de l'extraction du FIDEV", ex);
+                //}
+
+            }
+        }
+
+
+        #region Protected CLASSES
+
+        protected class DevisView
+        {
+            #region Public PROPERTIES
+
+            [Name("FR", "Nom dossier")]
+            [WidthColumn(30)]
+            public string Article { get; set; }
+
+            [Name("FR", "Statut")]
+            [WidthColumn(30)]
+            public string Libelle { get; set; }
+
+            [Name("FR", "Configurateur")]
+            [WidthColumn(30)]
+            public string Saisie1 { get; set; }
+
+            [Name("FR", "Description")]
+            [WidthColumn(30)]
+            public string Saisie2 { get; set; }
+
+            [Name("FR", "Nom modèle")]
+            [WidthColumn(30)]
+            public string Ecran { get; set; }
+
+            #endregion
+
+            #region Public METHODS
+
+            public static DevisView ConvertTo(List<string> iList)
+            {
+                if (iList == null)
+                    return null;
+
+                var newView = new DevisView();
+
+                newView.Ecran = iList[0];
+                newView.Article = iList[1];
+                newView.Libelle = iList[2];
+                newView.Saisie1 = iList[3];
+                newView.Saisie2 = iList[4];
+
+                return newView;
+            }
+
+            public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
+            {
+                NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
+                NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
+                return name != null ? name.GetName() : null;
+            }
+
+            public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
+            {
+                WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
+                return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
+            }
+
+            #endregion
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<string> TableControlNameProperty;
+        private FlowProperty<string> FIDEVFilePathProperty;
 
         #endregion
     }

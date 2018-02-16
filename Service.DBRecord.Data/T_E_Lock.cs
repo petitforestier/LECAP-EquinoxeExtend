@@ -19,5 +19,7 @@ namespace Service.DBRecord.Data
         public string SessionGUID { get; set; }
         public System.DateTime LockDate { get; set; }
         public System.Guid UserId { get; set; }
+    
+        public virtual T_E_Dossier T_E_Dossier { get; set; }
     }
 }

@@ -75,6 +75,8 @@
             this.txtCreationDate = new System.Windows.Forms.TextBox();
             this.txtOpenedDate = new System.Windows.Forms.TextBox();
             this.txtCompletedDate = new System.Windows.Forms.TextBox();
+            this.tlpProjectNumber = new System.Windows.Forms.TableLayoutPanel();
+            this.cmdDeleteProjectNumber = new System.Windows.Forms.Button();
             this.tlpMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numPriority)).BeginInit();
             this.tlpPackage.SuspendLayout();
@@ -87,6 +89,7 @@
             this.tlpDescription.SuspendLayout();
             this.pagDates.SuspendLayout();
             this.tlpDates.SuspendLayout();
+            this.tlpProjectNumber.SuspendLayout();
             this.SuspendLayout();
             // 
             // tlpMain
@@ -113,10 +116,10 @@
             this.tlpMain.Controls.Add(this.lblObjectifDate, 0, 5);
             this.tlpMain.Controls.Add(this.dtpObjectifDate, 1, 5);
             this.tlpMain.Controls.Add(this.lblProjectNumber, 0, 4);
-            this.tlpMain.Controls.Add(this.cboProjectNumber, 1, 4);
             this.tlpMain.Controls.Add(this.tlpPackage, 1, 7);
             this.tlpMain.Controls.Add(this.lblStatus, 0, 1);
             this.tlpMain.Controls.Add(this.txtStatus, 1, 1);
+            this.tlpMain.Controls.Add(this.tlpProjectNumber, 1, 4);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpMain.Location = new System.Drawing.Point(3, 3);
             this.tlpMain.Name = "tlpMain";
@@ -132,7 +135,7 @@
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
-            this.tlpMain.Size = new System.Drawing.Size(334, 417);
+            this.tlpMain.Size = new System.Drawing.Size(335, 428);
             this.tlpMain.TabIndex = 0;
             // 
             // cboRequestUser
@@ -142,7 +145,7 @@
             this.cboRequestUser.FormattingEnabled = true;
             this.cboRequestUser.Location = new System.Drawing.Point(72, 228);
             this.cboRequestUser.Name = "cboRequestUser";
-            this.cboRequestUser.Size = new System.Drawing.Size(238, 21);
+            this.cboRequestUser.Size = new System.Drawing.Size(239, 21);
             this.cboRequestUser.TabIndex = 15;
             // 
             // lblMainTaskId
@@ -162,7 +165,7 @@
             this.txtMainTaskId.Location = new System.Drawing.Point(72, 3);
             this.txtMainTaskId.Name = "txtMainTaskId";
             this.txtMainTaskId.ReadOnly = true;
-            this.txtMainTaskId.Size = new System.Drawing.Size(238, 20);
+            this.txtMainTaskId.Size = new System.Drawing.Size(239, 20);
             this.txtMainTaskId.TabIndex = 1;
             // 
             // txtName
@@ -171,7 +174,7 @@
             this.txtName.Location = new System.Drawing.Point(72, 53);
             this.txtName.MaxLength = 300;
             this.txtName.Name = "txtName";
-            this.txtName.Size = new System.Drawing.Size(238, 20);
+            this.txtName.Size = new System.Drawing.Size(239, 20);
             this.txtName.TabIndex = 2;
             // 
             // lblName
@@ -203,7 +206,7 @@
             this.cboTaskType.FormattingEnabled = true;
             this.cboTaskType.Location = new System.Drawing.Point(72, 78);
             this.cboTaskType.Name = "cboTaskType";
-            this.cboTaskType.Size = new System.Drawing.Size(238, 21);
+            this.cboTaskType.Size = new System.Drawing.Size(239, 21);
             this.cboTaskType.TabIndex = 5;
             this.cboTaskType.SelectedIndexChanged += new System.EventHandler(this.cboTaskType_SelectedIndexChanged);
             // 
@@ -273,7 +276,7 @@
             this.cboCreationUser.FormattingEnabled = true;
             this.cboCreationUser.Location = new System.Drawing.Point(72, 203);
             this.cboCreationUser.Name = "cboCreationUser";
-            this.cboCreationUser.Size = new System.Drawing.Size(238, 21);
+            this.cboCreationUser.Size = new System.Drawing.Size(239, 21);
             this.cboCreationUser.TabIndex = 14;
             // 
             // lblProductLines
@@ -282,7 +285,7 @@
             this.lblProductLines.Dock = System.Windows.Forms.DockStyle.Fill;
             this.lblProductLines.Location = new System.Drawing.Point(3, 250);
             this.lblProductLines.Name = "lblProductLines";
-            this.lblProductLines.Size = new System.Drawing.Size(63, 167);
+            this.lblProductLines.Size = new System.Drawing.Size(63, 178);
             this.lblProductLines.TabIndex = 24;
             this.lblProductLines.Text = "Gammes";
             this.lblProductLines.TextAlign = System.Drawing.ContentAlignment.TopRight;
@@ -294,7 +297,7 @@
             this.chlProductLines.FormattingEnabled = true;
             this.chlProductLines.Location = new System.Drawing.Point(72, 253);
             this.chlProductLines.Name = "chlProductLines";
-            this.chlProductLines.Size = new System.Drawing.Size(238, 161);
+            this.chlProductLines.Size = new System.Drawing.Size(239, 172);
             this.chlProductLines.TabIndex = 25;
             // 
             // lblObjectifDate
@@ -314,7 +317,7 @@
             this.dtpObjectifDate.Location = new System.Drawing.Point(72, 128);
             this.dtpObjectifDate.Name = "dtpObjectifDate";
             this.dtpObjectifDate.ShowCheckBox = true;
-            this.dtpObjectifDate.Size = new System.Drawing.Size(238, 20);
+            this.dtpObjectifDate.Size = new System.Drawing.Size(239, 20);
             this.dtpObjectifDate.TabIndex = 27;
             // 
             // lblProjectNumber
@@ -333,9 +336,9 @@
             this.cboProjectNumber.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cboProjectNumber.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboProjectNumber.FormattingEnabled = true;
-            this.cboProjectNumber.Location = new System.Drawing.Point(72, 103);
+            this.cboProjectNumber.Location = new System.Drawing.Point(3, 3);
             this.cboProjectNumber.Name = "cboProjectNumber";
-            this.cboProjectNumber.Size = new System.Drawing.Size(238, 21);
+            this.cboProjectNumber.Size = new System.Drawing.Size(212, 21);
             this.cboProjectNumber.TabIndex = 29;
             // 
             // tlpPackage
@@ -351,7 +354,8 @@
             this.tlpPackage.Name = "tlpPackage";
             this.tlpPackage.RowCount = 1;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPackage.Size = new System.Drawing.Size(244, 25);
+            this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlpPackage.Size = new System.Drawing.Size(245, 25);
             this.tlpPackage.TabIndex = 30;
             // 
             // cboPackage
@@ -361,14 +365,14 @@
             this.cboPackage.FormattingEnabled = true;
             this.cboPackage.Location = new System.Drawing.Point(3, 3);
             this.cboPackage.Name = "cboPackage";
-            this.cboPackage.Size = new System.Drawing.Size(213, 21);
+            this.cboPackage.Size = new System.Drawing.Size(214, 21);
             this.cboPackage.TabIndex = 11;
             // 
             // cmdDeletePackage
             // 
             this.cmdDeletePackage.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
-            this.cmdDeletePackage.Location = new System.Drawing.Point(219, 0);
+            this.cmdDeletePackage.Location = new System.Drawing.Point(220, 0);
             this.cmdDeletePackage.Margin = new System.Windows.Forms.Padding(0);
             this.cmdDeletePackage.Name = "cmdDeletePackage";
             this.cmdDeletePackage.Size = new System.Drawing.Size(25, 25);
@@ -393,7 +397,7 @@
             this.txtStatus.Location = new System.Drawing.Point(72, 28);
             this.txtStatus.Name = "txtStatus";
             this.txtStatus.ReadOnly = true;
-            this.txtStatus.Size = new System.Drawing.Size(238, 20);
+            this.txtStatus.Size = new System.Drawing.Size(239, 20);
             this.txtStatus.TabIndex = 32;
             // 
             // tlpFooter
@@ -405,18 +409,18 @@
             this.tlpFooter.Controls.Add(this.cmdCancel, 2, 0);
             this.tlpFooter.Controls.Add(this.cmdOk, 1, 0);
             this.tlpFooter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpFooter.Location = new System.Drawing.Point(0, 455);
+            this.tlpFooter.Location = new System.Drawing.Point(0, 466);
             this.tlpFooter.Margin = new System.Windows.Forms.Padding(0);
             this.tlpFooter.Name = "tlpFooter";
             this.tlpFooter.RowCount = 1;
             this.tlpFooter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpFooter.Size = new System.Drawing.Size(354, 30);
+            this.tlpFooter.Size = new System.Drawing.Size(355, 30);
             this.tlpFooter.TabIndex = 22;
             // 
             // cmdCancel
             // 
             this.cmdCancel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdCancel.Location = new System.Drawing.Point(257, 3);
+            this.cmdCancel.Location = new System.Drawing.Point(258, 3);
             this.cmdCancel.Name = "cmdCancel";
             this.cmdCancel.Size = new System.Drawing.Size(94, 24);
             this.cmdCancel.TabIndex = 0;
@@ -427,7 +431,7 @@
             // cmdOk
             // 
             this.cmdOk.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cmdOk.Location = new System.Drawing.Point(157, 3);
+            this.cmdOk.Location = new System.Drawing.Point(158, 3);
             this.cmdOk.Name = "cmdOk";
             this.cmdOk.Size = new System.Drawing.Size(94, 24);
             this.cmdOk.TabIndex = 1;
@@ -451,7 +455,7 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(354, 485);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(355, 496);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // tabMain
@@ -463,7 +467,7 @@
             this.tabMain.Location = new System.Drawing.Point(3, 3);
             this.tabMain.Name = "tabMain";
             this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(348, 449);
+            this.tabMain.Size = new System.Drawing.Size(349, 460);
             this.tabMain.TabIndex = 0;
             // 
             // pagGeneral
@@ -473,7 +477,7 @@
             this.pagGeneral.Location = new System.Drawing.Point(4, 22);
             this.pagGeneral.Name = "pagGeneral";
             this.pagGeneral.Padding = new System.Windows.Forms.Padding(3);
-            this.pagGeneral.Size = new System.Drawing.Size(340, 423);
+            this.pagGeneral.Size = new System.Drawing.Size(341, 434);
             this.pagGeneral.TabIndex = 0;
             this.pagGeneral.Text = "Général";
             // 
@@ -641,13 +645,42 @@
             this.txtCompletedDate.Size = new System.Drawing.Size(100, 20);
             this.txtCompletedDate.TabIndex = 5;
             // 
+            // tlpProjectNumber
+            // 
+            this.tlpProjectNumber.ColumnCount = 2;
+            this.tlpProjectNumber.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpProjectNumber.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 27F));
+            this.tlpProjectNumber.Controls.Add(this.cmdDeleteProjectNumber, 1, 0);
+            this.tlpProjectNumber.Controls.Add(this.cboProjectNumber, 0, 0);
+            this.tlpProjectNumber.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpProjectNumber.Location = new System.Drawing.Point(69, 100);
+            this.tlpProjectNumber.Margin = new System.Windows.Forms.Padding(0);
+            this.tlpProjectNumber.Name = "tlpProjectNumber";
+            this.tlpProjectNumber.RowCount = 1;
+            this.tlpProjectNumber.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpProjectNumber.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tlpProjectNumber.Size = new System.Drawing.Size(245, 25);
+            this.tlpProjectNumber.TabIndex = 33;
+            // 
+            // cmdDeleteProjectNumber
+            // 
+            this.cmdDeleteProjectNumber.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cmdDeleteProjectNumber.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
+            this.cmdDeleteProjectNumber.Location = new System.Drawing.Point(218, 0);
+            this.cmdDeleteProjectNumber.Margin = new System.Windows.Forms.Padding(0);
+            this.cmdDeleteProjectNumber.Name = "cmdDeleteProjectNumber";
+            this.cmdDeleteProjectNumber.Size = new System.Drawing.Size(27, 25);
+            this.cmdDeleteProjectNumber.TabIndex = 13;
+            this.cmdDeleteProjectNumber.UseVisualStyleBackColor = true;
+            this.cmdDeleteProjectNumber.Click += new System.EventHandler(this.cmdDeleteProjectNumber_Click);
+            // 
             // ucMainTaskEdit
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ucMainTaskEdit";
-            this.Size = new System.Drawing.Size(354, 485);
+            this.Size = new System.Drawing.Size(355, 496);
             this.tlpMain.ResumeLayout(false);
             this.tlpMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numPriority)).EndInit();
@@ -663,6 +696,7 @@
             this.pagDates.ResumeLayout(false);
             this.tlpDates.ResumeLayout(false);
             this.tlpDates.PerformLayout();
+            this.tlpProjectNumber.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -715,5 +749,7 @@
         private System.Windows.Forms.Button cmdDeletePackage;
         private System.Windows.Forms.Label lblStatus;
         private System.Windows.Forms.TextBox txtStatus;
+        private System.Windows.Forms.TableLayoutPanel tlpProjectNumber;
+        private System.Windows.Forms.Button cmdDeleteProjectNumber;
     }
 }

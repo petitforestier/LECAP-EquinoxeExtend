@@ -26,7 +26,8 @@ namespace EquinoxeExtendPlugin.Object
                 TemplateDescription = iDossier.TemplateDescription,
                 TemplateName = iDossier.TemplateName,
                 Name = iDossier.Name,
-                DossierId = iDossier.DossierId
+                DossierId = iDossier.DossierId,
+                Lock = iDossier.Lock,
             };
         }
     }

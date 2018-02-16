@@ -286,6 +286,19 @@ namespace Service.Release.Front
                     thePackage.SubTasks.AddRange(mainTaskItem.SubTasks);
                 }
             }
+            else if(iGranularity == GranularityEnum.Partial1)
+            {
+                //MainTask
+                thePackage.MainTasks = GetMaintaskListByPackageId(iPackageId).Enum().Where(x => x.Status != MainTaskStatusEnum.Canceled).Enum().ToList();
+
+                //ProjectTask
+                thePackage.SubTasks = new List<SubTask>();
+                foreach (var mainTaskItem in thePackage.MainTasks.Enum())
+                {
+                    mainTaskItem.SubTasks = GetSubTaskByMainTaskId(mainTaskItem.MainTaskId);
+                    thePackage.SubTasks.AddRange(mainTaskItem.SubTasks);
+                }
+            }
 
             return thePackage;
         }
@@ -340,6 +353,51 @@ namespace Service.Release.Front
 
             foreach (var item in packageList.Enum())
                 result.Add(GetPackageById(item.PackageId, GranularityEnum.Full));
+
+            return result;
+        }
+
+        public List<Package> GetPackageOrderByDeployementList(DeployementSearchEnum iDeployementSearch, bool iIsDescending)
+        {
+            var theQuery = DBReleaseDataService.GetQuery<T_E_Deployement>(null);
+
+            //Env
+            if(iDeployementSearch ==  DeployementSearchEnum.Production)
+            {
+                theQuery = theQuery.Where(x => x.EnvironmentDestinationRef == (short)PackageStatusEnum.Production);
+            }
+            else if (iDeployementSearch == DeployementSearchEnum.Staging)
+            {
+                theQuery = theQuery.Where(x => x.EnvironmentDestinationRef == (short)PackageStatusEnum.Staging);
+            }
+            else if (iDeployementSearch == DeployementSearchEnum.All)
+            {
+                //Ne rien filtrer
+            }
+            else
+                throw new Exception(iDeployementSearch.ToStringWithEnumName());
+
+            //Order
+            if (iIsDescending)
+                theQuery = theQuery.OrderByDescending(x => x.DeployementDate);
+            else
+                theQuery = theQuery.OrderBy(x => x.DeployementDate);
+
+            var deploiement = theQuery.ToList();
+
+            var result = new List<Package>();
+
+            //Enrichissement package avec un seul deploiement
+            foreach (var item in deploiement.Enum())
+            {
+                var thePackage = GetPackageById(item.PackageId, GranularityEnum.Partial1);
+
+                //deployement
+                thePackage.Deployements = new List<Deployement>();
+                thePackage.Deployements.Add(GetDeployementById(item.DeployementId));
+
+                result.Add(thePackage);
+            }
 
             return result;
         }

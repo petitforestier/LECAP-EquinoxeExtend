@@ -61,6 +61,12 @@ namespace DriveWorks.Helper
                 throw new Exception("Erreur lors de l'importation des données de la table {0}, projet {1}".FormatString(iImportedDataTable1.DisplayName, iProjectName2), ex);
             }
 
+            if(tableData1.GetUpperBound(0) != tableData2.GetUpperBound(0))
+                return "Le nombre de ligne est différent";
+
+            if (tableData1.GetUpperBound(1) != tableData2.GetUpperBound(1))
+                return "Le nombre de colonne est différent";
+
             //Bouclage sur les lignes
             for (int rowIndex = 0; rowIndex <= tableData1.GetLength(0) - 1; rowIndex++)
             {

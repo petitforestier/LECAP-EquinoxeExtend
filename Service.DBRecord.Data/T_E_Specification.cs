@@ -21,6 +21,7 @@ namespace Service.DBRecord.Data
         public string Controls { get; set; }
         public string Constants { get; set; }
         public System.DateTime CreationDate { get; set; }
+        public string Comments { get; set; }
     
         public virtual T_E_Dossier T_E_Dossier { get; set; }
     }

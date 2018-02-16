@@ -7,5 +7,6 @@
 	[Controls]				NVARCHAR(MAX)		NOT NULL,
 	[Constants]				NVARCHAR(MAX)		NOT NULL,
 	[CreationDate]			DATETIME2			NOT NULL,
+	[Comments]				NVARCHAR(MAX)		NULL,
 )
 

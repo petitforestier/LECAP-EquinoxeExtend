@@ -27,8 +27,14 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
         public void Initialize(IApplication iApplication, Group iGroup)
         {
             _Group = iGroup;
-            this.ucTaskManager.Initialize(iGroup);
-            this.ucPackageManagement.Initialize(iApplication, iGroup);
+            using (var timer1 = new Library.Tools.Debug.MyTimer(true, "tache"))
+            {
+                this.ucTaskManager.Initialize(iGroup);
+            }
+            using (var timer1 = new Library.Tools.Debug.MyTimer(true, "package"))
+            {
+                this.ucPackageManagement.Initialize(iApplication, iGroup);
+            }
         }
 
         private void CloseFake()

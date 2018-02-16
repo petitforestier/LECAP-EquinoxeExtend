@@ -25,8 +25,3 @@ CREATE UNIQUE NONCLUSTERED INDEX [IX.T_E_MainTask.Priority.IsUnique]
 ON[S_Release].[T_E_MainTask]([Priority])
 WHERE [Priority] IS NOT NULL;
 GO
-
-CREATE UNIQUE NONCLUSTERED INDEX [IX.T_E_MainTask.ExternalProjectId.IsUnique]
-ON[S_Release].[T_E_MainTask]([ExternalProjectId])
-WHERE [ExternalProjectId] IS NOT NULL;
-GO

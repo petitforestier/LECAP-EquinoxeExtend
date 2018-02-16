@@ -47,9 +47,13 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 this.ucMainTaskEdit.Initialize(_Group);
                 this.ucMainTaskEdit.Close += MainTaskEditClosed;
 
-                //Status
-                cboMainTaskStatusSearch = cboMainTaskStatusSearch.FillByDictionary(new MainTaskStatusSearchEnum().ToDictionary("FR"));
-                cboMainTaskStatusSearch.SelectedValue = MainTaskStatusSearchEnum.NotCompleted;
+                //todo revoir temsp chargement
+                using (var timer = new Library.Tools.Debug.MyTimer(true, "status"))
+                {
+                    //Status
+                    cboMainTaskStatusSearch = cboMainTaskStatusSearch.FillByDictionary(new MainTaskStatusSearchEnum().ToDictionary("FR"));
+                    cboMainTaskStatusSearch.SelectedValue = MainTaskStatusSearchEnum.NotCompleted;
+                }
 
                 //Order
                 cboOrderBy = cboOrderBy.FillByDictionary(new MainTaskOrderByEnum().ToDictionary("FR"));
@@ -74,6 +78,12 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                     cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
                     cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All,PackageOrderByEnum.PackageId);
                     cboPackage.SelectedIndex = -1;
+
+                    //Numéro de projet
+                    cboProjectNumber.DisplayMember = PropertyObserver.GetPropertyName<ExternalProject>(x => x.ProjectNumber);
+                    cboProjectNumber.ValueMember = PropertyObserver.GetPropertyName<ExternalProject>(x => x.ExternalProjectId);
+                    cboProjectNumber.DataSource = releaseService.GetExternalProjectList(ExternalProjectStatusSearchEnum.All);
+                    cboProjectNumber.SelectedIndex = -1;
                 }
 
                 //Type
@@ -95,10 +105,6 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
                 this.ucSubTaskEdit.Initialize(_Group);
                 this.ucSubTaskEdit.Close += SubTaskEditClosed;
-
-                //sptMain.SplitterDistance = sptMain.Height - 250;
-                //sptTasks.SplitterDistance = sptTasks.Width - 200;
-                //sptSubTasks.SplitterDistance = sptSubTasks.Width - 200;
 
                 LoadCriteria();
             }
@@ -142,8 +148,9 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
             MainTaskTypeEnum? type = (cboMainTaskType.SelectedIndex != -1) ? (MainTaskTypeEnum?)cboMainTaskType.SelectedValue : null;
             Guid? developperId = (cboDevelopper.SelectedIndex != -1) ? (Guid?)cboDevelopper.SelectedValue : null;
             long? packageId = (cboPackage.SelectedIndex != -1) ? (long?)cboPackage.SelectedValue : null;
+            long? externalProjectId = (cboProjectNumber.SelectedIndex != -1) ? (long?)cboProjectNumber.SelectedValue : null;
 
-            this.ucMainTaskManager.LoadControl((MainTaskStatusSearchEnum)cboMainTaskStatusSearch.SelectedValue, (MainTaskOrderByEnum)cboOrderBy.SelectedValue, projectId, productLineId, type, developperId, packageId);
+            this.ucMainTaskManager.LoadControl((MainTaskStatusSearchEnum)cboMainTaskStatusSearch.SelectedValue, (MainTaskOrderByEnum)cboOrderBy.SelectedValue, projectId, productLineId, type, developperId, packageId, externalProjectId);
         }
 
         private void LoadMainTask()
@@ -415,6 +422,29 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
             }
         }
 
+        private void cboProjectNumber_KeyDown(object sender, KeyEventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    if (e.KeyCode == Keys.Delete || e.KeyCode == Keys.Back)
+                    {
+                        cboProjectNumber.DroppedDown = false;
+                        cboProjectNumber.SelectedIndex = -1;
+                        cmdCriteriaSearch.Focus();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
         #endregion
+
+
     }
 }

@@ -20,6 +20,16 @@ namespace Service.Release.Front
             return DBReleaseDataService.AddDeployement(newEntity);
         }
 
+        public Deployement GetDeployementById(long iDeployementId)
+        {
+            var query = DBReleaseDataService.GetQuery<T_E_Deployement>(null).SingleOrDefault(x=>x.DeployementId == iDeployementId);
+
+            if (query != null)
+                return query.Convert();
+            else
+                return null;
+        }
+
         public List<Deployement> GetDeployementList()
         {
             return DBReleaseDataService.GetList<T_E_Deployement>().Enum().Select(x => x.Convert()).Enum().ToList();

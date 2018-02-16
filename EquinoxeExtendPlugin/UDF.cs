@@ -166,6 +166,44 @@ namespace EquinoxeExtendPlugin
             }
         }
 
+        [Udf]
+        [FunctionInfo("Retourne un GUID")]
+        public string UDFGetGUID()
+        {
+            try
+            {
+                return Guid.NewGuid().ToString();
+            }
+            catch (Exception ex)
+            {
+                return "#Error! " + ex.Message;
+            }
+        }
+
+        [Udf]
+        [FunctionInfo("Retourne une liste ranger par ordre alphabétique")]
+        public string UDFOrderList([ParamInfo("Liste à ordonner", "Liste à ordonner")] string iTextList, [ParamInfo("Séparateur", "Séparateur")] string iSeparator, [ParamInfo("Ranger par ordre décroissant", "Ranger par ordre décroissan")] bool iOrderByDescending)
+        {
+            try
+            {
+                if (iTextList.IsNullOrEmpty())
+                    return iTextList;
+                if (iSeparator.IsNullOrEmpty())
+                    throw new Exception("Le séparateur est invalide");
+
+                var theList = iTextList.Split(iSeparator).ToList().OrderBy(x=>x).ToList();
+
+                if (iOrderByDescending)
+                    theList = theList.OrderByDescending(x => x).ToList();
+
+                return theList.Concat(iSeparator);
+            }
+            catch (Exception ex)
+            {
+                return "#Error! " + ex.Message;
+            }
+        }
+
         #endregion
 
         #region Private METHODS
@@ -559,6 +597,32 @@ namespace EquinoxeExtendPlugin
             }
         }
 
-        #endregion
-    }
+        [Udf]
+        [FunctionInfo("Retourne si le projet est verrouillé")]
+        public bool UDFIsDossierLocked([ParamInfo("Nom dossier", "Nom dossier")]string iDossierName)
+        {
+            try
+            {
+                using (var dossierService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(iDossierName);
+                    if (theDossier == null)
+                        throw new Exception("Le dossier '{0}' est inextant".FormatString(theDossier.Name));
+
+                    if (theDossier.Lock != null)
+                        return true;
+                    else
+                        return false;
+                }
+            }
+            catch (Exception)
+            {
+                return true;
+            }
+        }
+
+        
+    #endregion
+}
 }

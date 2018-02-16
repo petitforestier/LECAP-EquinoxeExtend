@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Dynamic;
+using DriveWorks.Forms.DataModel;
 
 namespace DriveWorks.Helper
 {
@@ -71,7 +73,7 @@ namespace DriveWorks.Helper
             return result;
         }
 
-        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue, List<double> iColumnWidthList = null)
+        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue, List<string> iColumnWidthList = null)
         {
             var tableControl = (DataTableControl)iProject.Navigation.GetControl(iControlName);
 
@@ -80,9 +82,14 @@ namespace DriveWorks.Helper
 
             tableControl.Items = iTableValue;
 
-            //todo à remettre, trouver l'erreur
-            //if(iColumnWidthList.IsNotNullAndNotEmpty())
-            //    tableControl.ColumnWidths = iColumnWidthList;
+            //Définition des largeurs de colonnes
+            if (iColumnWidthList.IsNotNullAndNotEmpty())
+            {
+                var properties = DynamicProperty.GetProperties(typeof(DataTableControl));
+                var property = properties.Single(x => x.CustomStoreName == "ColumnWidths");
+                property.SetValue(tableControl, iColumnWidthList.ToArray());
+            }
+
         }
 
 

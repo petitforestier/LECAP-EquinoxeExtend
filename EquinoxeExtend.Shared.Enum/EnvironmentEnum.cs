@@ -16,8 +16,8 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_SandBox")]
-        [ProjectDirectory("\\s2sbe01\\Equinoxe\\Masters_PréProd\\")]
-        [ProjectDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Sandbox\\_Archives\\")]
+        [ProjectDirectory(@"\\s2sbe01\Equinoxe\Masters_PréProd\")]
+        [ProjectDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Sandbox\_Archives\")]
         Sandbox = 10,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -27,10 +27,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Dev")]
-        [ProjectDirectory("\\s2sbe01\\Equinoxe\\Masters_Dev\\1-Projet\\")]
-        [ProjectDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Dev\\1-Projet\\_Archives\\")]
-        [PluginDirectory("\\s2sbe01\\Equinoxe\\Masters_Dev\\0-Plugin\\")]
-        [PluginDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Dev\\0-Plugin\\_Archives\\")]
+        [ProjectDirectory(@"\\s2sbe01\Equinoxe\Masters_Dev\1-Projet\")]
+        [ProjectDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Dev\1-Projet\_Archives\")]
+        [PluginDirectory(@"\\s2sbe01\Equinoxe\Masters_Dev\0-Plugin\")]
+        [PluginDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Dev\0-Plugin\_Archives\")]
         Developpement = 20,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -40,10 +40,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_PreProd")]
-        [ProjectDirectory("\\s2sbe01\\Equinoxe\\Masters_PreProd\\1-Projet\\")]
-        [ProjectDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_PreProd\\1-Projet\\_Archives\\")]
-        [PluginDirectory("\\s2sbe01\\Equinoxe\\Masters_PreProd\\0-Plugin\\")]
-        [PluginDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_PreProd\\0-Plugin\\_Archives\\")]
+        [ProjectDirectory(@"\\s2sbe01\Equinoxe\Masters_PreProd\1-Projet\")]
+        [ProjectDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_PreProd\1-Projet\_Archives\")]
+        [PluginDirectory(@"\\s2sbe01\Equinoxe\Masters_PreProd\0-Plugin\")]
+        [PluginDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_PreProd\0-Plugin\_Archives\")]
         Staging = 30,
 
         [LoginPassword("Admin", "DWAequinoxe")]
@@ -53,10 +53,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("5")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Product")]
-        [ProjectDirectory("\\s2sbe01\\Equinoxe\\Masters_Product\\1-Projet\\")]
-        [ProjectDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Product\\1-Projet\\_Archives\\")]
-        [PluginDirectory("\\s2sbe01\\Equinoxe\\Masters_Product\\0-Plugin\\")]
-        [PluginDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Product\\0-Plugin\\_Archives\\")]
+        [ProjectDirectory(@"\\s2sbe01\Equinoxe\Masters_Product\1-Projet\")]
+        [ProjectDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Product\1-Projet\_Archives\")]
+        [PluginDirectory(@"\\s2sbe01\Equinoxe\Masters_Product\0-Plugin\")]
+        [PluginDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Product\0-Plugin\_Archives\")]
         Production = 40,
 
         [LoginPassword("Admin", "")]
@@ -66,10 +66,10 @@ namespace EquinoxeExtend.Shared.Enum
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_Backup")]
-        [ProjectDirectory("\\s2sbe01\\Equinoxe\\Masters_Backup\\1-Projet\\")]
-        [ProjectDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Backup\\1-Projet\\_Archives\\")]
-        [PluginDirectory("\\s2sbe01\\Equinoxe\\Masters_Backup\\0-Plugin\\")]
-        [PluginDirectoryArchive("\\s2sbe01\\Equinoxe\\Masters_Backup\\0-Plugin\\_Archives\\")]
+        [ProjectDirectory(@"\\s2sbe01\Equinoxe\Masters_Backup\1-Projet\")]
+        [ProjectDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Backup\1-Projet\_Archives\")]
+        [PluginDirectory(@"\\s2sbe01\Equinoxe\Masters_Backup\0-Plugin\")]
+        [PluginDirectoryArchive(@"\\s2sbe01\Equinoxe\Masters_Backup\0-Plugin\_Archives\")]
         Backup = 50
     };
 }

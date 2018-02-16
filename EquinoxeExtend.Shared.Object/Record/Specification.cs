@@ -24,6 +24,7 @@ namespace EquinoxeExtend.Shared.Object.Record
                 Controls = iEntity.Controls,
                 Constants = iEntity.Constants,
                 CreationDate = iEntity.CreationDate,
+                Comments = iEntity.Comments,
             };
         }
 
@@ -36,6 +37,7 @@ namespace EquinoxeExtend.Shared.Object.Record
             iEntity.Controls = iObj.Controls;
             iEntity.Constants = iObj.Constants;
             iEntity.CreationDate = iObj.CreationDate;
+            iEntity.Comments = iObj.Comments;
         }
 
         #endregion
@@ -51,7 +53,8 @@ namespace EquinoxeExtend.Shared.Object.Record
         public decimal ProjectVersion { get; set; }
         public string Controls { get; set; }
         public string Constants { get; set; }
-        public System.DateTime CreationDate { get; set; }     
+        public System.DateTime CreationDate { get; set; } 
+        public string Comments { get; set; }
 
         #endregion
     }

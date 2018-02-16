@@ -49,6 +49,11 @@
     <Compile Include="MainTaskOrderByEnum.cs" />
     <Compile Include="ExternalProjectStatusEnum.cs" />
     <Compile Include="MainTaskStatusEnum.cs" />
+    <Compile Include="DeployementSearchEnum.cs" />
+    <Compile Include="SpecificationProductionDrawingDefinitionStatusEnum.cs" />
+    <Compile Include="SpecificationCAMDefinitionStatusEnum.cs" />
+    <Compile Include="SpecificationPrefabricationDefinitionStatusEnum.cs" />
+    <Compile Include="SpecificationOrderDefinitionStatusEnum.cs" />
     <Compile Include="ProjectTaskTypeEnum.cs" />
     <Compile Include="PackageStatusEnum.cs" />
     <Compile Include="TypeDocumentEnum.cs" />

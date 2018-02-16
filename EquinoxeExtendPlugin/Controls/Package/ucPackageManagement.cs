@@ -55,6 +55,10 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 cboOrderBy = cboOrderBy.FillByDictionary(new PackageOrderByEnum().ToDictionary("FR"));
                 cboOrderBy.SelectedValue = PackageOrderByEnum.Priority;
 
+                //Deploy
+                cboDestinationEnvironment = cboDestinationEnvironment.FillByDictionary(new DeployementSearchEnum().ToDictionary("FR"));
+                cboDestinationEnvironment.SelectedValue = DeployementSearchEnum.All;
+
                 //Main task
                 dgvMainTask.MultiSelect = false;
                 dgvMainTask.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
@@ -114,6 +118,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 bdsDeployement.DataSource = new List<DeployementView>();
                 dgvDeployement.DataSource = bdsDeployement;
                 dgvDeployement.FormatColumns<DeployementView>("FR");
+
+                _SeachType = SearchTypeEnum.Package;
 
                 DisplaySelectionMode();
 
@@ -194,6 +200,16 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         #endregion
 
+        #region Private ENUMS
+
+        private enum SearchTypeEnum
+        {
+            Package = 1,
+            Deployement = 2,
+        };
+
+        #endregion
+
         #region Protected CLASSES
 
         protected class PackageView
@@ -249,6 +265,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             public string Duration { get; set; }
 
+            [Visible]
+            [Name("FR", "Dernier déploiement")]
+            [WidthColumn(100)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string LastDeploy { get; set; }
+
             public EquinoxeExtend.Shared.Object.Release.Package Object { get; set; }
 
             #endregion
@@ -301,6 +323,14 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //Duration
                 newView.Duration = iObj.DoneDuration.ToString() + "/" + iObj.DurationSum.ToString();
+
+                //LastDeploy
+                var deploys = iObj.Deployements.Enum().OrderByDescending(x => x.DeployementDate);
+                if(deploys.IsNotNullAndNotEmpty())
+                {
+                    var lastDeploy = deploys.First();
+                    newView.LastDeploy = lastDeploy.DeployementDate.ToShortDateString();
+                }
 
                 return newView;
             }
@@ -493,6 +523,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private Group _Group;
 
+        private SearchTypeEnum _SeachType;
+
         #endregion
 
         #region Private METHODS
@@ -512,6 +544,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 if (_IsLoading.Value) return;
                 using (var locker = new BoolLocker(ref _IsLoading))
                 {
+                    _SeachType = SearchTypeEnum.Package;
                     LoadPackageDataGridView(null);
                 }
             }
@@ -523,11 +556,26 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         private void LoadPackageDataGridView(long? iPackageId)
         {
-            using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+            //Recherche de package
+            if (_SeachType == SearchTypeEnum.Package)
             {
-                var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboStatus.SelectedValue, (PackageOrderByEnum)cboOrderBy.SelectedValue);
-                bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
+                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    var packages = releaseService.GetPackageList((PackageStatusSearchEnum)cboStatus.SelectedValue, (PackageOrderByEnum)cboOrderBy.SelectedValue);
+                    bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
+                }
             }
+            //Recherche de déployement
+            else if (_SeachType == SearchTypeEnum.Deployement)
+            {
+                using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    var packages = releaseService.GetPackageOrderByDeployementList((DeployementSearchEnum)cboDestinationEnvironment.SelectedValue, true);
+                    bdsPackage.DataSource = packages.Enum().Select(x => PackageView.ConvertTo(x)).Enum().ToList();
+                }
+            }
+            else
+                throw new NotSupportedException(_SeachType.ToStringWithEnumName());
 
             if (iPackageId != null)
             {
@@ -753,7 +801,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             if (packageToDeploy.MainTasks.Any(x => x.Status != MainTaskStatusEnum.Dev))
                                 throw new Exception("Toutes les tâches doivent être en cours");
 
-                            deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy);
+                            if (!deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy))
+                                return;
                             releaseService.MovePackageToStaging(selectedPackage);
                         }
                         MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, destinationEnvironnement.GetName("FR")));
@@ -770,7 +819,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         private void cmdDeployToProduction_Click(object sender, System.EventArgs e)
-        {          
+        {
             try
             {
                 var sourceEnvironnement = EnvironmentEnum.Staging;
@@ -802,9 +851,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             throw new Exception("Toutes les tâches doivent être phase de test");
 
                         //déploiement prod => backup
-                        deployPackageToOtherGroup(destinationEnvironnement, backupEnvironnement, packageToDeploy);
+                        if (!deployPackageToOtherGroup(destinationEnvironnement, backupEnvironnement, packageToDeploy, true))
+                            return;
                         //déploiement préprod => prod
-                        deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy);
+                        if (!deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy))
+                            return;
 
                         //Déploiement vers production
                         releaseService.MovePackageToProduction(selectedPackage);
@@ -935,7 +986,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             cmdUpdate_Click(sender, e);
         }
 
-        private void deployPackageToOtherGroup(EnvironmentEnum iSourceEnvironnement, EnvironmentEnum iDestinationEnvironnement, EquinoxeExtend.Shared.Object.Release.Package iPackage )
+        private bool deployPackageToOtherGroup(EnvironmentEnum iSourceEnvironnement, EnvironmentEnum iDestinationEnvironnement, EquinoxeExtend.Shared.Object.Release.Package iPackage, bool iIgnoreMissingSourceProject = false)
         {
             if (iPackage == null)
                 throw new Exception("Le package n'est pas défini");
@@ -974,7 +1025,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //Confirmation
                 if (MessageBox.Show("Etes-sûr de vouloir déployer le package '{0}' vers '{1}' ?".FormatString(iPackage.PackageIdString, destinationGroupName), "Confirmation", MessageBoxButtons.YesNo) != DialogResult.Yes)
-                    return;
+                    return false;
 
                 //Vérification que l'autopilot ou le web ne fonctionne pas sur le group préprod
                 //Mettre message pour demander la fermeture de l'autopilot et de solidworks.
@@ -994,11 +1045,11 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         {
                             project = devGroup.Projects.GetProject((Guid)item);
                         }
-                        catch(Exception)
+                        catch (Exception)
                         { }
-                        if(project != null)
+                        if (project != null)
                             packageDistinctProjectDetailsList.Add(project);
-                    }      
+                    }
                 }
 
                 var projectDevComparator = new ListComparator<ProjectDetails, ProjectDetails>(openedDevProjectlist, x => x.Id, packageDistinctProjectDetailsList, x => x.Id);
@@ -1031,9 +1082,19 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             var projectList = sheetItem.ToList();
                             if (projectList.Count > 1)
                             {
-                                var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
-                                if (differenceList.IsNotNullAndNotEmpty())
-                                    invalideDataTables.AddRange(differenceList);
+                                try
+                                {
+                                    if (projectList.First().Item3.FileLocation == "C:\\_LECAPITAINE\\R1-Développer les produits\\3-Table définition\\TDF0000053.xlsx")
+                                        Library.Tools.Debug.MyDebug.BreakForDebug();
+
+                                    var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
+                                    if (differenceList.IsNotNullAndNotEmpty())
+                                        invalideDataTables.AddRange(differenceList);
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw ex;
+                                }
                             }
                         }
                     }
@@ -1050,7 +1111,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //Enleve les droits
                 loadingControl.SetMessage("Modification des droits...");
-                if(iSourceEnvironnement == EnvironmentEnum.Developpement)
+                if (iSourceEnvironnement == EnvironmentEnum.Developpement)
                     sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == iSourceEnvironnement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
 
                 //PLUGING
@@ -1101,11 +1162,18 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 foreach (var projectItem in packageDistinctProjectDetailsList.Enum())
                 {
+                    //ignore un projet qui n'existerai pas dans les sources, cas possible de PROD ver Backup d'un tout nouveau projet (cas encore existant dans PROD)
+                    if (iIgnoreMissingSourceProject && !sourceGroup.Projects.GetProjects().Any(x => x.Name == projectItem.Name))
+                    {
+                        MessageBox.Show("Le projet '{0}' est inexistant dans le groupe '{1}'. Le projet doit un être un tout nouveau projet. Il n'y a donc pas de copie de ce projet dans le groupe '{2}'".FormatString(projectItem.Name, sourceGroup.Name, destinationGroup.Name));
+                        continue;
+                    }
+
                     var answer = MessageBox.Show("Voulez-vous importer le projet '{0}' ? Cliquer sur annuler pour annuler complètement le déploiement".FormatString(projectItem.Name), "Confirmation importation", MessageBoxButtons.YesNoCancel);
                     if (answer == DialogResult.Cancel)
                     {
                         MessageBox.Show("Annulation du déploiement en l'état");
-                        return;
+                        return false;
                     }
                     else if (answer == DialogResult.Yes)
                     {
@@ -1130,6 +1198,25 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 //Applications des droits sur le groupe source
                 if (iSourceEnvironnement == EnvironmentEnum.Developpement)
                     Tools.Tools.ReleaseProjectsRights(sourceGroup);
+
+                return true;
+            }
+        }
+
+        private void cmdDeployementSearch_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    _SeachType = SearchTypeEnum.Deployement;
+                    LoadPackageDataGridView(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
             }
         }
 

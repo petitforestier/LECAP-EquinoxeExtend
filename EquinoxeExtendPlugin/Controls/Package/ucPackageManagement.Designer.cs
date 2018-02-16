@@ -42,13 +42,6 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
-            this.fraSearch = new System.Windows.Forms.GroupBox();
-            this.tlpHeader = new System.Windows.Forms.TableLayoutPanel();
-            this.cboStatus = new System.Windows.Forms.ComboBox();
-            this.cmdPackageSearch = new System.Windows.Forms.Button();
-            this.lblStatus = new System.Windows.Forms.Label();
-            this.lblOrderBy = new System.Windows.Forms.Label();
-            this.cboOrderBy = new System.Windows.Forms.ComboBox();
             this.splFooter = new System.Windows.Forms.SplitContainer();
             this.tlpLeft = new System.Windows.Forms.TableLayoutPanel();
             this.fraPackages = new System.Windows.Forms.GroupBox();
@@ -70,7 +63,6 @@
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.dgvPackage = new System.Windows.Forms.DataGridView();
             this.fraPackage = new System.Windows.Forms.GroupBox();
-            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
             this.tlpRight = new System.Windows.Forms.TableLayoutPanel();
@@ -78,9 +70,21 @@
             this.dgvSubTask = new System.Windows.Forms.DataGridView();
             this.fraDeployement = new System.Windows.Forms.GroupBox();
             this.dgvDeployement = new System.Windows.Forms.DataGridView();
+            this.tlpHeader = new System.Windows.Forms.TableLayoutPanel();
+            this.fraSearchPackage = new System.Windows.Forms.GroupBox();
+            this.tlpSearchPackage = new System.Windows.Forms.TableLayoutPanel();
+            this.cboStatus = new System.Windows.Forms.ComboBox();
+            this.cmdPackageSearch = new System.Windows.Forms.Button();
+            this.lblStatus = new System.Windows.Forms.Label();
+            this.lblOrderBy = new System.Windows.Forms.Label();
+            this.cboOrderBy = new System.Windows.Forms.ComboBox();
+            this.fraSearchDeploy = new System.Windows.Forms.GroupBox();
+            this.tlpSearchDeploy = new System.Windows.Forms.TableLayoutPanel();
+            this.cboDestinationEnvironment = new System.Windows.Forms.ComboBox();
+            this.cmdDeployementSearch = new System.Windows.Forms.Button();
+            this.lblDestinationEnvironment = new System.Windows.Forms.Label();
+            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.tlpMain.SuspendLayout();
-            this.fraSearch.SuspendLayout();
-            this.tlpHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splFooter)).BeginInit();
             this.splFooter.Panel1.SuspendLayout();
             this.splFooter.Panel2.SuspendLayout();
@@ -98,111 +102,33 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvSubTask)).BeginInit();
             this.fraDeployement.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvDeployement)).BeginInit();
+            this.tlpHeader.SuspendLayout();
+            this.fraSearchPackage.SuspendLayout();
+            this.tlpSearchPackage.SuspendLayout();
+            this.fraSearchDeploy.SuspendLayout();
+            this.tlpSearchDeploy.SuspendLayout();
             this.SuspendLayout();
             // 
             // tlpMain
             // 
             this.tlpMain.ColumnCount = 1;
             this.tlpMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpMain.Controls.Add(this.fraSearch, 0, 0);
             this.tlpMain.Controls.Add(this.splFooter, 0, 1);
+            this.tlpMain.Controls.Add(this.tlpHeader, 0, 0);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpMain.Location = new System.Drawing.Point(0, 0);
             this.tlpMain.Name = "tlpMain";
             this.tlpMain.RowCount = 2;
-            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 82F));
+            this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 91F));
             this.tlpMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpMain.Size = new System.Drawing.Size(1050, 575);
             this.tlpMain.TabIndex = 0;
-            // 
-            // fraSearch
-            // 
-            this.fraSearch.Controls.Add(this.tlpHeader);
-            this.fraSearch.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fraSearch.Location = new System.Drawing.Point(3, 3);
-            this.fraSearch.Name = "fraSearch";
-            this.fraSearch.Size = new System.Drawing.Size(1044, 76);
-            this.fraSearch.TabIndex = 1;
-            this.fraSearch.TabStop = false;
-            this.fraSearch.Text = "Recherche";
-            // 
-            // tlpHeader
-            // 
-            this.tlpHeader.ColumnCount = 3;
-            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
-            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 165F));
-            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 754F));
-            this.tlpHeader.Controls.Add(this.cboStatus, 1, 0);
-            this.tlpHeader.Controls.Add(this.cmdPackageSearch, 2, 1);
-            this.tlpHeader.Controls.Add(this.lblStatus, 0, 0);
-            this.tlpHeader.Controls.Add(this.lblOrderBy, 0, 1);
-            this.tlpHeader.Controls.Add(this.cboOrderBy, 1, 1);
-            this.tlpHeader.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tlpHeader.Location = new System.Drawing.Point(3, 16);
-            this.tlpHeader.Margin = new System.Windows.Forms.Padding(0);
-            this.tlpHeader.Name = "tlpHeader";
-            this.tlpHeader.RowCount = 2;
-            this.tlpHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tlpHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
-            this.tlpHeader.Size = new System.Drawing.Size(1038, 57);
-            this.tlpHeader.TabIndex = 3;
-            // 
-            // cboStatus
-            // 
-            this.cboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboStatus.FormattingEnabled = true;
-            this.cboStatus.Location = new System.Drawing.Point(122, 3);
-            this.cboStatus.Name = "cboStatus";
-            this.cboStatus.Size = new System.Drawing.Size(158, 21);
-            this.cboStatus.TabIndex = 0;
-            // 
-            // cmdPackageSearch
-            // 
-            this.cmdPackageSearch.Location = new System.Drawing.Point(287, 31);
-            this.cmdPackageSearch.Name = "cmdPackageSearch";
-            this.cmdPackageSearch.Size = new System.Drawing.Size(75, 23);
-            this.cmdPackageSearch.TabIndex = 1;
-            this.cmdPackageSearch.Text = "Rechercher";
-            this.cmdPackageSearch.UseVisualStyleBackColor = true;
-            this.cmdPackageSearch.Click += new System.EventHandler(this.cmdPackageSearch_Click);
-            // 
-            // lblStatus
-            // 
-            this.lblStatus.AutoSize = true;
-            this.lblStatus.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblStatus.Location = new System.Drawing.Point(3, 0);
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(113, 28);
-            this.lblStatus.TabIndex = 2;
-            this.lblStatus.Text = "Statut";
-            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // lblOrderBy
-            // 
-            this.lblOrderBy.AutoSize = true;
-            this.lblOrderBy.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lblOrderBy.Location = new System.Drawing.Point(3, 28);
-            this.lblOrderBy.Name = "lblOrderBy";
-            this.lblOrderBy.Size = new System.Drawing.Size(113, 29);
-            this.lblOrderBy.TabIndex = 3;
-            this.lblOrderBy.Text = "Ranger par";
-            this.lblOrderBy.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // cboOrderBy
-            // 
-            this.cboOrderBy.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cboOrderBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboOrderBy.FormattingEnabled = true;
-            this.cboOrderBy.Location = new System.Drawing.Point(122, 31);
-            this.cboOrderBy.Name = "cboOrderBy";
-            this.cboOrderBy.Size = new System.Drawing.Size(159, 21);
-            this.cboOrderBy.TabIndex = 4;
             // 
             // splFooter
             // 
             this.splFooter.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splFooter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splFooter.Location = new System.Drawing.Point(3, 85);
+            this.splFooter.Location = new System.Drawing.Point(3, 94);
             this.splFooter.Name = "splFooter";
             // 
             // splFooter.Panel1
@@ -212,7 +138,7 @@
             // splFooter.Panel2
             // 
             this.splFooter.Panel2.Controls.Add(this.tlpRight);
-            this.splFooter.Size = new System.Drawing.Size(1044, 487);
+            this.splFooter.Size = new System.Drawing.Size(1044, 478);
             this.splFooter.SplitterDistance = 646;
             this.splFooter.TabIndex = 3;
             // 
@@ -228,7 +154,7 @@
             this.tlpLeft.RowCount = 2;
             this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpLeft.Size = new System.Drawing.Size(644, 485);
+            this.tlpLeft.Size = new System.Drawing.Size(644, 476);
             this.tlpLeft.TabIndex = 0;
             // 
             // fraPackages
@@ -237,7 +163,7 @@
             this.fraPackages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraPackages.Location = new System.Drawing.Point(3, 3);
             this.fraPackages.Name = "fraPackages";
-            this.fraPackages.Size = new System.Drawing.Size(638, 236);
+            this.fraPackages.Size = new System.Drawing.Size(638, 232);
             this.fraPackages.TabIndex = 1;
             this.fraPackages.TabStop = false;
             this.fraPackages.Text = "Packages";
@@ -256,7 +182,7 @@
             this.tlpPackage.RowCount = 2;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPackage.Size = new System.Drawing.Size(632, 217);
+            this.tlpPackage.Size = new System.Drawing.Size(632, 213);
             this.tlpPackage.TabIndex = 0;
             // 
             // tlsPackage
@@ -438,7 +364,7 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvPackage.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvPackage.Size = new System.Drawing.Size(359, 181);
+            this.dgvPackage.Size = new System.Drawing.Size(359, 177);
             this.dgvPackage.TabIndex = 4;
             this.dgvPackage.SelectionChanged += new System.EventHandler(this.dgvPackage_SelectionChanged);
             this.dgvPackage.DoubleClick += new System.EventHandler(this.dgvPackage_DoubleClick);
@@ -450,27 +376,18 @@
             this.fraPackage.Location = new System.Drawing.Point(368, 3);
             this.fraPackage.Name = "fraPackage";
             this.tlpPackage.SetRowSpan(this.fraPackage, 2);
-            this.fraPackage.Size = new System.Drawing.Size(261, 211);
+            this.fraPackage.Size = new System.Drawing.Size(261, 207);
             this.fraPackage.TabIndex = 6;
             this.fraPackage.TabStop = false;
             this.fraPackage.Text = "Package";
-            // 
-            // ucPackageEdit
-            // 
-            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
-            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucPackageEdit.Name = "ucPackageEdit";
-            this.ucPackageEdit.Size = new System.Drawing.Size(255, 192);
-            this.ucPackageEdit.TabIndex = 5;
             // 
             // fraMainTask
             // 
             this.fraMainTask.Controls.Add(this.dgvMainTask);
             this.fraMainTask.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fraMainTask.Location = new System.Drawing.Point(3, 245);
+            this.fraMainTask.Location = new System.Drawing.Point(3, 241);
             this.fraMainTask.Name = "fraMainTask";
-            this.fraMainTask.Size = new System.Drawing.Size(638, 237);
+            this.fraMainTask.Size = new System.Drawing.Size(638, 232);
             this.fraMainTask.TabIndex = 1;
             this.fraMainTask.TabStop = false;
             this.fraMainTask.Text = "Tâches";
@@ -505,7 +422,7 @@
             dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvMainTask.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvMainTask.Size = new System.Drawing.Size(632, 218);
+            this.dgvMainTask.Size = new System.Drawing.Size(632, 213);
             this.dgvMainTask.TabIndex = 5;
             // 
             // tlpRight
@@ -520,16 +437,16 @@
             this.tlpRight.RowCount = 2;
             this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpRight.Size = new System.Drawing.Size(392, 485);
+            this.tlpRight.Size = new System.Drawing.Size(392, 476);
             this.tlpRight.TabIndex = 0;
             // 
             // fraProjectTask
             // 
             this.fraProjectTask.Controls.Add(this.dgvSubTask);
             this.fraProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fraProjectTask.Location = new System.Drawing.Point(3, 245);
+            this.fraProjectTask.Location = new System.Drawing.Point(3, 241);
             this.fraProjectTask.Name = "fraProjectTask";
-            this.fraProjectTask.Size = new System.Drawing.Size(386, 237);
+            this.fraProjectTask.Size = new System.Drawing.Size(386, 232);
             this.fraProjectTask.TabIndex = 2;
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâches";
@@ -564,7 +481,7 @@
             dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSubTask.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
-            this.dgvSubTask.Size = new System.Drawing.Size(380, 218);
+            this.dgvSubTask.Size = new System.Drawing.Size(380, 213);
             this.dgvSubTask.TabIndex = 6;
             // 
             // fraDeployement
@@ -573,7 +490,7 @@
             this.fraDeployement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraDeployement.Location = new System.Drawing.Point(3, 3);
             this.fraDeployement.Name = "fraDeployement";
-            this.fraDeployement.Size = new System.Drawing.Size(386, 236);
+            this.fraDeployement.Size = new System.Drawing.Size(386, 232);
             this.fraDeployement.TabIndex = 1;
             this.fraDeployement.TabStop = false;
             this.fraDeployement.Text = "Déploiements";
@@ -608,8 +525,175 @@
             dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvDeployement.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
-            this.dgvDeployement.Size = new System.Drawing.Size(380, 217);
+            this.dgvDeployement.Size = new System.Drawing.Size(380, 213);
             this.dgvDeployement.TabIndex = 7;
+            // 
+            // tlpHeader
+            // 
+            this.tlpHeader.ColumnCount = 3;
+            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 381F));
+            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 400F));
+            this.tlpHeader.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpHeader.Controls.Add(this.fraSearchPackage, 0, 0);
+            this.tlpHeader.Controls.Add(this.fraSearchDeploy, 1, 0);
+            this.tlpHeader.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpHeader.Location = new System.Drawing.Point(3, 3);
+            this.tlpHeader.Name = "tlpHeader";
+            this.tlpHeader.RowCount = 1;
+            this.tlpHeader.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpHeader.Size = new System.Drawing.Size(1044, 85);
+            this.tlpHeader.TabIndex = 4;
+            // 
+            // fraSearchPackage
+            // 
+            this.fraSearchPackage.Controls.Add(this.tlpSearchPackage);
+            this.fraSearchPackage.Location = new System.Drawing.Point(3, 3);
+            this.fraSearchPackage.Name = "fraSearchPackage";
+            this.fraSearchPackage.Size = new System.Drawing.Size(375, 79);
+            this.fraSearchPackage.TabIndex = 1;
+            this.fraSearchPackage.TabStop = false;
+            this.fraSearchPackage.Text = "Recherche package";
+            // 
+            // tlpSearchPackage
+            // 
+            this.tlpSearchPackage.ColumnCount = 4;
+            this.tlpSearchPackage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 119F));
+            this.tlpSearchPackage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 165F));
+            this.tlpSearchPackage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 85F));
+            this.tlpSearchPackage.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 14F));
+            this.tlpSearchPackage.Controls.Add(this.cboStatus, 1, 0);
+            this.tlpSearchPackage.Controls.Add(this.cmdPackageSearch, 2, 1);
+            this.tlpSearchPackage.Controls.Add(this.lblStatus, 0, 0);
+            this.tlpSearchPackage.Controls.Add(this.lblOrderBy, 0, 1);
+            this.tlpSearchPackage.Controls.Add(this.cboOrderBy, 1, 1);
+            this.tlpSearchPackage.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpSearchPackage.Location = new System.Drawing.Point(3, 16);
+            this.tlpSearchPackage.Margin = new System.Windows.Forms.Padding(0);
+            this.tlpSearchPackage.Name = "tlpSearchPackage";
+            this.tlpSearchPackage.RowCount = 2;
+            this.tlpSearchPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tlpSearchPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 28F));
+            this.tlpSearchPackage.Size = new System.Drawing.Size(369, 60);
+            this.tlpSearchPackage.TabIndex = 3;
+            // 
+            // cboStatus
+            // 
+            this.cboStatus.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboStatus.FormattingEnabled = true;
+            this.cboStatus.Location = new System.Drawing.Point(122, 3);
+            this.cboStatus.Name = "cboStatus";
+            this.cboStatus.Size = new System.Drawing.Size(158, 21);
+            this.cboStatus.TabIndex = 0;
+            // 
+            // cmdPackageSearch
+            // 
+            this.cmdPackageSearch.Location = new System.Drawing.Point(287, 31);
+            this.cmdPackageSearch.Name = "cmdPackageSearch";
+            this.cmdPackageSearch.Size = new System.Drawing.Size(75, 23);
+            this.cmdPackageSearch.TabIndex = 1;
+            this.cmdPackageSearch.Text = "Rechercher";
+            this.cmdPackageSearch.UseVisualStyleBackColor = true;
+            this.cmdPackageSearch.Click += new System.EventHandler(this.cmdPackageSearch_Click);
+            // 
+            // lblStatus
+            // 
+            this.lblStatus.AutoSize = true;
+            this.lblStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblStatus.Location = new System.Drawing.Point(3, 0);
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(113, 28);
+            this.lblStatus.TabIndex = 2;
+            this.lblStatus.Text = "Statut";
+            this.lblStatus.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // lblOrderBy
+            // 
+            this.lblOrderBy.AutoSize = true;
+            this.lblOrderBy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblOrderBy.Location = new System.Drawing.Point(3, 28);
+            this.lblOrderBy.Name = "lblOrderBy";
+            this.lblOrderBy.Size = new System.Drawing.Size(113, 32);
+            this.lblOrderBy.TabIndex = 3;
+            this.lblOrderBy.Text = "Ranger par";
+            this.lblOrderBy.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // cboOrderBy
+            // 
+            this.cboOrderBy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cboOrderBy.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOrderBy.FormattingEnabled = true;
+            this.cboOrderBy.Location = new System.Drawing.Point(122, 31);
+            this.cboOrderBy.Name = "cboOrderBy";
+            this.cboOrderBy.Size = new System.Drawing.Size(159, 21);
+            this.cboOrderBy.TabIndex = 4;
+            // 
+            // fraSearchDeploy
+            // 
+            this.fraSearchDeploy.Controls.Add(this.tlpSearchDeploy);
+            this.fraSearchDeploy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.fraSearchDeploy.Location = new System.Drawing.Point(384, 3);
+            this.fraSearchDeploy.Name = "fraSearchDeploy";
+            this.fraSearchDeploy.Size = new System.Drawing.Size(394, 79);
+            this.fraSearchDeploy.TabIndex = 2;
+            this.fraSearchDeploy.TabStop = false;
+            this.fraSearchDeploy.Text = "Recherche déploiement";
+            // 
+            // tlpSearchDeploy
+            // 
+            this.tlpSearchDeploy.ColumnCount = 3;
+            this.tlpSearchDeploy.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 146F));
+            this.tlpSearchDeploy.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 159F));
+            this.tlpSearchDeploy.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 346F));
+            this.tlpSearchDeploy.Controls.Add(this.cboDestinationEnvironment, 1, 0);
+            this.tlpSearchDeploy.Controls.Add(this.cmdDeployementSearch, 2, 1);
+            this.tlpSearchDeploy.Controls.Add(this.lblDestinationEnvironment, 0, 0);
+            this.tlpSearchDeploy.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpSearchDeploy.Location = new System.Drawing.Point(3, 16);
+            this.tlpSearchDeploy.Name = "tlpSearchDeploy";
+            this.tlpSearchDeploy.RowCount = 2;
+            this.tlpSearchDeploy.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tlpSearchDeploy.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 25F));
+            this.tlpSearchDeploy.Size = new System.Drawing.Size(388, 60);
+            this.tlpSearchDeploy.TabIndex = 0;
+            // 
+            // cboDestinationEnvironment
+            // 
+            this.cboDestinationEnvironment.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboDestinationEnvironment.FormattingEnabled = true;
+            this.cboDestinationEnvironment.Location = new System.Drawing.Point(149, 3);
+            this.cboDestinationEnvironment.Name = "cboDestinationEnvironment";
+            this.cboDestinationEnvironment.Size = new System.Drawing.Size(153, 21);
+            this.cboDestinationEnvironment.TabIndex = 4;
+            // 
+            // cmdDeployementSearch
+            // 
+            this.cmdDeployementSearch.Location = new System.Drawing.Point(308, 33);
+            this.cmdDeployementSearch.Name = "cmdDeployementSearch";
+            this.cmdDeployementSearch.Size = new System.Drawing.Size(75, 23);
+            this.cmdDeployementSearch.TabIndex = 2;
+            this.cmdDeployementSearch.Text = "Rechercher";
+            this.cmdDeployementSearch.UseVisualStyleBackColor = true;
+            this.cmdDeployementSearch.Click += new System.EventHandler(this.cmdDeployementSearch_Click);
+            // 
+            // lblDestinationEnvironment
+            // 
+            this.lblDestinationEnvironment.AutoSize = true;
+            this.lblDestinationEnvironment.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblDestinationEnvironment.Location = new System.Drawing.Point(3, 0);
+            this.lblDestinationEnvironment.Name = "lblDestinationEnvironment";
+            this.lblDestinationEnvironment.Size = new System.Drawing.Size(140, 30);
+            this.lblDestinationEnvironment.TabIndex = 3;
+            this.lblDestinationEnvironment.Text = "Environnement destination";
+            this.lblDestinationEnvironment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // ucPackageEdit
+            // 
+            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
+            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucPackageEdit.Name = "ucPackageEdit";
+            this.ucPackageEdit.Size = new System.Drawing.Size(255, 188);
+            this.ucPackageEdit.TabIndex = 5;
             // 
             // ucPackageManagement
             // 
@@ -619,9 +703,6 @@
             this.Name = "ucPackageManagement";
             this.Size = new System.Drawing.Size(1050, 575);
             this.tlpMain.ResumeLayout(false);
-            this.fraSearch.ResumeLayout(false);
-            this.tlpHeader.ResumeLayout(false);
-            this.tlpHeader.PerformLayout();
             this.splFooter.Panel1.ResumeLayout(false);
             this.splFooter.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splFooter)).EndInit();
@@ -641,6 +722,13 @@
             ((System.ComponentModel.ISupportInitialize)(this.dgvSubTask)).EndInit();
             this.fraDeployement.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvDeployement)).EndInit();
+            this.tlpHeader.ResumeLayout(false);
+            this.fraSearchPackage.ResumeLayout(false);
+            this.tlpSearchPackage.ResumeLayout(false);
+            this.tlpSearchPackage.PerformLayout();
+            this.fraSearchDeploy.ResumeLayout(false);
+            this.tlpSearchDeploy.ResumeLayout(false);
+            this.tlpSearchDeploy.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -653,7 +741,7 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripButton cmdDeployToStaging;
         private System.Windows.Forms.ToolStripButton cmdDeployToProduction;
-        private System.Windows.Forms.TableLayoutPanel tlpHeader;
+        private System.Windows.Forms.TableLayoutPanel tlpSearchPackage;
         private System.Windows.Forms.ComboBox cboStatus;
         private System.Windows.Forms.Button cmdPackageSearch;
         private System.Windows.Forms.DataGridView dgvPackage;
@@ -665,7 +753,7 @@
         private System.Windows.Forms.GroupBox fraMainTask;
         private System.Windows.Forms.GroupBox fraPackages;
         private System.Windows.Forms.TableLayoutPanel tlpPackage;
-        private System.Windows.Forms.GroupBox fraSearch;
+        private System.Windows.Forms.GroupBox fraSearchPackage;
         private System.Windows.Forms.SplitContainer splFooter;
         private System.Windows.Forms.TableLayoutPanel tlpLeft;
         private System.Windows.Forms.TableLayoutPanel tlpRight;
@@ -684,5 +772,11 @@
         private Package.ucPackageEdit ucPackageEdit;
         private System.Windows.Forms.GroupBox fraPackage;
         private System.Windows.Forms.ToolStripButton cmdUpdate;
+        private System.Windows.Forms.TableLayoutPanel tlpHeader;
+        private System.Windows.Forms.GroupBox fraSearchDeploy;
+        private System.Windows.Forms.TableLayoutPanel tlpSearchDeploy;
+        private System.Windows.Forms.ComboBox cboDestinationEnvironment;
+        private System.Windows.Forms.Button cmdDeployementSearch;
+        private System.Windows.Forms.Label lblDestinationEnvironment;
     }
 }

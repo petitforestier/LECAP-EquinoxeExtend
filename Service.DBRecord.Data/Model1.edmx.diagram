@@ -4,10 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="04044fa7f0384a318c893801c7564a10" Name="Diagram1">
-        <EntityTypeShape EntityType="RecordDBModel.T_E_Dossier" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="RecordDBModel.T_E_Lock" Width="1.5" PointX="0.75" PointY="4.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="RecordDBModel.T_E_Specification" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+      <Diagram DiagramId="d94d9541f6224f49a6bec7c4a2eb659e" Name="Diagram1">
+        <EntityTypeShape EntityType="RecordDBModel.T_E_Dossier" Width="1.5" PointX="0.75" PointY="2.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecordDBModel.T_E_Lock" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecordDBModel.T_E_Specification" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
+        <AssociationConnector Association="RecordDBModel.FK_T_E_Lock_DossierId" ManuallyRouted="false" />
         <AssociationConnector Association="RecordDBModel.FK_T_E_Specification_DossierId" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>

@@ -85,13 +85,13 @@
       <Project>{bd397c73-6537-41c8-8501-50f7f84c4de1}</Project>
       <Name>Service.DBProduct.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Service.DBRelease.Data\Service.DBRelease.Data.csproj">
-      <Project>{125ea7c9-2f73-4b36-bad6-5f49dde22458}</Project>
-      <Name>Service.DBRelease.Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Service.DBRecord.Data\Service.DBRecord.Data.csproj">
       <Project>{8fae8c3d-0987-4b76-843b-ffc1065b5a14}</Project>
       <Name>Service.DBRecord.Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Service.DBRelease.Data\Service.DBRelease.Data.csproj">
+      <Project>{125ea7c9-2f73-4b36-bad6-5f49dde22458}</Project>
+      <Name>Service.DBRelease.Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\Service.PDCExcelFile.Data\Service.PDCExcelFile.Data.csproj">
       <Project>{f1e65bad-b90e-454b-81c9-9231eabcb035}</Project>

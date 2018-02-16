@@ -149,8 +149,6 @@ namespace DriveWorks.Helper
             options.TargetFolder = destinationProjectPath;
 
             var projectToCopy = iSourceGroup.Projects.GetProject(iProjectNameToCopy);
-            if (projectToCopy == null)
-                throw new Exception("Le projet '{0}' est inexistant dans le groupe '{1}'".FormatString(iProjectNameToCopy, iSourceGroup.Name));
             
             //Ajout du projet à copier
             options.Projects.Add(projectToCopy);

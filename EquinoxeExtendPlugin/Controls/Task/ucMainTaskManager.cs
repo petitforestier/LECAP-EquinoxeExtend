@@ -73,7 +73,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
         }
 
-        public void LoadControl(MainTaskStatusSearchEnum iMainTaskStatusSearch, MainTaskOrderByEnum iMainTaskOrderBy, Guid? iProjectId, long? iProductLineId, MainTaskTypeEnum? iMainTaskType, Guid? iDevelopperId, long? iPackageId)
+        public void LoadControl(MainTaskStatusSearchEnum iMainTaskStatusSearch, MainTaskOrderByEnum iMainTaskOrderBy, Guid? iProjectId, long? iProductLineId, MainTaskTypeEnum? iMainTaskType, Guid? iDevelopperId, long? iPackageId, long? iExternalProjectId)
         {
             if (_IsLoading.Value) return;
             using (var locker = new BoolLocker(ref _IsLoading))
@@ -86,6 +86,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 _MainTaskType = iMainTaskType;
                 _DevelopperId = iDevelopperId;
                 _PackageId = iPackageId;
+                _ExternalProjectId = iExternalProjectId;
 
                 LoadDataGridViewMainTask(true, null);
                 DisplaySelectionMode();
@@ -397,6 +398,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         private long _MainTaskId;
         private Guid? _DevelopperId;
         private long? _PackageId;
+        private long? _ExternalProjectId;
 
         private BindingSource _MainTaskBindingSource = new BindingSource();
 
@@ -426,7 +428,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 if (_LoadingType == LoadingType.Criteria)
                 {
-                    maintaskTuple = releaseService.GetMainTaskList(_MainTaskStatusSearchEnum, _MainTaskOrderBy, _ProjectId, _ProductLineId, _MainTaskType, _DevelopperId, _PackageId, skip, ucNavigator.Take, GranularityEnum.Full);
+                    maintaskTuple = releaseService.GetMainTaskList(_MainTaskStatusSearchEnum, _MainTaskOrderBy, _ProjectId, _ProductLineId, _MainTaskType, _DevelopperId, _PackageId, skip, ucNavigator.Take, GranularityEnum.Full,_ExternalProjectId);
                 }
                 else if (_LoadingType == LoadingType.MainTaskId)
                 {
