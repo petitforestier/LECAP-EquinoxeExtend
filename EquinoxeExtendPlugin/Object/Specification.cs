@@ -27,6 +27,7 @@ namespace EquinoxeExtendPlugin.Object
                  ProjectVersion = iSpecification.ProjectVersion,
                  SpecificationId = iSpecification.SpecificationId,
                  Comments = iSpecification.Comments,
+                 CreatorGUID = iSpecification.CreatorGUID,             
             };
         }
     }

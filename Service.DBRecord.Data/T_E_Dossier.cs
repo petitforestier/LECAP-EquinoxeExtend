@@ -17,8 +17,8 @@ namespace Service.DBRecord.Data
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public T_E_Dossier()
         {
-            this.T_E_Lock = new HashSet<T_E_Lock>();
             this.T_E_Specification = new HashSet<T_E_Specification>();
+            this.T_E_Lock = new HashSet<T_E_Lock>();
         }
     
         public long DossierId { get; set; }
@@ -27,10 +27,12 @@ namespace Service.DBRecord.Data
         public bool IsTemplate { get; set; }
         public string TemplateDescription { get; set; }
         public string TemplateName { get; set; }
+        public int StateRef { get; set; }
+        public bool IsCreateVersionOnGeneration { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<T_E_Lock> T_E_Lock { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<T_E_Specification> T_E_Specification { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<T_E_Lock> T_E_Lock { get; set; }
     }
 }

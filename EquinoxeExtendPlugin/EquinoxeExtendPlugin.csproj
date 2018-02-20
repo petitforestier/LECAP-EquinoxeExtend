@@ -143,8 +143,6 @@
     <Compile Include="Controls\WhereUsed\ucWhereUsedGroup.Designer.cs">
       <DependentUpon>ucWhereUsedGroup.cs</DependentUpon>
     </Compile>
-    <Compile Include="Object\Specification.cs" />
-    <Compile Include="Object\Dossier.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -157,19 +155,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Library.Control\Library.Control.csproj">
+    <ProjectReference Include="..\..\LECAP-Library\Library.Control\Library.Control.csproj">
       <Project>{26813b7a-de40-455e-9bd3-544e976f3ace}</Project>
       <Name>Library.Control</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Library.Excel\Library.Excel.csproj">
+    <ProjectReference Include="..\..\LECAP-Library\Library.Excel\Library.Excel.csproj">
       <Project>{7bfa9e65-4118-4cc8-89a0-e11401c49c37}</Project>
       <Name>Library.Excel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Library\Library.Text\Library.Text.csproj">
-      <Project>{ac7721cf-0ded-4a92-9b52-890228821fb4}</Project>
-      <Name>Library.Text</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+    <ProjectReference Include="..\..\LECAP-Library\Library.Tools\Library.Tools.csproj">
       <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
       <Name>Library.Tools</Name>
     </ProjectReference>
@@ -325,6 +319,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\Planning\" />
+    <Folder Include="Object\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\1475694463_test_tube24.png" />

@@ -28,6 +28,8 @@ namespace EquinoxeExtendPlugin.Object
                 Name = iDossier.Name,
                 DossierId = iDossier.DossierId,
                 Lock = iDossier.Lock,
+                IsCreateVersionOnGeneration = iDossier.IsCreateVersionOnGeneration,
+                State = iDossier.State,
             };
         }
     }

@@ -13,13 +13,15 @@ namespace EquinoxeExtend.Shared.Enum
         None = 1,
         [Name("FR", "Attente génération modèles")]
         WaitingModelBuilding = 20,
+        [Name("FR", "Génération en cours modèles")]
+        ModelBuilding = 30,
         [Name("FR","Modèles générés")]
-        ModelBuilt = 30,
+        ModelBuilt = 40,
         [Name("FR", "Etude en cours")]
-        Studying = 40,
+        Studying = 50,
         [Name("FR", "Attente génération documents finaux")]
-        WaitingFinalBuilding = 50,
+        WaitingFinalBuilding = 60,
         [Name("FR", "Terminé")]
-        Completed = 60,
+        Completed = 70,
     };
 }

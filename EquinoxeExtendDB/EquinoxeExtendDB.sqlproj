@@ -92,6 +92,7 @@
     <None Include="Script\Deployed\Scriptv015.sql" />
     <Build Include="Tables\S_Record\T_E_Dossier.sql" />
     <Build Include="Tables\S_Record\T_E_Lock.sql" />
+    <Build Include="Tables\S_Record\T_E_Generation.sql" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Equinoxe_SandBox_Extend.publish.xml" />

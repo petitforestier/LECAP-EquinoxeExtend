@@ -574,30 +574,6 @@ namespace EquinoxeExtendPlugin
         }
 
         [Udf]
-        [FunctionInfo("Retourne la liste des états existant sur un projet")]
-        public string UDFGetStateNameListOfProject([ParamInfo("Nom Projet", "Nom projet")]string iProjectName)
-        {
-            try
-            {
-                if (iProjectName.IsNullOrEmpty())
-                    throw new Exception("Le nom du projet est invalide");
-                
-                //Récupère le projet depuis son nom
-                var project = DriveWorks.Helper.GroupHelper.GetProjectList(this.Project.Group).Enum().SingleOrDefault(x => x.Name == iProjectName);
-
-                //Récupére la liste des états
-                var dataBaseQuery = new DataBaseQuery(this.Project.Group.GetEnvironment().GetSQLConnectionString());
-                var stateList = dataBaseQuery.GetStateNameListOfProject(project.Id.ToString());
-
-                return stateList.Enum().Concat("|");
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        [Udf]
         [FunctionInfo("Retourne si le projet est verrouillé")]
         public bool UDFIsDossierLocked([ParamInfo("Nom dossier", "Nom dossier")]string iDossierName)
         {

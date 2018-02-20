@@ -49,6 +49,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Record\Generation.cs" />
     <Compile Include="Record\Lock.cs" />
     <Compile Include="Log\Log.cs" />
     <Compile Include="Pool\Pool.cs" />
@@ -64,7 +65,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\..\Library\Library.Tools\Library.Tools.csproj">
+    <ProjectReference Include="..\..\LECAP-Library\Library.Tools\Library.Tools.csproj">
       <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
       <Name>Library.Tools</Name>
     </ProjectReference>

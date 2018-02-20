@@ -18,4 +18,8 @@ namespace Service.DBRecord.Data
     public partial class T_E_Lock : IEntity
     {
     }
+
+    public partial class T_E_Generation : IEntity
+    {
+    }
 }

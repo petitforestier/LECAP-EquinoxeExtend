@@ -14,6 +14,12 @@ namespace Service.DBRecord.Data
     
     public partial class T_E_Specification
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public T_E_Specification()
+        {
+            this.T_E_Generation = new HashSet<T_E_Generation>();
+        }
+    
         public long SpecificationId { get; set; }
         public string Name { get; set; }
         public long DossierId { get; set; }
@@ -22,7 +28,10 @@ namespace Service.DBRecord.Data
         public string Constants { get; set; }
         public System.DateTime CreationDate { get; set; }
         public string Comments { get; set; }
+        public System.Guid CreatorGUID { get; set; }
     
         public virtual T_E_Dossier T_E_Dossier { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<T_E_Generation> T_E_Generation { get; set; }
     }
 }

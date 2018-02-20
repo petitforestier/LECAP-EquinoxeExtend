@@ -27,6 +27,12 @@ namespace Service.Record.Front
             if (DBRecordDataService.Any<T_E_Specification>(x => x.Name == iNewSpecification.Name))
                 throw new Exception("La spécification de ce nom existe déjà");
 
+            if (iNewSpecification.CreatorGUID == null)
+                throw new Exception("Le nom du createur est invalide");
+
+            if (iNewSpecification.CreationDate == null)
+                throw new Exception("La date de création est invalide");
+
             //Création de l'enregistrement
             var newEntity = new T_E_Specification();
             newEntity.Merge(iNewSpecification);
@@ -67,7 +73,7 @@ namespace Service.Record.Front
             DBRecordDataService.DeleteSpecification(iSpecificationId);
         }
 
-        public EquinoxeExtend.Shared.Object.Record.Specification GetSpecificationByName(string iSpecificationName)
+        public EquinoxeExtend.Shared.Object.Record.Specification GetSpecificationByName(string iSpecificationName, bool iIsFull)
         {
             if (iSpecificationName.IsNullOrEmpty())
                 throw new Exception("Le nom de la spécification est invalide");
@@ -75,14 +81,24 @@ namespace Service.Record.Front
             var specificationEntity = DBRecordDataService.GetSingleOrDefault<T_E_Specification>(x => x.Name == iSpecificationName);
 
             if (specificationEntity != null)
-                return specificationEntity.Convert();
+            {
+                var specification = specificationEntity.Convert();
+                if(iIsFull)
+                    specification.Generations = GetGenerationBySpecificationId(specification.SpecificationId);
+                return specification;
+            }               
             else
                 return null;
         }
 
-        public List<EquinoxeExtend.Shared.Object.Record.Specification> GetSpecificationsByDossierId(long iDossierId)
+        public List<EquinoxeExtend.Shared.Object.Record.Specification> GetSpecificationsByDossierId(long iDossierId, bool iIsFull)
         {
-            return DBRecordDataService.GetList<T_E_Specification>(x => x.DossierId == iDossierId).Enum().Select(x => x.Convert()).Enum().OrderBy(x=>x.CreationDate).ToList();
+            var result = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
+            var entities = DBRecordDataService.GetList<T_E_Specification>(x => x.DossierId == iDossierId);
+            foreach(var entity in entities.Enum())
+                result.Add(GetSpecificationByName(entity.Name, iIsFull));
+
+            return result.Enum().OrderBy(x=>x.CreationDate).ToList();
         }
 
         #endregion

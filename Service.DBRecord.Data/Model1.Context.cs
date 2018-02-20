@@ -26,6 +26,7 @@ namespace Service.DBRecord.Data
         }
     
         public virtual DbSet<T_E_Dossier> T_E_Dossier { get; set; }
+        public virtual DbSet<T_E_Generation> T_E_Generation { get; set; }
         public virtual DbSet<T_E_Lock> T_E_Lock { get; set; }
         public virtual DbSet<T_E_Specification> T_E_Specification { get; set; }
     }

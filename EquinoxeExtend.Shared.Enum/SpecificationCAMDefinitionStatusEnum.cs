@@ -12,8 +12,10 @@ namespace EquinoxeExtend.Shared.Enum
         [Name("FR", "")]
         None = 1,
         [Name("FR", "Attente génération programme")]
-        Working = 20,
+        WaitingForCAMBuilding = 20,
+        [Name("FR", "Génération programme en cours")]
+        CAMBuilding = 30,
         [Name("FR","Terminé")]
-        Completed = 30,
+        Completed = 40,
     };
 }

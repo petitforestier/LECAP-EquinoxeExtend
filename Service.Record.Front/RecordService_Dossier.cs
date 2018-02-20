@@ -135,7 +135,7 @@ namespace Service.Record.Front
             if (theDossierEntity != null)
             {
                 var theDossier = theDossierEntity.Convert();
-                theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId);
+                theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId,true);
                 theDossier.Lock = GetLockByDossierId(theDossier.DossierId);
                 return theDossier;
             }
@@ -153,7 +153,7 @@ namespace Service.Record.Front
             if (theDossierEntity != null)
             {
                 var theDossier = theDossierEntity.Convert();
-                theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId);
+                theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId,true);
                 theDossier.Lock = GetLockByDossierId(theDossier.DossierId);
                 return theDossier;
             }
@@ -172,7 +172,7 @@ namespace Service.Record.Front
                 var theDossier = theDossierEntity.Convert();
                 if(iIsFull)
                 {
-                    theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId);
+                    theDossier.Specifications = GetSpecificationsByDossierId(theDossier.DossierId, iIsFull);
                     theDossier.Lock = GetLockByDossierId(theDossier.DossierId);
                 }
                     
@@ -189,11 +189,42 @@ namespace Service.Record.Front
             var result = new List<Dossier>();
             foreach (var DossierItem in theDossiers.Enum())
             {
-                DossierItem.Specifications = GetSpecificationsByDossierId(DossierItem.DossierId);
+                DossierItem.Specifications = GetSpecificationsByDossierId(DossierItem.DossierId,true);
                 DossierItem.Lock = GetLockByDossierId(DossierItem.DossierId);
                 result.Add(DossierItem);
             }
             return theDossiers;
+        }
+
+        public List<EquinoxeExtend.Shared.Object.Record.Dossier> GetDossiers(bool iIsNotTemplate, string iDossierName, Guid iCreatorModificator, DossierStatusEnum? iDossierStatusEnum)
+        {
+            var theQuery = DBRecordDataService.GetQuery<T_E_Dossier>(null);
+
+            //Template
+            if (iIsNotTemplate)
+                theQuery = theQuery.Where(x => x.IsTemplate != iIsNotTemplate);
+
+            //DossierName
+            if(iDossierName.IsNotNullAndNotEmpty())
+                theQuery = theQuery.Where(x => x.Name != iDossierName);
+
+            //Createur/Modificateur
+            if (iCreatorModificator != null)
+                theQuery = theQuery.Where(x => x.T_E_Specification.Any(y => y.CreatorGUID == iCreatorModificator));
+
+            //Status
+            if(iDossierStatusEnum !=null )
+                theQuery = theQuery.Where(x => x.StateRef == (short)iDossierStatusEnum);
+
+            var result = theQuery.ToList().Enum().Select(x=>x.Convert()).ToList();
+          
+            foreach (var DossierItem in result.Enum())
+            {
+                DossierItem.Specifications = GetSpecificationsByDossierId(DossierItem.DossierId, true);
+                DossierItem.Lock = GetLockByDossierId(DossierItem.DossierId);
+                result.Add(DossierItem);
+            }
+            return result;
         }
 
         #endregion
