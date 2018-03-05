@@ -9,7 +9,7 @@ namespace EquinoxeExtend.Shared.Enum
 {
     public enum GenerationTypeEnum
     {
-        [Name("FR", "Modèles 3d/2d")]
+        [Name("FR", "Maquette numérique")]
         Model = 10,
         [Name("FR", "Liasses de production")]
         ProductionBundle = 20,

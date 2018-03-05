@@ -12,6 +12,9 @@ namespace EquinoxeExtendPlugin.Consts
         public const string IDSeparator = "<<>>";
         public const string ItemSeparator = "|";
         public static BoolLock DontShowCheckTaskOnStartup = new BoolLock();
+        public const string MailingListTeamName = "temListeDiffusion_DeploiementProduct";
+        public const string SMTPHOST = "smtp-relay.lecapitaine.fr";
+        public const int SMTPPORT = 25;
     }
  
 }

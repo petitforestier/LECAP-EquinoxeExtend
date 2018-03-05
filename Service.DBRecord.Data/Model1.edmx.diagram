@@ -4,9 +4,9 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="bd1a25e098c74eadae12d8dac4d4fb0f" Name="Diagram1">
+      <Diagram DiagramId="83eb7670ba684eb9adbf7f53387ccfd5" Name="Diagram1">
         <EntityTypeShape EntityType="RecordDBModel.T_E_Dossier" Width="1.5" PointX="0.75" PointY="2.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="RecordDBModel.T_E_Generation" Width="1.5" PointX="5.25" PointY="4.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="RecordDBModel.T_E_Generation" Width="1.5" PointX="5.25" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RecordDBModel.T_E_Lock" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="RecordDBModel.T_E_Specification" Width="1.5" PointX="3" PointY="4" IsExpanded="true" />
         <AssociationConnector Association="RecordDBModel.FK_T_E_Dossier_DossierId" ManuallyRouted="false" />

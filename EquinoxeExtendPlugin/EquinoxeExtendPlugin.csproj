@@ -50,6 +50,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -162,6 +163,10 @@
     <ProjectReference Include="..\..\LECAP-Library\Library.Excel\Library.Excel.csproj">
       <Project>{7bfa9e65-4118-4cc8-89a0-e11401c49c37}</Project>
       <Name>Library.Excel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LECAP-Library\Library.Mail\Library.Mail.csproj">
+      <Project>{4fb34c72-31de-401c-add0-7ddd2692788d}</Project>
+      <Name>Library.Mail</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\LECAP-Library\Library.Tools\Library.Tools.csproj">
       <Project>{38e9e476-647e-4a43-9d61-10fbbe1cb2af}</Project>
@@ -319,7 +324,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controls\Planning\" />
-    <Folder Include="Object\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\1475694463_test_tube24.png" />
@@ -329,6 +333,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\blank.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\if_th-list_216422.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

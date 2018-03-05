@@ -3,13 +3,16 @@ using DriveWorks.Helper;
 using Library.Tools.Extensions;
 using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
+
+using Library.Tools.Extensions;
+
 using Service.Pool.Front;
 using Service.Record.Front;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Text;
 using Titan.Rules.Execution;
 
 namespace EquinoxeExtendPlugin
@@ -41,18 +44,25 @@ namespace EquinoxeExtendPlugin
             [ParamInfo("Liste des items", "Texte des items séparé par '|'")] string iSearchItem,
             [ParamInfo("Sensible à la case", "Sensible à case")] bool iCaseSensible = true)
         {
-            if (iList.IsNullOrEmpty())
-                return false;
+            try
+            {
+                if (iList.IsNullOrEmpty())
+                    return false;
 
-            if (iSearchItem.IsNullOrEmpty())
-                return false;
+                if (iSearchItem.IsNullOrEmpty())
+                    return false;
 
-            var list = iList.Split("|").Enum().ToList();
+                var list = iList.Split("|").Enum().ToList();
 
-            if (iCaseSensible)
-                return list.Any(x => x == iSearchItem);
-            else
-                return list.Any(x => x.ToLower() == iSearchItem.ToLower());
+                if (iCaseSensible)
+                    return list.Any(x => x == iSearchItem);
+                else
+                    return list.Any(x => x.ToLower() == iSearchItem.ToLower());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Udf]
@@ -61,16 +71,23 @@ namespace EquinoxeExtendPlugin
             [ParamInfo("Liste des items", "Texte des items séparé par '|'")] string iSearchText,
             [ParamInfo("Sensible à la case", "Sensible à case")] bool iCaseSensible = true)
         {
-            if (iText.IsNullOrEmpty())
-                return false;
+            try
+            {
+                if (iText.IsNullOrEmpty())
+                    return false;
 
-            if (iSearchText.IsNullOrEmpty())
-                return false;
+                if (iSearchText.IsNullOrEmpty())
+                    return false;
 
-            if (iCaseSensible)
-                return iText.Contains(iSearchText);
-            else
-                return iText.ToLower().Contains(iSearchText.ToLower());
+                if (iCaseSensible)
+                    return iText.Contains(iSearchText);
+                else
+                    return iText.ToLower().Contains(iSearchText.ToLower());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Udf]
@@ -191,7 +208,7 @@ namespace EquinoxeExtendPlugin
                 if (iSeparator.IsNullOrEmpty())
                     throw new Exception("Le séparateur est invalide");
 
-                var theList = iTextList.Split(iSeparator).ToList().OrderBy(x=>x).ToList();
+                var theList = iTextList.Split(iSeparator).ToList().OrderBy(x => x).ToList();
 
                 if (iOrderByDescending)
                     theList = theList.OrderByDescending(x => x).ToList();
@@ -289,59 +306,80 @@ namespace EquinoxeExtendPlugin
 
         private int GetRowIndexOfValueInNamedColumn(IArrayValue iTableValue, string iHeaderName, string iValueName)
         {
-            if (iTableValue == null)
-                throw new Exception("Le controle DataTable est null");
-
-            if (iHeaderName.IsNullOrEmpty())
-                throw new Exception("Le nom de la colonne est invalide");
-
-            if (iValueName.IsNullOrEmpty())
-                throw new Exception("La valeur à rechercher est invalide");
-
-            var searchColumnIndex = GetColumnIndexFromHeaderName(iTableValue, iHeaderName);
-            if (searchColumnIndex == null)
-                throw new Exception("Le nom de la colonne n'existe pas");
-            for (int rowIndex = 1; rowIndex <= iTableValue.Rows - 1; rowIndex++)
+            try
             {
-                if (iValueName == iTableValue.ToArray()[rowIndex, (int)searchColumnIndex].ToString())
-                    return rowIndex;
-            }
+                if (iTableValue == null)
+                    throw new Exception("Le controle DataTable est null");
 
-            throw new Exception("La valeur recherchée n'existe pas");
+                if (iHeaderName.IsNullOrEmpty())
+                    throw new Exception("Le nom de la colonne est invalide");
+
+                if (iValueName.IsNullOrEmpty())
+                    throw new Exception("La valeur à rechercher est invalide");
+
+                var searchColumnIndex = GetColumnIndexFromHeaderName(iTableValue, iHeaderName);
+                if (searchColumnIndex == null)
+                    throw new Exception("Le nom de la colonne n'existe pas");
+                for (int rowIndex = 1; rowIndex <= iTableValue.Rows - 1; rowIndex++)
+                {
+                    if (iValueName == iTableValue.ToArray()[rowIndex, (int)searchColumnIndex].ToString())
+                        return rowIndex;
+                }
+
+                throw new Exception("La valeur recherchée n'existe pas");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private int? GetColumnIndexFromHeaderName(IArrayValue iTableValue, string iHeaderName)
         {
-            if (iTableValue == null)
-                throw new Exception("La table est nulle");
-
-            if (iHeaderName.IsNullOrEmpty())
-                throw new Exception("Le nom de la colonne est invalide");
-
-            var groupTableDataArray = iTableValue.ToArray();
-
-            for (int columnIndex = 0; columnIndex <= iTableValue.Columns - 1; columnIndex++)
+            try
             {
-                if (iHeaderName == groupTableDataArray[0, columnIndex].ToString())
-                    return columnIndex;
+                if (iTableValue == null)
+                    throw new Exception("La table est nulle");
+
+                if (iHeaderName.IsNullOrEmpty())
+                    throw new Exception("Le nom de la colonne est invalide");
+
+                var groupTableDataArray = iTableValue.ToArray();
+
+                for (int columnIndex = 0; columnIndex <= iTableValue.Columns - 1; columnIndex++)
+                {
+                    if (iHeaderName == groupTableDataArray[0, columnIndex].ToString())
+                        return columnIndex;
+                }
+                return null;
             }
-            return null;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private string GetValueFromGetValueFromDataTable(IArrayValue iTableValue, string iColumnName, double iRowIndex)
         {
-            if (iTableValue == null)
-                throw new Exception("Le controle DataTable est null");
+            try
+            {
+                if (iTableValue == null)
+                    throw new Exception("Le controle DataTable est null");
 
-            if (iRowIndex < 1)
-                throw new Exception("L'index est invalide, il doit être supérieur ou égal à 1");
+                if (iRowIndex < 1)
+                    throw new Exception("L'index est invalide, il doit être supérieur ou égal à 1");
 
-            var columnIndex = GetColumnIndexFromHeaderName(iTableValue, iColumnName);
+                var columnIndex = GetColumnIndexFromHeaderName(iTableValue, iColumnName);
 
-            if (columnIndex == null)
-                throw new Exception("La colonne demandé n'existe pas '{0}'".FormatString(iColumnName));
-            else
-                return iTableValue.ToArray()[(int)iRowIndex, (int)columnIndex].ToString();
+                if (columnIndex == null)
+                    throw new Exception("La colonne demandé n'existe pas '{0}'".FormatString(iColumnName));
+                else
+                    return iTableValue.ToArray()[(int)iRowIndex, (int)columnIndex].ToString();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         #endregion
@@ -358,10 +396,17 @@ namespace EquinoxeExtendPlugin
         [FunctionInfo("Retourne si le controle doit être enable ou non. Si le texte d'explication est vide alors le controle doit être actif")]
         public bool UDFEnabled([ParamInfo("VariableEnabled", "Contient le texte expliquant pourquoi le controle est désactivé")] string iVariableEnabled)
         {
-            if (iVariableEnabled != "")
-                return false;
-            else
-                return true;
+            try
+            {
+                if (iVariableEnabled != "")
+                    return false;
+                else
+                    return true;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Udf]
@@ -494,7 +539,14 @@ namespace EquinoxeExtendPlugin
         [FunctionInfo("Retourne s'il existe un controle en état d'erreur. L'erreur est détectée par la couleur du backGroundColor du Controle. La couleur associée est paramétrable dans le table Settings")]
         public bool UDFIsContainsError()
         {
-            return this.Project.GetErrorMessageList().IsNotNullAndNotEmpty();
+            try
+            {
+                return this.Project.GetErrorMessageList().IsNotNullAndNotEmpty();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         [Udf]
@@ -598,7 +650,6 @@ namespace EquinoxeExtendPlugin
             }
         }
 
-        
-    #endregion
-}
+        #endregion
+    }
 }

@@ -22,13 +22,14 @@
           <Key>
             <PropertyRef Name="GenerationId" />
           </Key>
-          <Property Name="GenerationId" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="GenerationId" Type="bigint" Nullable="false" />
           <Property Name="SpecificationId" Type="bigint" Nullable="false" />
           <Property Name="StateRef" Type="int" Nullable="false" />
           <Property Name="TypeRef" Type="int" Nullable="false" />
           <Property Name="ProjectName" Type="nvarchar" MaxLength="259" Nullable="false" />
           <Property Name="CreatorGUID" Type="uniqueidentifier" Nullable="false" />
           <Property Name="CreationDate" Type="datetime2" Precision="7" Nullable="false" />
+          <Property Name="History" Type="nvarchar" MaxLength="2000" />
           <Property Name="Comments" Type="nvarchar" MaxLength="2000" />
         </EntityType>
         <EntityType Name="T_E_Lock">
@@ -133,13 +134,14 @@
           <Key>
             <PropertyRef Name="GenerationId" />
           </Key>
-          <Property Name="GenerationId" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="GenerationId" Type="Int64" Nullable="false" />
           <Property Name="SpecificationId" Type="Int64" Nullable="false" />
           <Property Name="StateRef" Type="Int32" Nullable="false" />
           <Property Name="TypeRef" Type="Int32" Nullable="false" />
           <Property Name="ProjectName" Type="String" MaxLength="259" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="CreatorGUID" Type="Guid" Nullable="false" />
           <Property Name="CreationDate" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Name="History" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <Property Name="Comments" Type="String" MaxLength="2000" FixedLength="false" Unicode="true" />
           <NavigationProperty Name="T_E_Specification" Relationship="Self.FK_T_E_Generation_SpecificationId" FromRole="T_E_Generation" ToRole="T_E_Specification" />
         </EntityType>
@@ -254,6 +256,7 @@
                 <ScalarProperty Name="ProjectName" ColumnName="ProjectName" />
                 <ScalarProperty Name="CreatorGUID" ColumnName="CreatorGUID" />
                 <ScalarProperty Name="CreationDate" ColumnName="CreationDate" />
+                <ScalarProperty Name="History" ColumnName="History" />
                 <ScalarProperty Name="Comments" ColumnName="Comments" />
               </MappingFragment>
             </EntityTypeMapping>

@@ -21,6 +21,7 @@ namespace Service.DBRecord.Data
         public string ProjectName { get; set; }
         public System.Guid CreatorGUID { get; set; }
         public System.DateTime CreationDate { get; set; }
+        public string History { get; set; }
         public string Comments { get; set; }
     
         public virtual T_E_Specification T_E_Specification { get; set; }

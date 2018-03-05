@@ -73,26 +73,6 @@ namespace DriveWorks.Helper
             return result;
         }
 
-        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue, List<string> iColumnWidthList = null)
-        {
-            var tableControl = (DataTableControl)iProject.Navigation.GetControl(iControlName);
-
-            if (tableControl == null)
-                throw new Exception("Le controle datatable nommé '{0}' est introuvable");
-
-            tableControl.Items = iTableValue;
-
-            //Définition des largeurs de colonnes
-            if (iColumnWidthList.IsNotNullAndNotEmpty())
-            {
-                var properties = DynamicProperty.GetProperties(typeof(DataTableControl));
-                var property = properties.Single(x => x.CustomStoreName == "ColumnWidths");
-                property.SetValue(tableControl, iColumnWidthList.ToArray());
-            }
-
-        }
-
-
         #endregion
     }
 }

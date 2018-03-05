@@ -326,7 +326,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 //LastDeploy
                 var deploys = iObj.Deployements.Enum().OrderByDescending(x => x.DeployementDate);
-                if(deploys.IsNotNullAndNotEmpty())
+                if (deploys.IsNotNullAndNotEmpty())
                 {
                     var lastDeploy = deploys.First();
                     newView.LastDeploy = lastDeploy.DeployementDate.ToShortDateString();
@@ -851,8 +851,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             throw new Exception("Toutes les tâches doivent être phase de test");
 
                         //déploiement prod => backup
-                        if (!deployPackageToOtherGroup(destinationEnvironnement, backupEnvironnement, packageToDeploy, true))
-                            return;
+                        deployPackageToOtherGroup(destinationEnvironnement, backupEnvironnement, packageToDeploy, true);
+
                         //déploiement préprod => prod
                         if (!deployPackageToOtherGroup(sourceEnvironnement, destinationEnvironnement, packageToDeploy))
                             return;
@@ -861,6 +861,20 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         releaseService.MovePackageToProduction(selectedPackage);
 
                         MessageBox.Show("Le Package '{0}' a été déployé avec succès dans l'environnement '{1}'".FormatString(selectedPackage.PackageIdString, destinationEnvironnement.GetName("FR")));
+
+                        //Notification par email
+                        if (MessageBox.Show("Voulez-vous envoyer le descriptif du package à la liste de diffusion ?", "Confirmation", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                        {
+                            DriveWorks.Security.TeamDetails mailingListTeam = null;
+                            _Group.Security.TryGetTeam(Consts.Consts.MailingListTeamName, ref mailingListTeam);
+                            var userList = _Group.Security.GetUsersInTeam(mailingListTeam).Enum().Where(x => x.EmailAddress.IsNotNullAndNotEmpty()).Enum().Select(x => x.EmailAddress).Enum().ToList();
+
+                            var message = GetPackageDescriptif(packageToDeploy);
+
+                            var mailTools = new Library.Mail.MailTools(Consts.Consts.SMTPHOST, Consts.Consts.SMTPPORT, "Equinoxe");
+
+                            mailTools.SendMail(userList, null, "Nouveau package Equinoxe '{0}' déploié".FormatString(packageToDeploy.PackageIdString), message, null);
+                        }
                     }
 
                     //Rechargement de l'ensemble
@@ -1218,6 +1232,48 @@ namespace EquinoxeExtendPlugin.Controls.Task
             {
                 ex.ShowInMessageBox();
             }
+        }
+
+        private void cmdShowDescriptif_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    var selectedPackage = GetSelectedPackage();
+                    if (selectedPackage == null)
+                        return;
+
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                    {
+                        var packageToDeploy = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
+
+                        var message = GetPackageDescriptif(packageToDeploy);
+
+                        MessageBox.Show(message);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private string GetPackageDescriptif(EquinoxeExtend.Shared.Object.Release.Package iPackage)
+        {
+            var message = "Veuillez-trouver ci-dessous la liste des modifications apportées sur Equinoxe via le package '{0}':".FormatString(iPackage.PackageIdString) + Environment.NewLine;
+
+            message += Environment.NewLine;
+
+            //Bouclage sur les tâches
+            foreach (var mainTaskItem in iPackage.MainTasks.Enum())
+            {
+                message += "'{0}' : {1}".FormatString(mainTaskItem.MainTaskIdString, mainTaskItem.Name) + Environment.NewLine + Library.Tools.Misc.MyString.Indent() + "Description : " + mainTaskItem.Description + Environment.NewLine + Library.Tools.Misc.MyString.Indent() + "Commentaires : " + mainTaskItem.Comments + Environment.NewLine;
+            }
+
+            return message;
         }
 
         #endregion

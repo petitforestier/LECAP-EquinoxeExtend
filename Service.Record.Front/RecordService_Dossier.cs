@@ -196,7 +196,7 @@ namespace Service.Record.Front
             return theDossiers;
         }
 
-        public List<EquinoxeExtend.Shared.Object.Record.Dossier> GetDossiers(bool iIsNotTemplate, string iDossierName, Guid iCreatorModificator, DossierStatusEnum? iDossierStatusEnum)
+        public List<EquinoxeExtend.Shared.Object.Record.Dossier> GetDossiers(bool iIsNotTemplate, string iDossierName, Guid? iCreatorModificator, DossierStatusEnum? iDossierStatusEnum)
         {
             var theQuery = DBRecordDataService.GetQuery<T_E_Dossier>(null);
 
@@ -222,7 +222,6 @@ namespace Service.Record.Front
             {
                 DossierItem.Specifications = GetSpecificationsByDossierId(DossierItem.DossierId, true);
                 DossierItem.Lock = GetLockByDossierId(DossierItem.DossierId);
-                result.Add(DossierItem);
             }
             return result;
         }

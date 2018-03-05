@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace DriveWorks.Helper.Object
 {
-    public class TableValue : ITableValue
+    public class TableValue : DriveWorks.ITableValue
     {
         #region Public PROPERTIES
 
         public object[,] Data { get; set; }
 
-        int ITableValue.Columns
+        int DriveWorks.ITableValue.Columns
         {
             get
             {
@@ -22,7 +22,7 @@ namespace DriveWorks.Helper.Object
             }
         }
 
-        int ITableValue.Rows
+        int DriveWorks.ITableValue.Rows
         {
             get
             {
@@ -34,40 +34,40 @@ namespace DriveWorks.Helper.Object
 
         #region Public METHODS
 
-        object ITableValue.GetElement(int rowIndex, int columnIndex)
+        object DriveWorks.ITableValue.GetElement(int rowIndex, int columnIndex)
         {
             return Data[rowIndex, columnIndex];
         }
 
-        bool? ITableValue.GetElementAsBoolean(CultureInfo ci, int rowIndex, int columnIndex)
+        bool? DriveWorks.ITableValue.GetElementAsBoolean(CultureInfo ci, int rowIndex, int columnIndex)
         {
             bool value;
             Titan.Rules.Execution.ValueConvertHelper.TryConvert(ci, Data[rowIndex, columnIndex], out value);
             return value;
         }
 
-        DateTime? ITableValue.GetElementAsDateTime(CultureInfo ci, int rowIndex, int columnIndex)
+        DateTime? DriveWorks.ITableValue.GetElementAsDateTime(CultureInfo ci, int rowIndex, int columnIndex)
         {
             DateTime value;
             Titan.Rules.Execution.ValueConvertHelper.TryConvert(ci, Data[rowIndex, columnIndex], out value);
             return value;
         }
 
-        double? ITableValue.GetElementAsDouble(CultureInfo ci, int rowIndex, int columnIndex)
+        double? DriveWorks.ITableValue.GetElementAsDouble(CultureInfo ci, int rowIndex, int columnIndex)
         {
             double value;
             Titan.Rules.Execution.ValueConvertHelper.TryConvert(ci, Data[rowIndex, columnIndex], out value);
             return value;
         }
 
-        string ITableValue.GetElementAsString(CultureInfo ci, int rowIndex, int columnIndex)
+        string DriveWorks.ITableValue.GetElementAsString(CultureInfo ci, int rowIndex, int columnIndex)
         {
             string value = null;
             Titan.Rules.Execution.ValueConvertHelper.TryConvert(ci, Data[rowIndex, columnIndex], out value);
             return value;
         }
 
-        object[,] ITableValue.ToArray()
+        object[,] DriveWorks.ITableValue.ToArray()
         {
             return Data;
         }

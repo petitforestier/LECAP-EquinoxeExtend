@@ -5,6 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Tools.Extensions;
 using Library.Tools.Debug;
+using DriveWorks.Helper.Object;
+using Library.Tools.Attributes;
+using Library.Control.Datagridview;
+using DriveWorks.Forms;
+using DriveWorks.Forms.DataModel;
 
 namespace DriveWorks.Helper
 {
@@ -218,6 +223,66 @@ namespace DriveWorks.Helper
 
             //Ecriture des données dans le tableau
             iSimpleDataTable.SetTableData(mergeData);
+        }
+
+        public static void SetDataTableValuesFromList<T>(this Project iProject, List<T> iDataList,string iDataTableName)
+        {
+            //Retourne une table vide si vide
+            if (iDataList.IsNullOrEmpty())
+                iProject.SetTableControlItems(iDataTableName, null);
+
+            //Mise en forme du tableau et de l'entête via la classe DossierView
+            Type dataViewType = typeof(T);
+            var arraySize = dataViewType.GetProperties().Count();
+            var objectArray = new object[iDataList.Count + 1, arraySize];
+
+            var columnIndex = 0;
+            foreach (var propertyItem in dataViewType.GetProperties().Enum())
+            {
+                objectArray[0, columnIndex] = dataViewType.GetName(propertyItem.Name, "FR");
+                columnIndex++;
+            }
+
+            //Convertion list des objects en tableau et intégration dans le tableau final
+            var dataArray = iDataList.ToStringArray();
+            Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
+
+            //Dimension des colonnes
+            var widthList = new List<string>();
+            foreach (var propertyItem in dataViewType.GetProperties().Enum())
+            {
+                var width = dataViewType.GetWidthColumn(propertyItem.Name);
+                if (width != null)
+                    widthList.Add(Convert.ToString(width));
+                else
+                    widthList.Add("120");
+            }
+
+            //Remplissage tableau
+            var tableValue = new TableValue();
+            tableValue.Data = objectArray;
+
+            iProject.SetTableControlItems(iDataTableName, tableValue, widthList);
+
+        }
+
+        public static void SetTableControlItems(this Project iProject, string iControlName, ITableValue iTableValue, List<string> iColumnWidthList = null)
+        {
+            var tableControl = (DataTableControl)iProject.Navigation.GetControl(iControlName);
+
+            if (tableControl == null)
+                throw new Exception("Le controle datatable nommé '{0}' est introuvable");
+
+            tableControl.Items = iTableValue;
+
+            //Définition des largeurs de colonnes
+            if (iColumnWidthList.IsNotNullAndNotEmpty())
+            {
+                var properties = DynamicProperty.GetProperties(typeof(DataTableControl));
+                var property = properties.Single(x => x.CustomStoreName == "ColumnWidths");
+                property.SetValue(tableControl, iColumnWidthList.ToArray());
+            }
+
         }
 
     }

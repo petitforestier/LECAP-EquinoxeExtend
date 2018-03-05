@@ -16,7 +16,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-
 namespace EquinoxeExtendPlugin
 {
     [Task("SPECMGT:DeleteTemplate", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
@@ -336,10 +335,9 @@ namespace EquinoxeExtendPlugin
 
                     if (addedMessageList.IsNotNullAndNotEmpty())
                         endMessage += Environment.NewLine + Environment.NewLine + "CONTROLE(S) AJOUTE(S) :" + Environment.NewLine + addedMessageList.Select(x => "{0} : {1}".FormatString(MessageManager.SplitCamelCase(x.Name.Remove(0, 3)), x.Message)).ToList().Concat(Environment.NewLine);
-                    
+
                     if (deletedMessageList.IsNotNullAndNotEmpty())
                         endMessage += Environment.NewLine + Environment.NewLine + "CONTROLE(S) SUPPRIME(S) :" + Environment.NewLine + deletedMessageList.Concat(Environment.NewLine);
-
 
                     ctx.Project.AddMessage(endMessage);
                 }
@@ -371,6 +369,7 @@ namespace EquinoxeExtendPlugin
             SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification à Créer");
             SessionGUIDProperty = Properties.RegisterStringProperty("Code session", "GUID de la session de lock");
             CommentProperty = Properties.RegisterStringProperty("Commentaire", "Commentaire de la modification");
+            StateProperty = Properties.RegisterInt32Property("Etat du dossier", "10 pour brouillon, 20 pour terminé");
         }
 
         #endregion
@@ -405,21 +404,31 @@ namespace EquinoxeExtendPlugin
 
                     decimal projectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
 
-                    //Creation de la Specification
-                    theDossier.Specifications = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
+                    using (var ts = new System.Transactions.TransactionScope())
+                    {
+                        //Modification dossier
+                        theDossier.State = (DossierStatusEnum)StateProperty.Value;
+                        dossierService.UpdateDossier(theDossier);
 
-                    var newSpecification = new EquinoxeExtend.Shared.Object.Record.Specification();
+                        //Creation de la Specification
+                        theDossier.Specifications = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
 
-                    newSpecification.SpecificationId = -1;
-                    newSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
-                    newSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
-                    newSpecification.CreationDate = DateTime.Now;
-                    newSpecification.DossierId = theDossier.DossierId;
-                    newSpecification.Name = SpecificationNameProperty.Value;
-                    newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
-                    newSpecification.Comments = CommentProperty.Value;
+                        var newSpecification = new EquinoxeExtend.Shared.Object.Record.Specification();
 
-                    dossierService.NewSpecification(newSpecification);
+                        newSpecification.SpecificationId = -1;
+                        newSpecification.Constants = ctx.Project.GetCurrentConstantList().SerializeList();
+                        newSpecification.Controls = ctx.Project.GetCurrentControlStateList().SerializeList();
+                        newSpecification.CreationDate = DateTime.Now;
+                        newSpecification.DossierId = theDossier.DossierId;
+                        newSpecification.Name = SpecificationNameProperty.Value;
+                        newSpecification.ProjectVersion = ctx.Project.GetProjectSettings().ProjectVersion;
+                        newSpecification.Comments = CommentProperty.Value;
+                        newSpecification.CreatorGUID = ctx.Group.CurrentUser.Id;
+
+                        dossierService.NewSpecification(newSpecification);
+
+                        ts.Complete();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -437,6 +446,139 @@ namespace EquinoxeExtendPlugin
         private FlowProperty<bool> CheckErrorProperty;
         private FlowProperty<string> SessionGUIDProperty;
         private FlowProperty<string> CommentProperty;
+        private FlowProperty<Int32> StateProperty;
+
+        #endregion
+    }
+
+    [Task("SPECMGT:NewGeneration", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class NewGeneration : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public NewGeneration()
+        {
+            GenerationIdProperty = Properties.RegisterInt64Property("ID de génération", "Identifiant à l'utiliser pour changer son statut plus tard.");
+            CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
+            SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification liée à génération");
+            CommentsProperty = Properties.RegisterStringProperty("Commentaire", "Commentaire de la génération");
+            StateProperty = Properties.RegisterInt32Property("Etat de la génération", "10 attente - 20 en cours - 30 Terminée");
+            TypeProperty = Properties.RegisterInt32Property("Type de la génération", "10 maquette numérique - 20 liasses de production");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                try
+                {
+                    // Vérification des erreurs
+                    if (CheckErrorProperty.Value)
+                        if (ctx.Project.GetErrorMessageList().IsNotNullAndNotEmpty())
+                            throw new Exception("La création n'est pas possible car contient des erreurs");
+
+                    if (SpecificationNameProperty.Value.IsNullOrEmpty())
+                        throw new Exception("Aucun nom de spécification n'a été renseigné");
+
+                    //récupération de la spécification
+                    var theSpecification = recordService.GetSpecificationByName(SpecificationNameProperty.Value, false);
+                    if (theSpecification == null)
+                        throw new Exception("La spécification est introuvable");
+
+                    //Creation de la generation
+                    var newGeneration = new EquinoxeExtend.Shared.Object.Record.Generation();
+
+                    newGeneration.GenerationId = -1;
+                    newGeneration.Comments = CommentsProperty.Value;
+                    newGeneration.CreationDate = DateTime.Now;
+                    newGeneration.CreatorGUID = ctx.Group.CurrentUser.Id;
+                    newGeneration.ProjectName = ctx.Project.Name;
+                    newGeneration.SpecificationId = theSpecification.SpecificationId;
+                    newGeneration.State = (GenerationStatusEnum)StateProperty.Value;
+                    newGeneration.Type = (GenerationTypeEnum)TypeProperty.Value;
+                    newGeneration.History = null;
+
+                    recordService.NewGeneration(newGeneration);
+                }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur lors de la mise à jour du dossier", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<Int64> GenerationIdProperty;
+        private FlowProperty<string> SpecificationNameProperty;
+        private FlowProperty<bool> CheckErrorProperty;
+        private FlowProperty<string> CommentsProperty;
+        private FlowProperty<int> StateProperty;
+        private FlowProperty<int> TypeProperty;
+
+        #endregion
+    }
+
+    [Task("SPECMGT:UpdateGeneration", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class UpdateGeneration : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public UpdateGeneration()
+        {
+            GenerationIdProperty = Properties.RegisterInt64Property("ID de génération", "Identifiant à l'utiliser pour changer son statut plus tard.");
+            CheckErrorProperty = Properties.RegisterBooleanProperty("Vérifier les erreurs", "True si une vérification doit être effectué, False s'il ne faut pas, par exemple pour sauvegarder un brouillon");
+            StateProperty = Properties.RegisterInt32Property("Etat de la génération", "10 attente - 20 en cours - 30 Terminée");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                try
+                {
+                    // Vérification des erreurs
+                    if (CheckErrorProperty.Value)
+                        if (ctx.Project.GetErrorMessageList().IsNotNullAndNotEmpty())
+                            throw new Exception("La création n'est pas possible car contient des erreurs");
+
+                    if (GenerationIdProperty.Value >=1)
+                        throw new Exception("L'id de la génération est invalide");
+
+                    //récupération de la génération
+                    var theGeneration = recordService.GetGenerationById(GenerationIdProperty.Value);
+                    if (theGeneration == null)
+                        throw new Exception("La génération est introuvable");
+
+                    theGeneration.History = "Modification le '{0}', par '{1}'".FormatString(DateTime.Now.ToStringDMYHMS(), ctx.Group.CurrentUser.DisplayName);
+                    theGeneration.State = (GenerationStatusEnum)StateProperty.Value; 
+
+                    recordService.UpdageGeneration(theGeneration);
+                }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur lors de la mise à jour de la génération", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<Int64> GenerationIdProperty;
+        private FlowProperty<bool> CheckErrorProperty;
+        private FlowProperty<int> StateProperty;
 
         #endregion
     }
@@ -530,7 +672,6 @@ namespace EquinoxeExtendPlugin
         #endregion
     }
 
-
     [Task("SPECMGT:LockDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class LockDossier : DriveWorks.Specification.Task
     {
@@ -557,7 +698,6 @@ namespace EquinoxeExtendPlugin
                 if (SessionGUIDProperty.Value.IsNullOrEmpty())
                     throw new Exception("Le GUID de session est invalide");
 
-
                 using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
                     //Vérification si le dossier n'est pas déjà locké
@@ -565,7 +705,7 @@ namespace EquinoxeExtendPlugin
                     if (theDossier == null)
                         throw new Exception("Le dossier '{0}' est inextant");
 
-                    if(theDossier.Lock != null)
+                    if (theDossier.Lock != null)
                     {
                         var theUser = DriveWorks.Helper.GroupHelper.GetUserById(ctx.Group, theDossier.Lock.UserId);
                         throw new Exception("Le dossier est déjà verrouillé par l'utilisateur '{0}' avec la session '{1}' depuis '{2}'".FormatString(theUser.DisplayName, theDossier.Lock.SessionGUID, theDossier.Lock.LockDate.ToStringDMYHMS()));
@@ -683,151 +823,29 @@ namespace EquinoxeExtendPlugin
                     var resultList = new List<EquinoxeExtend.Shared.Object.Record.Dossier>();
 
                     //User
+                    Guid? userId = null;
                     DriveWorks.Security.UserDetails userDetails = null;
-                    if(UserNameProperty.Value != null || UserNameProperty.Value != string.Empty)
-                       userDetails = userList.Enum().SingleOrDefault(x => x.LoginName == UserNameProperty.Value);
+                    if (UserNameProperty.Value != null || UserNameProperty.Value != string.Empty)
+                    {
+                        userDetails = userList.Enum().SingleOrDefault(x => x.LoginName == UserNameProperty.Value);
+                        if (userDetails != null)
+                            userId = userDetails.Id;
+                    }
 
                     //State
-                    DossierStatusEnum? state;
+                    DossierStatusEnum? state = null;
                     if (StateNameProperty.Value == DossierStatusEnum.Completed.GetName("FR"))
                         state = DossierStatusEnum.Completed;
                     else if (StateNameProperty.Value == DossierStatusEnum.Drafting.GetName("FR"))
                         state = DossierStatusEnum.Drafting;
-                    else
-                        throw new Exception();
 
-                    resultList = specificationService.GetDossiers(true, DossierNameProperty.Value, userDetails.Id, state);
-
-                    ////Recherche sur le nom
-                    //if (DossierNameProperty.Value.IsNotNullAndNotEmpty())
-                    //{
-                    //    var simpleDossier = specificationService.GetDossierByName(DossierNameProperty.Value);
-                    //    if (simpleDossier != null)
-                    //    {
-                    //        var fullDossier = simpleDossier.ConvertFull();
-                    //        fullDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
-
-                    //        foreach (var item in fullDossier.Specifications.Enum())
-                    //        {
-                    //            var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(item.Name);
-                    //            if (theSpecificationDetails == null)
-                    //                throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(item.Name));
-
-                    //            fullDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(item, theSpecificationDetails));
-                    //        }
-                    //        resultList.Add(fullDossier);
-                    //    }
-                    //}
-
-                    ////Autres
-                    //else
-                    //{
-                    //    List<DriveWorks.Helper.Object.Specification> dataBaseSpecifications = null;
-                    //    var dataBaseQuery = new DriveWorks.Helper.DataBaseQuery(ctx.Group.GetEnvironment().GetSQLConnectionString());
-
-                    //    //State
-                    //    if (StateNameProperty.Value.IsNotNullAndNotEmpty())
-                    //    {
-                    //        dataBaseSpecifications = dataBaseQuery.GetSpecificationsByStateName(StateNameProperty.Value);
-                    //    }
-
-                    //    //User
-                    //    if (UserNameProperty.Value.IsNotNullAndNotEmpty())
-                    //    {
-                    //        var UserDetails = userList.Enum().SingleOrDefault(x => x.LoginName == UserNameProperty.Value);
-                    //        if (UserDetails == null)
-                    //            throw new Exception("Le nom de l'utilisateur n'existe pas");
-
-                    //        if (StateNameProperty.Value.IsNotNullAndNotEmpty())
-                    //            dataBaseSpecifications = dataBaseSpecifications.Where(x => x.CreatorID == UserDetails.Id.ToString()).Enum().ToList();
-                    //        else
-                    //            dataBaseSpecifications = dataBaseQuery.GetSpecificationsByCreatorId(UserDetails.Id.ToString());
-                    //    }
-
-                    //    var tempDossiers = new List<EquinoxeExtend.Shared.Object.Record.Dossier>();
-
-                    //    //Bouclage sur chaque spécification pour enrichir et filtrer
-                    //    foreach (var specificationItem in dataBaseSpecifications.Enum())
-                    //    {
-                    //        //Récupére la spécification en base extend
-                    //        var specification = specificationService.GetSpecificationByName(specificationItem.Name);
-
-                    //        if (specification == null)
-                    //            continue;
-                    //        //Récupère le dossier en base extend
-                    //        var parentDossier = specificationService.GetDossierById(specification.DossierId);
-
-                    //        if (parentDossier == null)
-                    //            continue;
-
-                    //        //Pour l'état ne garder
-                    //        if (StateNameProperty.Value.IsNotNullAndNotEmpty())
-                    //        {
-                    //            var lastestSpecification = parentDossier.Specifications.OrderByDescending(x => x.CreationDate).First();
-                    //            if (lastestSpecification.SpecificationId == specification.SpecificationId)
-                    //                tempDossiers.Add(parentDossier);
-                    //        }
-                    //        else
-                    //        {
-                    //            tempDossiers.Add(parentDossier);
-                    //        }
-                    //    }
-
-                    //    //Enrichissement des objets
-                    //    foreach (var dossierItem in tempDossiers.Enum())
-                    //    {
-                    //        var fullDossier = dossierItem.ConvertFull();
-                    //        fullDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
-
-                    //        foreach (var item in fullDossier.Specifications.Enum())
-                    //        {
-                    //            var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(item.Name);
-                    //            if (theSpecificationDetails == null)
-                    //                throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(item.Name));
-
-                    //            fullDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(item, theSpecificationDetails));
-                    //        }
-                    //        resultList.Add(fullDossier);
-                    //    }
-                    //}
-
-                    //enlève les templates
-                   // resultList = resultList.Where(x => x.IsTemplate == false).Enum().ToList();
+                    resultList = specificationService.GetDossiers(true, DossierNameProperty.Value, userId, state);
 
                     var viewList = resultList.Enum().Select(x => DossierView.ConvertTo(x, userList)).Enum().ToList();
 
                     Type templateViewType = typeof(DossierView);
 
-                    //Mise en forme du tableau et de l'entête via la classe DossierView
-                    var arraySize = templateViewType.GetProperties().Count();
-                    var objectArray = new object[resultList.Count + 1, arraySize];
-
-                    var columnIndex = 0;
-                    foreach (var propertyItem in templateViewType.GetProperties().Enum())
-                    {
-                        objectArray[0, columnIndex] = DossierView.GetName(propertyItem, "FR");
-                        columnIndex++;
-                    }
-
-                    //Convertion list des objects en tableau et intégration dans le tableau final
-                    var dataArray = viewList.ToStringArray();
-                    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
-
-                    //Dimension des colonnes
-                    var widthList = new List<string>();
-                    foreach (var propertyItem in templateViewType.GetProperties().Enum())
-                    {
-                        var width = DossierView.GetWidth(propertyItem);
-                        if (width != null)
-                            widthList.Add(Convert.ToString(width));
-                        else
-                            widthList.Add("120");
-                    }
-
-                    //Remplissage tableau
-                    var tableValue = new TableValue();
-                    tableValue.Data = objectArray;
-                    ctx.Project.SetTableControlItems(DossierTableControlNameProperty.Value, tableValue, widthList);
+                    ctx.Project.SetDataTableValuesFromList(viewList, DossierTableControlNameProperty.Value);
                 }
                 catch (Exception ex)
                 {
@@ -853,16 +871,12 @@ namespace EquinoxeExtendPlugin
             public string DossierName { get; set; }
 
             [Name("FR", "Configurateur")]
-            [WidthColumn(130)]
+            [WidthColumn(160)]
             public string ProjectName { get; set; }
 
             [Name("FR", "Statut")]
             [WidthColumn(100)]
             public string State { get; set; }
-
-            [Name("FR", "Plan BE verrouillé")]
-            [WidthColumn(100)]
-            public string DrawingLock { get; set; }
 
             [Name("FR", "Créateur")]
             [WidthColumn(100)]
@@ -872,7 +886,11 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(80)]
             public string CreationDate { get; set; }
 
-            [Name("FR", "Verrou")]
+            [Name("FR", "Verrou maquette")]
+            [WidthColumn(100)]
+            public string DrawingLock { get; set; }
+
+            [Name("FR", "Verrou dossier")]
             [WidthColumn(100)]
             public string Lock { get; set; }
 
@@ -894,23 +912,10 @@ namespace EquinoxeExtendPlugin
                 newView.State = iObj.State.GetName("FR");
                 newView.CreatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID).DisplayName;
                 newView.CreationDate = firstSpecification.CreationDate.ToStringDMY();
-                newView.Lock = iObj.Lock != null ? iListUser.Single(x => x.Id == iObj.Lock.UserId).DisplayName  : "Non";
-                newView.DrawingLock = iObj.IsCreateVersionOnGeneration ? "Non" : "Oui";
+                newView.Lock = iObj.Lock != null ? iListUser.Single(x => x.Id == iObj.Lock.UserId).DisplayName : "Non";
+                newView.DrawingLock = iObj.IsCreateVersionOnGeneration ? "Oui" : "Non";
 
                 return newView;
-            }
-
-            public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
-            {
-                NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
-                NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
-                return name != null ? name.GetName() : null;
-            }
-
-            public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
-            {
-                WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
-                return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
             }
 
             #endregion
@@ -958,59 +963,18 @@ namespace EquinoxeExtendPlugin
                     {
                         ctx.Project.SetTableControlItems(SpecificationTableControlNameProperty.Value, null);
                         return;
-                    }                 
+                    }
 
                     var userList = ctx.Group.GetUserList();
 
                     //Récupération du dossier et des specifications
                     var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
-                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId,false).Enum().OrderByDescending(x => x.CreationDate).Enum().ToList();
-
-                    ////Enrichissement avec les données DW d'origne
-                    //var specificationFullList = new List<EquinoxeExtendPlugin.Object.Specification>();
-                    //foreach (var specificationItem in specificationList.Enum())
-                    //{
-                    //    var fullSpecification = specificationItem.ConvertFull();
-                    //    fullSpecification.SpecificationDetails = ctx.Group.Specifications.GetSpecification(specificationItem.Name);
-                    //    specificationFullList.Add(fullSpecification);
-                    //}
+                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId, false).Enum().OrderByDescending(x => x.CreationDate).Enum().ToList();
 
                     //Convertion pour mise en forme
                     var viewList = specificationList.Enum().Select(x => SpecificationView.ConvertTo(x, userList)).Enum().ToList();
 
-                    Type specificationViewType = typeof(SpecificationView);
-
-                    //Mise en forme du tableau et de l'entête via la classe DossierView
-                    var arraySize = specificationViewType.GetProperties().Count();
-                    var objectArray = new object[viewList.Count + 1, arraySize];
-
-                    var columnIndex = 0;
-                    foreach (var propertyItem in specificationViewType.GetProperties().Enum())
-                    {
-                        objectArray[0, columnIndex] = SpecificationView.GetName(propertyItem, "FR");
-                        columnIndex++;
-                    }
-
-                    //Convertion list des objects en tableau et intégration dans le tableau final
-                    var dataArray = viewList.ToStringArray();
-                    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
-
-                    //Dimension des colonnes
-                    var widthList = new List<string>();
-                    foreach (var propertyItem in specificationViewType.GetProperties().Enum())
-                    {
-                        var width = SpecificationView.GetWidth(propertyItem);
-                        if (width != null)
-                            widthList.Add(Convert.ToString(width));
-                        else
-                            widthList.Add("120");
-                    }
-
-                    //Remplissage tableau
-                    var tableValue = new TableValue();
-                    tableValue.Data = objectArray;
-
-                    ctx.Project.SetTableControlItems(SpecificationTableControlNameProperty.Value, tableValue, widthList);
+                    ctx.Project.SetDataTableValuesFromList(viewList, SpecificationTableControlNameProperty.Value);
                 }
             }
             catch (Exception ex)
@@ -1045,6 +1009,10 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(40)]
             public string ProjectVersion { get; set; }
 
+            [Name("FR", "Générations")]
+            [WidthColumn(100)]
+            public string Generations { get; set; }
+
             [Name("FR", "Commentaires")]
             [WidthColumn(300)]
             public string Comments { get; set; }
@@ -1065,21 +1033,12 @@ namespace EquinoxeExtendPlugin
                 newView.CreatorName = iUserList.Single(x => x.Id == iObj.CreatorGUID).DisplayName;
                 newView.ProjectVersion = iObj.ProjectVersion.ToString();
                 newView.Comments = iObj.Comments;
+                if (iObj.Generations.IsNotNullAndNotEmpty())
+                    newView.Generations = iObj.Generations.Count(x => x.State == GenerationStatusEnum.Completed).ToString() + "/" + iObj.Generations.Count();
+                else
+                    newView.Generations = "-";
 
                 return newView;
-            }
-
-            public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
-            {
-                NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
-                NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
-                return name != null ? name.GetName() : null;
-            }
-
-            public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
-            {
-                WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
-                return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
             }
 
             #endregion
@@ -1119,64 +1078,10 @@ namespace EquinoxeExtendPlugin
                 {
                     //Récupération des templates
                     var dossierList = dossierService.GetDossiers(false);
-                    var resultList = new List<EquinoxeExtendPlugin.Object.Dossier>();
 
-                    //Bouclage sur les dossiers modèles
-                    foreach (var dossierItem in dossierList.Enum())
-                    {
-                        var newDossier = new EquinoxeExtendPlugin.Object.Dossier();
-                        newDossier = dossierItem.ConvertFull();
+                    var viewList = dossierList.Enum().Select(x => TemplateView.ConvertTo(x)).Enum().ToList();
 
-                        newDossier.SpecificationPairs = new List<KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>>();
-
-                        //Bouclage sur les spécifications du dossier
-                        foreach (var specificationItem in dossierItem.Specifications.Enum())
-                        {
-                            var theSpecificationDetails = ctx.Group.Specifications.GetSpecification(specificationItem.Name);
-                            if (theSpecificationDetails == null)
-                                throw new Exception("la spécification '{0}' n'existe pas dans driveworks, contacter l'administrateur".FormatString(specificationItem.Name));
-
-                            newDossier.SpecificationPairs.Add(new KeyValuePair<EquinoxeExtend.Shared.Object.Record.Specification, SpecificationDetails>(specificationItem, theSpecificationDetails));
-                        }
-                        resultList.Add(newDossier);
-                    }
-
-                    var viewList = resultList.Enum().Select(x => TemplateView.ConvertTo(x)).Enum().ToList();
-
-                    Type templateViewType = typeof(TemplateView);
-
-                    //Mise en forme du tableau et de l'entête via la classe DossierView
-                    var arraySize = templateViewType.GetProperties().Count();
-                    var objectArray = new object[resultList.Count + 1, arraySize];
-
-                    var columnIndex = 0;
-                    foreach (var propertyItem in templateViewType.GetProperties().Enum())
-                    {
-                        objectArray[0, columnIndex] = TemplateView.GetName(propertyItem, "FR");
-                        columnIndex++;
-                    }
-
-                    //Convertion list des objects en tableau et intégration dans le tableau final
-                    var dataArray = viewList.ToStringArray();
-                    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
-
-                    //Dimension des colonnes
-                    var widthList = new List<string>();
-                    foreach (var propertyItem in templateViewType.GetProperties().Enum())
-                    {
-                        var width = TemplateView.GetWidth(propertyItem);
-                        if (width != null)
-                            widthList.Add(Convert.ToString(width));
-                        else
-                            widthList.Add("120");
-                    }
-
-                    //Remplissage tableau
-
-                    var tableValue = new TableValue();
-                    tableValue.Data = objectArray;
-
-                    ctx.Project.SetTableControlItems(TemplateTableControlNameProperty.Value, tableValue, widthList);
+                    ctx.Project.SetDataTableValuesFromList(viewList, TemplateTableControlNameProperty.Value);
                 }
             }
             catch (Exception ex)
@@ -1223,34 +1128,21 @@ namespace EquinoxeExtendPlugin
 
             #region Public METHODS
 
-            //public static TemplateView ConvertTo(EquinoxeExtendPlugin.Object.Dossier iObj)
-            //{
-            //    if (iObj == null)
-            //        return null;
-
-            //    var newView = new TemplateView();
-
-            //    newView.Description = iObj.TemplateDescription;
-            //    newView.DossierName = iObj.Name;
-            //    newView.Lock = iObj.Lock != null ? "Oui" : "Non";
-            //    newView.ProjectName = iObj.ProjectName;
-            //    newView.State = iObj.SpecificationPairs.OrderBy(x => x.Value.DateCreated).Last().Value.StateName;
-            //    newView.TemplateName = iObj.TemplateName;
-
-            //    return newView;
-            //}
-
-            public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
+            public static TemplateView ConvertTo(EquinoxeExtend.Shared.Object.Record.Dossier iObj)
             {
-                NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
-                NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
-                return name != null ? name.GetName() : null;
-            }
+                if (iObj == null)
+                    return null;
 
-            public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
-            {
-                WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
-                return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
+                var newView = new TemplateView();
+
+                newView.Description = iObj.TemplateDescription;
+                newView.DossierName = iObj.Name;
+                newView.Lock = iObj.Lock != null ? "Oui" : "Non";
+                newView.ProjectName = iObj.ProjectName;
+                newView.State = iObj.State.GetName("FR");
+                newView.TemplateName = iObj.TemplateName;
+
+                return newView;
             }
 
             #endregion
@@ -1450,20 +1342,17 @@ namespace EquinoxeExtendPlugin
         #endregion
     }
 
-    [Task("SPECMGT:LoadFIDEV", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
-    public class LoadFIDEV : DriveWorks.Specification.Task
+    [Task("SPECMGT:FillGenerationOfDossierTable", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class FillGenerationOfDossierTable : DriveWorks.Specification.Task
     {
         #region Public CONSTRUCTORS
 
-        public LoadFIDEV()
+        public FillGenerationOfDossierTable()
         {
             TableControlNameProperty = Properties.RegisterStringProperty("Nom controle Datatable sortie", "Définir le nom du controle où les données seront retournées");
-            FIDEVFilePathProperty = Properties.RegisterStringProperty("Chemin du FIDEV", "Définir le chemin du FIDEV à importer");
+            DossierNameProperty = Properties.RegisterStringProperty("Nom dossier", "Nom dossier à afficher les générations");
+            ThrowErrorProperty = Properties.RegisterBooleanProperty("Lever erreur", "Lever une erreur si une erreur à lieu");
         }
-
-        const int FIDEVSHEETINDEX = 1;
-        public static readonly int[] FIDEVLASTCOLUMNSINDEXARRAY = { 1, 3, 4, 5,6,7 };
-        const int FIDEVFIRSTROWINDEX = 18;
 
         #endregion
 
@@ -1473,145 +1362,273 @@ namespace EquinoxeExtendPlugin
         {
             using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
-                //try
-                //{
-                //    if (TableControlNameProperty.Value.IsNullOrEmpty())
-                //        throw new Exception("Le nom du controle de table n'est pas défini");
+                try
+                {
+                    if (DossierNameProperty.Value.IsNullOrEmpty())
+                    {
+                        ctx.Project.SetTableControlItems(TableControlNameProperty.Value, null);
+                        return;
+                    }
 
-                //    if (FIDEVFilePathProperty.Value.IsNullOrEmpty())
-                //        throw new Exception("Le chemin du FIDEV n'est pas définie");
+                    //Récupération des dossier
+                    var userList = ctx.Group.GetUserList();
+                    var theDossier = recordService.GetDossierByName(DossierNameProperty.Value);
 
-                //    var cancelToken = new System.Threading.CancellationTokenSource();
-                //    //var excelTools = new Library. .ExcelTools(cancelToken);
+                    var viewList = new List<GenerationView>();
 
-                //    //Création de la
-                //    var columnIndexList = FIDEVLASTCOLUMNSINDEXARRAY.ToList();
+                    //Bouclage sur les spécifications
+                    foreach (var specItem in theDossier.Specifications.Enum())
+                    {
+                        viewList.AddRange(specItem.Generations.Enum().Select(x => GenerationView.ConvertTo(x, specItem, userList)).ToList().Enum());
+                    }
 
-                //    //Récupération des données
-                //    //var resultList = excelTools.GetListFromExcelFile(FIDEVFilePathProperty.Value, columnIndexList, FIDEVSHEETINDEX, true, FIDEVFIRSTROWINDEX);
-
-                //    //Nettoyage des lignes inutiles
-                //    resultList = resultList.Where(x => (x[5] != null && x[5] != "FALSE" && x[5] != "0") || (x[6] != null && x[6] != "FALSE" && x[6] != "0")).ToList();
-
-                //    var finalResultList = new List<DevisView>();
-                //    string previousScreenValue = null;
-                //    foreach (var item in resultList.Enum())
-                //    {
-                //        var ScreenValue = item[1];
-                //        if (ScreenValue == previousScreenValue || previousScreenValue == null)
-                //        {
-                //            var newDevisView = new DevisView();
-                //            newDevisView = DevisView.ConvertTo(item);
-                //            finalResultList.Add(newDevisView);
-                //        }
-                //        else
-                //        {
-                //            finalResultList.Add(null);
-                //            previousScreenValue = null;
-                //        }
-                //    }
-
-                //    Type templateViewType = typeof(DevisView);
-
-                //    //Mise en forme du tableau et de l'entête via la classe DevisView
-                //    var arraySize = templateViewType.GetProperties().Count();
-                //    var objectArray = new object[finalResultList.Count + 1, arraySize];
-
-                //    var columnIndex = 0;
-                //    foreach (var propertyItem in templateViewType.GetProperties().Enum())
-                //    {
-                //        objectArray[0, columnIndex] = DevisView.GetName(propertyItem, "FR");
-                //        columnIndex++;
-                //    }
-
-                //    var dataArray = finalResultList.ToStringArray();
-                //    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
-
-                //    var tableValue = new TableValue();
-                //    tableValue.Data = objectArray;
-
-                //    ctx.Project.SetTableControlItems(TableControlNameProperty.Value, tableValue);
-                //}
-                //catch (Exception ex)
-                //{
-                //    ctx.Project.AddErrorMessage("Erreur lors de l'extraction du FIDEV", ex);
-                //}
-
+                    ctx.Project.SetDataTableValuesFromList(viewList, TableControlNameProperty.Value);
+                }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur chargement des templates", ex);
+                    if (ThrowErrorProperty.Value)
+                        throw ex;
+                }
             }
         }
 
+        #endregion
 
         #region Protected CLASSES
 
-        protected class DevisView
+        protected class GenerationView
         {
             #region Public PROPERTIES
 
-            [Name("FR", "Nom dossier")]
-            [WidthColumn(30)]
-            public string Article { get; set; }
+            [Name("FR", "GenerationId")]
+            [WidthColumn(70)]
+            public string GenerationId { get; set; }
 
-            [Name("FR", "Statut")]
-            [WidthColumn(30)]
-            public string Libelle { get; set; }
+            [Name("FR", "Nom spec.")]
+            [WidthColumn(70)]
+            public string SpecificationName { get; set; }
 
-            [Name("FR", "Configurateur")]
-            [WidthColumn(30)]
-            public string Saisie1 { get; set; }
+            [Name("FR", "Etat")]
+            [WidthColumn(80)]
+            public string State { get; set; }
 
-            [Name("FR", "Description")]
-            [WidthColumn(30)]
-            public string Saisie2 { get; set; }
+            [Name("FR", "Type")]
+            [WidthColumn(80)]
+            public string Type { get; set; }
 
-            [Name("FR", "Nom modèle")]
-            [WidthColumn(30)]
-            public string Ecran { get; set; }
+            [Name("FR", "Demandeur")]
+            [WidthColumn(80)]
+            public string CreatorName { get; set; }
+
+            [Name("FR", "Date")]
+            [WidthColumn(80)]
+            public string CreationDate { get; set; }
+
+            [Name("FR", "Commentaires")]
+            [WidthColumn(200)]
+            public string Comments { get; set; }
 
             #endregion
 
             #region Public METHODS
 
-            public static DevisView ConvertTo(List<string> iList)
+            public static GenerationView ConvertTo(EquinoxeExtend.Shared.Object.Record.Generation iGeneration, EquinoxeExtend.Shared.Object.Record.Specification iSpecification, List<DriveWorks.Security.UserDetails> iUserList)
             {
-                if (iList == null)
+                if (iGeneration == null)
                     return null;
 
-                var newView = new DevisView();
+                if (iSpecification == null)
+                    throw new Exception("La specification est null");
 
-                newView.Ecran = iList[0];
-                newView.Article = iList[1];
-                newView.Libelle = iList[2];
-                newView.Saisie1 = iList[3];
-                newView.Saisie2 = iList[4];
+                var newView = new GenerationView();
+
+                newView.Comments = iGeneration.Comments;
+                newView.CreationDate = iGeneration.CreationDate.ToStringDMYHMS();
+                newView.CreatorName = iUserList.Single(x => x.Id == iGeneration.CreatorGUID).DisplayName;
+                newView.GenerationId = iGeneration.GenerationId.ToString();
+                newView.SpecificationName = iSpecification.Name;
+                newView.State = iGeneration.State.GetName("FR");
+                newView.Type = iGeneration.Type.GetName("FR");
 
                 return newView;
             }
 
-            public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
-            {
-                NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
-                NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
-                return name != null ? name.GetName() : null;
-            }
-
-            public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
-            {
-                WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
-                return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
-            }
-
             #endregion
         }
-
-        #endregion
 
         #endregion
 
         #region Private FIELDS
 
         private FlowProperty<string> TableControlNameProperty;
-        private FlowProperty<string> FIDEVFilePathProperty;
+        private FlowProperty<string> DossierNameProperty;
+        private FlowProperty<bool> ThrowErrorProperty;
 
         #endregion
     }
+
+    //[Task("SPECMGT:LoadFIDEV", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    //public class LoadFIDEV : DriveWorks.Specification.Task
+    //{
+    //    #region Public CONSTRUCTORS
+
+    //    public LoadFIDEV()
+    //    {
+    //        TableControlNameProperty = Properties.RegisterStringProperty("Nom controle Datatable sortie", "Définir le nom du controle où les données seront retournées");
+    //        FIDEVFilePathProperty = Properties.RegisterStringProperty("Chemin du FIDEV", "Définir le chemin du FIDEV à importer");
+    //    }
+
+    //    const int FIDEVSHEETINDEX = 1;
+    //    public static readonly int[] FIDEVLASTCOLUMNSINDEXARRAY = { 1, 3, 4, 5,6,7 };
+    //    const int FIDEVFIRSTROWINDEX = 18;
+
+    //    #endregion
+
+    //    #region Protected METHODS
+
+    //    protected override void Execute(SpecificationContext ctx)
+    //    {
+    //        using (var recordService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+    //        {
+    //            //try
+    //            //{
+    //            //    if (TableControlNameProperty.Value.IsNullOrEmpty())
+    //            //        throw new Exception("Le nom du controle de table n'est pas défini");
+
+    //            //    if (FIDEVFilePathProperty.Value.IsNullOrEmpty())
+    //            //        throw new Exception("Le chemin du FIDEV n'est pas définie");
+
+    //            //    var cancelToken = new System.Threading.CancellationTokenSource();
+    //            //    //var excelTools = new Library. .ExcelTools(cancelToken);
+
+    //            //    //Création de la
+    //            //    var columnIndexList = FIDEVLASTCOLUMNSINDEXARRAY.ToList();
+
+    //            //    //Récupération des données
+    //            //    //var resultList = excelTools.GetListFromExcelFile(FIDEVFilePathProperty.Value, columnIndexList, FIDEVSHEETINDEX, true, FIDEVFIRSTROWINDEX);
+
+    //            //    //Nettoyage des lignes inutiles
+    //            //    resultList = resultList.Where(x => (x[5] != null && x[5] != "FALSE" && x[5] != "0") || (x[6] != null && x[6] != "FALSE" && x[6] != "0")).ToList();
+
+    //            //    var finalResultList = new List<DevisView>();
+    //            //    string previousScreenValue = null;
+    //            //    foreach (var item in resultList.Enum())
+    //            //    {
+    //            //        var ScreenValue = item[1];
+    //            //        if (ScreenValue == previousScreenValue || previousScreenValue == null)
+    //            //        {
+    //            //            var newDevisView = new DevisView();
+    //            //            newDevisView = DevisView.ConvertTo(item);
+    //            //            finalResultList.Add(newDevisView);
+    //            //        }
+    //            //        else
+    //            //        {
+    //            //            finalResultList.Add(null);
+    //            //            previousScreenValue = null;
+    //            //        }
+    //            //    }
+
+    //            //    Type templateViewType = typeof(DevisView);
+
+    //            //    //Mise en forme du tableau et de l'entête via la classe DevisView
+    //            //    var arraySize = templateViewType.GetProperties().Count();
+    //            //    var objectArray = new object[finalResultList.Count + 1, arraySize];
+
+    //            //    var columnIndex = 0;
+    //            //    foreach (var propertyItem in templateViewType.GetProperties().Enum())
+    //            //    {
+    //            //        objectArray[0, columnIndex] = DevisView.GetName(propertyItem, "FR");
+    //            //        columnIndex++;
+    //            //    }
+
+    //            //    var dataArray = finalResultList.ToStringArray();
+    //            //    Array.Copy(dataArray, 0, objectArray, objectArray.GetLength(1), dataArray.Length);
+
+    //            //    var tableValue = new TableValue();
+    //            //    tableValue.Data = objectArray;
+
+    //            //    ctx.Project.SetTableControlItems(TableControlNameProperty.Value, tableValue);
+    //            //}
+    //            //catch (Exception ex)
+    //            //{
+    //            //    ctx.Project.AddErrorMessage("Erreur lors de l'extraction du FIDEV", ex);
+    //            //}
+
+    //        }
+    //    }
+
+    //    #region Protected CLASSES
+
+    //    protected class DevisView
+    //    {
+    //        #region Public PROPERTIES
+
+    //        [Name("FR", "Nom dossier")]
+    //        [WidthColumn(30)]
+    //        public string Article { get; set; }
+
+    //        [Name("FR", "Statut")]
+    //        [WidthColumn(30)]
+    //        public string Libelle { get; set; }
+
+    //        [Name("FR", "Configurateur")]
+    //        [WidthColumn(30)]
+    //        public string Saisie1 { get; set; }
+
+    //        [Name("FR", "Description")]
+    //        [WidthColumn(30)]
+    //        public string Saisie2 { get; set; }
+
+    //        [Name("FR", "Nom modèle")]
+    //        [WidthColumn(30)]
+    //        public string Ecran { get; set; }
+
+    //        #endregion
+
+    //        #region Public METHODS
+
+    //        public static DevisView ConvertTo(List<string> iList)
+    //        {
+    //            if (iList == null)
+    //                return null;
+
+    //            var newView = new DevisView();
+
+    //            newView.Ecran = iList[0];
+    //            newView.Article = iList[1];
+    //            newView.Libelle = iList[2];
+    //            newView.Saisie1 = iList[3];
+    //            newView.Saisie2 = iList[4];
+
+    //            return newView;
+    //        }
+
+    //        public static string GetName(System.Reflection.PropertyInfo iPropertyInfo, string iLang)
+    //        {
+    //            NameAttribute[] attrs = iPropertyInfo.GetCustomAttributes(typeof(NameAttribute), false) as NameAttribute[];
+    //            NameAttribute name = (NameAttribute)attrs.Where(a => a is NameAttribute).Where(a => ((NameAttribute)a).lang == iLang).SingleOrDefault();
+    //            return name != null ? name.GetName() : null;
+    //        }
+
+    //        public static int? GetWidth(System.Reflection.PropertyInfo iPropertyInfo)
+    //        {
+    //            WidthColumnAttribute[] attribs = iPropertyInfo.GetCustomAttributes(typeof(WidthColumnAttribute), false) as WidthColumnAttribute[];
+    //            return attribs.Length > 0 ? (int?)attribs[0].WidthColumn : null;
+    //        }
+
+    //        #endregion
+    //    }
+
+    //    #endregion
+
+    //    #endregion
+
+    //    #region Private FIELDS
+
+    //    private FlowProperty<string> TableControlNameProperty;
+    //    private FlowProperty<string> FIDEVFilePathProperty;
+
+    //    #endregion
+    //}
 }

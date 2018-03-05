@@ -26,6 +26,7 @@ namespace EquinoxeExtend.Shared.Object.Record
                 SpecificationId = iEntity.SpecificationId,
                 State = (GenerationStatusEnum)iEntity.StateRef,
                 Type = (GenerationTypeEnum)iEntity.TypeRef,
+                History = iEntity.History,
             };
         }
 
@@ -39,6 +40,7 @@ namespace EquinoxeExtend.Shared.Object.Record
             iEntity.SpecificationId = iObj.SpecificationId;
             iEntity.StateRef = (short)iObj.State;
             iEntity.TypeRef = (short)iObj.Type;
+            iEntity.History = iObj.History;
         }
 
         #endregion
@@ -56,6 +58,7 @@ namespace EquinoxeExtend.Shared.Object.Record
         public System.Guid CreatorGUID { get; set; }
         public System.DateTime CreationDate { get; set; }
         public string Comments { get; set; }
+        public string History { get; set; }
 
         #endregion
     }
