@@ -476,6 +476,10 @@ namespace EquinoxeExtendPlugin
             {
                 try
                 {
+                    //Vérification génération id
+                    if (GenerationIdProperty.Value < 1)
+                        throw new Exception("L'id de génération n'est pas valide");
+
                     // Vérification des erreurs
                     if (CheckErrorProperty.Value)
                         if (ctx.Project.GetErrorMessageList().IsNotNullAndNotEmpty())
@@ -492,7 +496,7 @@ namespace EquinoxeExtendPlugin
                     //Creation de la generation
                     var newGeneration = new EquinoxeExtend.Shared.Object.Record.Generation();
 
-                    newGeneration.GenerationId = -1;
+                    newGeneration.GenerationId = GenerationIdProperty.Value;
                     newGeneration.Comments = CommentsProperty.Value;
                     newGeneration.CreationDate = DateTime.Now;
                     newGeneration.CreatorGUID = ctx.Group.CurrentUser.Id;
@@ -969,7 +973,7 @@ namespace EquinoxeExtendPlugin
 
                     //Récupération du dossier et des specifications
                     var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
-                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId, false).Enum().OrderByDescending(x => x.CreationDate).Enum().ToList();
+                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId, true).Enum().OrderByDescending(x => x.CreationDate).Enum().ToList();
 
                     //Convertion pour mise en forme
                     var viewList = specificationList.Enum().Select(x => SpecificationView.ConvertTo(x, userList)).Enum().ToList();
@@ -1401,12 +1405,8 @@ namespace EquinoxeExtendPlugin
         {
             #region Public PROPERTIES
 
-            [Name("FR", "GenerationId")]
-            [WidthColumn(70)]
-            public string GenerationId { get; set; }
-
             [Name("FR", "Nom spec.")]
-            [WidthColumn(70)]
+            [WidthColumn(80)]
             public string SpecificationName { get; set; }
 
             [Name("FR", "Etat")]
@@ -1414,20 +1414,24 @@ namespace EquinoxeExtendPlugin
             public string State { get; set; }
 
             [Name("FR", "Type")]
-            [WidthColumn(80)]
+            [WidthColumn(100)]
             public string Type { get; set; }
 
             [Name("FR", "Demandeur")]
-            [WidthColumn(80)]
+            [WidthColumn(100)]
             public string CreatorName { get; set; }
 
             [Name("FR", "Date")]
-            [WidthColumn(80)]
+            [WidthColumn(100)]
             public string CreationDate { get; set; }
 
             [Name("FR", "Commentaires")]
             [WidthColumn(200)]
             public string Comments { get; set; }
+
+            [Name("FR", "Id Generation")]
+            [WidthColumn(70)]
+            public string GenerationId { get; set; }
 
             #endregion
 

@@ -1019,7 +1019,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             var devGroup = devGroupManager.OpenGroup(EnvironmentEnum.Developpement);
 
             var loadingControl = new ucMessageBox("Démarrage déploiement de '{0}' vers '{1}'...".FormatString(sourceGroupName, destinationGroupName));
-            using (var loadingForm = new frmUserControl(loadingControl, "Déploiement vers '{0}'".FormatString(sourceGroupName), false, false))
+            using (var loadingForm = new frmUserControl(loadingControl, "Déploiement vers '{0}'".FormatString(destinationGroupName), false, false))
             {
                 loadingForm.Show();
                 loadingForm.Refresh();
@@ -1098,9 +1098,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                             {
                                 try
                                 {
-                                    if (projectList.First().Item3.FileLocation == "C:\\_LECAPITAINE\\R1-Développer les produits\\3-Table définition\\TDF0000053.xlsx")
-                                        Library.Tools.Debug.MyDebug.BreakForDebug();
-
                                     var differenceList = DriveWorks.Helper.DataTableHelper.GetProjectDataTableDifference(projectList);
                                     if (differenceList.IsNotNullAndNotEmpty())
                                         invalideDataTables.AddRange(differenceList);

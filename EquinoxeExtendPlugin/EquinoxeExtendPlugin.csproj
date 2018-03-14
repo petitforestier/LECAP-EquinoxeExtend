@@ -144,6 +144,7 @@
     <Compile Include="Controls\WhereUsed\ucWhereUsedGroup.Designer.cs">
       <DependentUpon>ucWhereUsedGroup.cs</DependentUpon>
     </Compile>
+    <Compile Include="GenTask.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ucPackageManagement));
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
@@ -40,19 +41,30 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle10 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle11 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle12 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ucPackageManagement));
             this.tlpMain = new System.Windows.Forms.TableLayoutPanel();
             this.splFooter = new System.Windows.Forms.SplitContainer();
             this.tlpLeft = new System.Windows.Forms.TableLayoutPanel();
             this.fraPackages = new System.Windows.Forms.GroupBox();
             this.tlpPackage = new System.Windows.Forms.TableLayoutPanel();
             this.tlsPackage = new System.Windows.Forms.ToolStrip();
+            this.cmdAddPackage = new System.Windows.Forms.ToolStripButton();
+            this.cmdUpdate = new System.Windows.Forms.ToolStripButton();
+            this.cmdDeletePackage = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdUpPackagePriority = new System.Windows.Forms.ToolStripButton();
+            this.cmdDownPackagePriority = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdDeployToDev = new System.Windows.Forms.ToolStripButton();
+            this.cmdDeployToStaging = new System.Windows.Forms.ToolStripButton();
+            this.cmdDeployToProduction = new System.Windows.Forms.ToolStripButton();
+            this.cmdRestoreFromBackup = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdLockUnlock = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
+            this.cmdShowDescriptif = new System.Windows.Forms.ToolStripButton();
             this.dgvPackage = new System.Windows.Forms.DataGridView();
             this.fraPackage = new System.Windows.Forms.GroupBox();
+            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
             this.tlpRight = new System.Windows.Forms.TableLayoutPanel();
@@ -73,18 +85,6 @@
             this.cboDestinationEnvironment = new System.Windows.Forms.ComboBox();
             this.cmdDeployementSearch = new System.Windows.Forms.Button();
             this.lblDestinationEnvironment = new System.Windows.Forms.Label();
-            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
-            this.cmdAddPackage = new System.Windows.Forms.ToolStripButton();
-            this.cmdUpdate = new System.Windows.Forms.ToolStripButton();
-            this.cmdDeletePackage = new System.Windows.Forms.ToolStripButton();
-            this.cmdUpPackagePriority = new System.Windows.Forms.ToolStripButton();
-            this.cmdDownPackagePriority = new System.Windows.Forms.ToolStripButton();
-            this.cmdDeployToDev = new System.Windows.Forms.ToolStripButton();
-            this.cmdDeployToStaging = new System.Windows.Forms.ToolStripButton();
-            this.cmdDeployToProduction = new System.Windows.Forms.ToolStripButton();
-            this.cmdRestoreFromBackup = new System.Windows.Forms.ToolStripButton();
-            this.cmdLockUnlock = new System.Windows.Forms.ToolStripButton();
-            this.cmdShowDescriptif = new System.Windows.Forms.ToolStripButton();
             this.tlpMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splFooter)).BeginInit();
             this.splFooter.Panel1.SuspendLayout();
@@ -212,25 +212,139 @@
             this.tlsPackage.TabIndex = 0;
             this.tlsPackage.Text = "toolStrip1";
             // 
+            // cmdAddPackage
+            // 
+            this.cmdAddPackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdAddPackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.add_icone;
+            this.cmdAddPackage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdAddPackage.Name = "cmdAddPackage";
+            this.cmdAddPackage.Size = new System.Drawing.Size(33, 27);
+            this.cmdAddPackage.Text = "Créer un package";
+            this.cmdAddPackage.Click += new System.EventHandler(this.cmdAddPackage_Click);
+            // 
+            // cmdUpdate
+            // 
+            this.cmdUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdUpdate.Image = global::EquinoxeExtendPlugin.Properties.Resources.edit_icon;
+            this.cmdUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdUpdate.Name = "cmdUpdate";
+            this.cmdUpdate.Size = new System.Drawing.Size(33, 27);
+            this.cmdUpdate.Text = "toolStripButton1";
+            this.cmdUpdate.ToolTipText = "Modifier package";
+            this.cmdUpdate.Click += new System.EventHandler(this.cmdUpdate_Click);
+            // 
+            // cmdDeletePackage
+            // 
+            this.cmdDeletePackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
+            this.cmdDeletePackage.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeletePackage.Name = "cmdDeletePackage";
+            this.cmdDeletePackage.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeletePackage.Text = "toolStripButton1";
+            this.cmdDeletePackage.ToolTipText = "Supprimer un package";
+            this.cmdDeletePackage.Click += new System.EventHandler(this.cmdDeletePackage_Click);
+            // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
             this.toolStripSeparator1.Size = new System.Drawing.Size(6, 30);
+            // 
+            // cmdUpPackagePriority
+            // 
+            this.cmdUpPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdUpPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.up_icon;
+            this.cmdUpPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdUpPackagePriority.Name = "cmdUpPackagePriority";
+            this.cmdUpPackagePriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdUpPackagePriority.Text = "Monter la priorité";
+            this.cmdUpPackagePriority.Click += new System.EventHandler(this.cmdUpPackagePriority_Click);
+            // 
+            // cmdDownPackagePriority
+            // 
+            this.cmdDownPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDownPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.down_icon;
+            this.cmdDownPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDownPackagePriority.Name = "cmdDownPackagePriority";
+            this.cmdDownPackagePriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdDownPackagePriority.Text = "Descendre la priorité";
+            this.cmdDownPackagePriority.Click += new System.EventHandler(this.cmdDownPackagePriority_Click);
             // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
             this.toolStripSeparator3.Size = new System.Drawing.Size(6, 30);
             // 
+            // cmdDeployToDev
+            // 
+            this.cmdDeployToDev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeployToDev.Image = global::EquinoxeExtendPlugin.Properties.Resources.Gear_icon24;
+            this.cmdDeployToDev.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeployToDev.Name = "cmdDeployToDev";
+            this.cmdDeployToDev.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeployToDev.Text = "Basculer en Dev";
+            this.cmdDeployToDev.Click += new System.EventHandler(this.cmdDeployToDev_Click);
+            // 
+            // cmdDeployToStaging
+            // 
+            this.cmdDeployToStaging.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeployToStaging.Image = ((System.Drawing.Image)(resources.GetObject("cmdDeployToStaging.Image")));
+            this.cmdDeployToStaging.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeployToStaging.Name = "cmdDeployToStaging";
+            this.cmdDeployToStaging.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeployToStaging.Text = "Déploier vers Préprod";
+            this.cmdDeployToStaging.Click += new System.EventHandler(this.cmdDeployToStaging_Click);
+            // 
+            // cmdDeployToProduction
+            // 
+            this.cmdDeployToProduction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdDeployToProduction.Enabled = false;
+            this.cmdDeployToProduction.Image = global::EquinoxeExtendPlugin.Properties.Resources.accept;
+            this.cmdDeployToProduction.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdDeployToProduction.Name = "cmdDeployToProduction";
+            this.cmdDeployToProduction.Size = new System.Drawing.Size(33, 27);
+            this.cmdDeployToProduction.Text = "Déploier en Production";
+            this.cmdDeployToProduction.Click += new System.EventHandler(this.cmdDeployToProduction_Click);
+            // 
+            // cmdRestoreFromBackup
+            // 
+            this.cmdRestoreFromBackup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdRestoreFromBackup.Enabled = false;
+            this.cmdRestoreFromBackup.Image = global::EquinoxeExtendPlugin.Properties.Resources.undo_icon;
+            this.cmdRestoreFromBackup.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdRestoreFromBackup.Name = "cmdRestoreFromBackup";
+            this.cmdRestoreFromBackup.Size = new System.Drawing.Size(33, 27);
+            this.cmdRestoreFromBackup.Text = "Restorer production depuis backup";
+            this.cmdRestoreFromBackup.Click += new System.EventHandler(this.cmdRestoreFromBackup_Click);
+            // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
             this.toolStripSeparator2.Size = new System.Drawing.Size(6, 30);
             // 
+            // cmdLockUnlock
+            // 
+            this.cmdLockUnlock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdLockUnlock.Image = global::EquinoxeExtendPlugin.Properties.Resources._lock;
+            this.cmdLockUnlock.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdLockUnlock.Name = "cmdLockUnlock";
+            this.cmdLockUnlock.Size = new System.Drawing.Size(33, 27);
+            this.cmdLockUnlock.Text = "Verrouiller/Déverrouiller l\'ajout de tâche";
+            this.cmdLockUnlock.Click += new System.EventHandler(this.cmdLockUnlock_Click);
+            // 
             // toolStripSeparator4
             // 
             this.toolStripSeparator4.Name = "toolStripSeparator4";
             this.toolStripSeparator4.Size = new System.Drawing.Size(6, 30);
+            // 
+            // cmdShowDescriptif
+            // 
+            this.cmdShowDescriptif.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdShowDescriptif.Image = global::EquinoxeExtendPlugin.Properties.Resources.if_th_list_216422;
+            this.cmdShowDescriptif.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdShowDescriptif.Name = "cmdShowDescriptif";
+            this.cmdShowDescriptif.Size = new System.Drawing.Size(33, 27);
+            this.cmdShowDescriptif.Text = "Affiche le descriptif du package";
+            this.cmdShowDescriptif.Click += new System.EventHandler(this.cmdShowDescriptif_Click);
             // 
             // dgvPackage
             // 
@@ -278,6 +392,15 @@
             this.fraPackage.TabIndex = 6;
             this.fraPackage.TabStop = false;
             this.fraPackage.Text = "Package";
+            // 
+            // ucPackageEdit
+            // 
+            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
+            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucPackageEdit.Name = "ucPackageEdit";
+            this.ucPackageEdit.Size = new System.Drawing.Size(255, 188);
+            this.ucPackageEdit.TabIndex = 5;
             // 
             // fraMainTask
             // 
@@ -583,129 +706,6 @@
             this.lblDestinationEnvironment.TabIndex = 3;
             this.lblDestinationEnvironment.Text = "Environnement destination";
             this.lblDestinationEnvironment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // ucPackageEdit
-            // 
-            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
-            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucPackageEdit.Name = "ucPackageEdit";
-            this.ucPackageEdit.Size = new System.Drawing.Size(255, 188);
-            this.ucPackageEdit.TabIndex = 5;
-            // 
-            // cmdAddPackage
-            // 
-            this.cmdAddPackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdAddPackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.add_icone;
-            this.cmdAddPackage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdAddPackage.Name = "cmdAddPackage";
-            this.cmdAddPackage.Size = new System.Drawing.Size(33, 27);
-            this.cmdAddPackage.Text = "Créer un package";
-            this.cmdAddPackage.Click += new System.EventHandler(this.cmdAddPackage_Click);
-            // 
-            // cmdUpdate
-            // 
-            this.cmdUpdate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdUpdate.Image = global::EquinoxeExtendPlugin.Properties.Resources.edit_icon;
-            this.cmdUpdate.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdUpdate.Name = "cmdUpdate";
-            this.cmdUpdate.Size = new System.Drawing.Size(33, 27);
-            this.cmdUpdate.Text = "toolStripButton1";
-            this.cmdUpdate.ToolTipText = "Modifier package";
-            this.cmdUpdate.Click += new System.EventHandler(this.cmdUpdate_Click);
-            // 
-            // cmdDeletePackage
-            // 
-            this.cmdDeletePackage.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdDeletePackage.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
-            this.cmdDeletePackage.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdDeletePackage.Name = "cmdDeletePackage";
-            this.cmdDeletePackage.Size = new System.Drawing.Size(33, 27);
-            this.cmdDeletePackage.Text = "toolStripButton1";
-            this.cmdDeletePackage.ToolTipText = "Supprimer un package";
-            this.cmdDeletePackage.Click += new System.EventHandler(this.cmdDeletePackage_Click);
-            // 
-            // cmdUpPackagePriority
-            // 
-            this.cmdUpPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdUpPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.up_icon;
-            this.cmdUpPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdUpPackagePriority.Name = "cmdUpPackagePriority";
-            this.cmdUpPackagePriority.Size = new System.Drawing.Size(33, 27);
-            this.cmdUpPackagePriority.Text = "Monter la priorité";
-            this.cmdUpPackagePriority.Click += new System.EventHandler(this.cmdUpPackagePriority_Click);
-            // 
-            // cmdDownPackagePriority
-            // 
-            this.cmdDownPackagePriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdDownPackagePriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.down_icon;
-            this.cmdDownPackagePriority.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdDownPackagePriority.Name = "cmdDownPackagePriority";
-            this.cmdDownPackagePriority.Size = new System.Drawing.Size(33, 27);
-            this.cmdDownPackagePriority.Text = "Descendre la priorité";
-            this.cmdDownPackagePriority.Click += new System.EventHandler(this.cmdDownPackagePriority_Click);
-            // 
-            // cmdDeployToDev
-            // 
-            this.cmdDeployToDev.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdDeployToDev.Image = global::EquinoxeExtendPlugin.Properties.Resources.Gear_icon24;
-            this.cmdDeployToDev.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdDeployToDev.Name = "cmdDeployToDev";
-            this.cmdDeployToDev.Size = new System.Drawing.Size(33, 27);
-            this.cmdDeployToDev.Text = "Basculer en Dev";
-            this.cmdDeployToDev.Click += new System.EventHandler(this.cmdDeployToDev_Click);
-            // 
-            // cmdDeployToStaging
-            // 
-            this.cmdDeployToStaging.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdDeployToStaging.Image = ((System.Drawing.Image)(resources.GetObject("cmdDeployToStaging.Image")));
-            this.cmdDeployToStaging.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdDeployToStaging.Name = "cmdDeployToStaging";
-            this.cmdDeployToStaging.Size = new System.Drawing.Size(33, 27);
-            this.cmdDeployToStaging.Text = "Déploier vers Préprod";
-            this.cmdDeployToStaging.Click += new System.EventHandler(this.cmdDeployToStaging_Click);
-            // 
-            // cmdDeployToProduction
-            // 
-            this.cmdDeployToProduction.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdDeployToProduction.Enabled = false;
-            this.cmdDeployToProduction.Image = global::EquinoxeExtendPlugin.Properties.Resources.accept;
-            this.cmdDeployToProduction.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdDeployToProduction.Name = "cmdDeployToProduction";
-            this.cmdDeployToProduction.Size = new System.Drawing.Size(33, 27);
-            this.cmdDeployToProduction.Text = "Déploier en Production";
-            this.cmdDeployToProduction.Click += new System.EventHandler(this.cmdDeployToProduction_Click);
-            // 
-            // cmdRestoreFromBackup
-            // 
-            this.cmdRestoreFromBackup.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdRestoreFromBackup.Enabled = false;
-            this.cmdRestoreFromBackup.Image = global::EquinoxeExtendPlugin.Properties.Resources.undo_icon;
-            this.cmdRestoreFromBackup.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdRestoreFromBackup.Name = "cmdRestoreFromBackup";
-            this.cmdRestoreFromBackup.Size = new System.Drawing.Size(33, 27);
-            this.cmdRestoreFromBackup.Text = "Restorer production depuis backup";
-            this.cmdRestoreFromBackup.Click += new System.EventHandler(this.cmdRestoreFromBackup_Click);
-            // 
-            // cmdLockUnlock
-            // 
-            this.cmdLockUnlock.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdLockUnlock.Image = global::EquinoxeExtendPlugin.Properties.Resources._lock;
-            this.cmdLockUnlock.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdLockUnlock.Name = "cmdLockUnlock";
-            this.cmdLockUnlock.Size = new System.Drawing.Size(33, 27);
-            this.cmdLockUnlock.Text = "Verrouiller/Déverrouiller l\'ajout de tâche";
-            this.cmdLockUnlock.Click += new System.EventHandler(this.cmdLockUnlock_Click);
-            // 
-            // cmdShowDescriptif
-            // 
-            this.cmdShowDescriptif.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdShowDescriptif.Image = global::EquinoxeExtendPlugin.Properties.Resources.if_th_list_216422;
-            this.cmdShowDescriptif.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdShowDescriptif.Name = "cmdShowDescriptif";
-            this.cmdShowDescriptif.Size = new System.Drawing.Size(33, 27);
-            this.cmdShowDescriptif.Text = "Affiche le descriptif du package";
-            this.cmdShowDescriptif.Click += new System.EventHandler(this.cmdShowDescriptif_Click);
             // 
             // ucPackageManagement
             // 

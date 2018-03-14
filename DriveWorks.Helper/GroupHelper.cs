@@ -139,7 +139,10 @@ namespace DriveWorks.Helper
         /// <param name="iDestinationProjectPath"></param>
         public static void CopyProjetToOtherGroup(this Group iSourceGroup, string iProjectNameToCopy, EnvironmentEnum iDestinationGroupEnum)
         {
-            var destinationProjectPath = iDestinationGroupEnum.GetProjectDirectory() + iProjectNameToCopy;
+            var projectToCopy = iSourceGroup.Projects.GetProject(iProjectNameToCopy);
+
+            //Définition du dossier de destination
+            var destinationProjectPath = projectToCopy.Directory.Replace(iSourceGroup.GetEnvironment().GetProjectDirectory(), iDestinationGroupEnum.GetProjectDirectory());
 
             if (!Directory.Exists(destinationProjectPath))
                 Directory.CreateDirectory(destinationProjectPath);
@@ -147,9 +150,7 @@ namespace DriveWorks.Helper
             //Définition destination
             var options = new CopyGroupOptions();
             options.TargetFolder = destinationProjectPath;
-
-            var projectToCopy = iSourceGroup.Projects.GetProject(iProjectNameToCopy);
-            
+                   
             //Ajout du projet à copier
             options.Projects.Add(projectToCopy);
             var fileOptions =  new FilePickingOptions(projectToCopy.Directory);

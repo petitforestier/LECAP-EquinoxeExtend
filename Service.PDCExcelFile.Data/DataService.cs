@@ -46,9 +46,6 @@ namespace Service.PDCExcelFile.Data
                 //bouclage sur les lignes
                 while (sheet.Cells[rowIndex, PROJECTNUMBERCOLUMNINDEX].Value != null)
                 {
-                    if (rowIndex == 129)
-                        Library.Tools.Debug.MyDebug.BreakForDebug();
-
                     var newExternalProject = new ExternalProject();
 
                     //Priority

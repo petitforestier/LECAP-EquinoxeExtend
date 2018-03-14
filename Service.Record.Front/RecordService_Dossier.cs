@@ -206,7 +206,7 @@ namespace Service.Record.Front
 
             //DossierName
             if(iDossierName.IsNotNullAndNotEmpty())
-                theQuery = theQuery.Where(x => x.Name != iDossierName);
+                theQuery = theQuery.Where(x => x.Name == iDossierName);
 
             //Createur/Modificateur
             if (iCreatorModificator != null)

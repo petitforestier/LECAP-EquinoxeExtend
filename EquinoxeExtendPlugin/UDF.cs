@@ -3,9 +3,6 @@ using DriveWorks.Helper;
 using Library.Tools.Extensions;
 using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
-
-using Library.Tools.Extensions;
-
 using Service.Pool.Front;
 using Service.Record.Front;
 using System;
@@ -647,6 +644,38 @@ namespace EquinoxeExtendPlugin
             catch (Exception)
             {
                 return true;
+            }
+        }
+
+        #endregion
+    }
+
+    /// <summary>
+    /// Generation
+    /// </summary>
+    public partial class UDF
+    {
+        #region Public METHODS
+
+        [Udf]
+        [FunctionInfo("Retourne l'historique de la génération")]
+        public string UDFGetHistoryOfGeneration([ParamInfo("GénérationId", "GénérationId")]string iGenerationId)
+        {
+            try
+            {
+                using (var dossierService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Récupération du dossier
+                    var theGeneration = dossierService.GetGenerationById(Convert.ToInt64(iGenerationId));
+                    if (theGeneration == null)
+                        throw new Exception("La génération '{0}' est inextant".FormatString(iGenerationId.ToString()));
+
+                    return theGeneration.History;
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
             }
         }
 
