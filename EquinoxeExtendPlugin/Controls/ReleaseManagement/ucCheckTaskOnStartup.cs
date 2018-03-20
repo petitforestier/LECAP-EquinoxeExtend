@@ -20,6 +20,13 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 {
     public partial class ucCheckTaskOnStartup : UserControl, IUcUserControl
     {
+        public enum OpenModeEnum
+        {
+            ReadOnly,
+            NotAllowed,
+            Writable,         
+        }
+
         #region Public EVENTS
 
         public event EventHandler Close;
@@ -28,7 +35,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
         #region Public PROPERTIES
 
-        public DialogResult DialogResult { get; private set; }
+        public OpenModeEnum DialogResult { get; private set; }
 
         #endregion
 
@@ -58,7 +65,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
         public bool RunCheckup()
         {
-            DialogResult = DialogResult.No;
+            DialogResult = OpenModeEnum.NotAllowed;
 
             using (var releaseService = new Service.Release.Front.ReleaseService(_Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
             {
@@ -72,8 +79,18 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 }
                 else
                 {
-                    MessageBox.Show("Ce projet n'est dans aucune tâche. Une sous-tâche est nécessaire. L'ouverture du projet est annulé");
-                    return false;
+                    var answer = MessageBox.Show("Ce projet n'est dans aucune tâche. Une sous-tâche est nécessaire. L'ouverture en modification n'est pas possible. Voulez-vous ouvrir un lecture seule le projet ?","Information",MessageBoxButtons.YesNo);
+
+                    if (answer == System.Windows.Forms.DialogResult.Yes)
+                    {
+                        DialogResult = OpenModeEnum.ReadOnly;
+                        return false;
+                    } 
+                    else
+                    {
+                        DialogResult = OpenModeEnum.NotAllowed;
+                        return false;
+                    }
                 }
             }
         }
@@ -133,13 +150,13 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
         private void cmdOk_Click(object sender, System.EventArgs e)
         {
-            DialogResult = DialogResult.Yes;
+            DialogResult = OpenModeEnum.Writable;
             Close(null, null);
         }
 
         private void cmdNo_Click(object sender, System.EventArgs e)
         {
-            DialogResult = DialogResult.No;
+            DialogResult = OpenModeEnum.NotAllowed;
             Close(null, null);
         }
 

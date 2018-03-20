@@ -1,4 +1,5 @@
 ﻿using DriveWorks;
+using DriveWorks.Forms;
 using DriveWorks.Applications;
 using DriveWorks.Helper;
 using DriveWorks.Helper.Manager;
@@ -1084,7 +1085,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     Action<string> progressAction = (value) => { loadingControl.SetMessage(value); loadingForm.Refresh(); Application.DoEvents(); };
 
                     var tools = new Tools.Tools(progressAction);
-                    tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
+                    tupleTables = tools.GetImportedDataTableFromPackage(iSourceEnvironnement, iDestinationEnvironnement, iPackage);
 
                     var invalideDataTables = new List<string>();
                     //Bouclage sur les fichiers
@@ -1126,50 +1127,59 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == iSourceEnvironnement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
 
                 //PLUGING
-                if (MessageBox.Show("Voulez-vous appliquer les  plugins ?", "Pluging", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                var isPlugingFolderSame = Tools.Tools.IsPlugingFolderSame(iSourceEnvironnement, iDestinationEnvironnement); 
+
+                if (!isPlugingFolderSame)
                 {
-                    loadingControl.SetMessage("Application des plugings...");
-                    //Vérifier qu'il n'y a pas de nouveau dossier de pluging
-                    var destinationPluginDirectory = new DirectoryInfo(iDestinationEnvironnement.GetPluginDirectory());
-                    var sourcePluginDirectory = new DirectoryInfo(iSourceEnvironnement.GetPluginDirectory());
-                    var directoryComparator = new ListComparator<DirectoryInfo, DirectoryInfo>(sourcePluginDirectory.GetDirectories().Enum().ToList(), x => x.Name, destinationPluginDirectory.GetDirectories().Enum().ToList(), y => y.Name);
-
-                    var newPluging = directoryComparator.NewList;
-                    var removePluging = directoryComparator.RemovedList;
-
-                    //Importation de la totalité des plugins
-                    if (!Library.Tools.IO.MyDirectory.IsDirectoryEmpty(iDestinationEnvironnement.GetPluginDirectory()))
+                    if (MessageBox.Show("Analyse montre que les pluging sont différents. Voulez-vous appliquer les nouveaux plugins ?", "Pluging", MessageBoxButtons.YesNo) == DialogResult.Yes)
                     {
-                        var directoryName = DateTime.Now.ToStringYMDHMS();
-                        //Archive le dossier actuel de plugin de préprod sans prendre le dossier archives
-                        foreach (var directoryItem in destinationPluginDirectory.GetDirectories().Enum())
+                        loadingControl.SetMessage("Application des plugings...");
+                        //Vérifier qu'il n'y a pas de nouveau dossier de pluging
+                        var destinationPluginDirectory = new DirectoryInfo(iDestinationEnvironnement.GetPluginDirectory());
+                        var sourcePluginDirectory = new DirectoryInfo(iSourceEnvironnement.GetPluginDirectory());
+                        var directoryComparator = new ListComparator<DirectoryInfo, DirectoryInfo>(sourcePluginDirectory.GetDirectories().Enum().ToList(), x => x.Name, destinationPluginDirectory.GetDirectories().Enum().ToList(), y => y.Name);
+
+                        var newPluging = directoryComparator.NewList;
+                        var removePluging = directoryComparator.RemovedList;
+
+                        //Importation de la totalité des plugins
+                        if (!Library.Tools.IO.MyDirectory.IsDirectoryEmpty(iDestinationEnvironnement.GetPluginDirectory()))
                         {
-                            if (directoryItem.FullName + "\\" != iDestinationEnvironnement.GetPluginDirectoryArchive())
+                            var directoryName = DateTime.Now.ToStringYMDHMS();
+                            //Archive le dossier actuel de plugin de préprod sans prendre le dossier archives
+                            foreach (var directoryItem in destinationPluginDirectory.GetDirectories().Enum())
                             {
-                                var archivePackageDirectoryName = iDestinationEnvironnement.GetPluginDirectoryArchive() + iPackage.PackageIdString + "_" + directoryName;
-                                Library.Tools.IO.MyDirectory.Cut(directoryItem.FullName, archivePackageDirectoryName + "\\" + directoryItem.Name);
+                                if (directoryItem.FullName + "\\" != iDestinationEnvironnement.GetPluginDirectoryArchive())
+                                {
+                                    var archivePackageDirectoryName = iDestinationEnvironnement.GetPluginDirectoryArchive() + iPackage.PackageIdString + "_" + directoryName;
+                                    Library.Tools.IO.MyDirectory.Cut(directoryItem.FullName, archivePackageDirectoryName + "\\" + directoryItem.Name);
+                                }
+                            }
+
+                            //Copy de source vers destination sans prendre le dossier archives
+                            foreach (var directoryItem in sourcePluginDirectory.GetDirectories().Enum())
+                            {
+                                if (directoryItem.FullName + "\\" != iSourceEnvironnement.GetPluginDirectoryArchive())
+                                    Library.Tools.IO.MyDirectory.Copy(directoryItem.FullName, iDestinationEnvironnement.GetPluginDirectory() + directoryItem.Name);
                             }
                         }
 
-                        //Copy de dev vers destination sans prendre le dossier archives
-                        foreach (var directoryItem in sourcePluginDirectory.GetDirectories().Enum())
-                        {
-                            if (directoryItem.FullName + "\\" != iSourceEnvironnement.GetPluginDirectoryArchive())
-                                Library.Tools.IO.MyDirectory.Copy(directoryItem.FullName, iDestinationEnvironnement.GetPluginDirectory() + directoryItem.Name);
-                        }
+                        //Affichage du message des plugings à installer
+                        if (newPluging.Any())
+                            MessageBox.Show("Attention, des nouveaux plugings ont été ajoutés {0}. Il est nécessaire installer ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
+
+                        //Affichage du message des plugings à supprimer
+                        if (removePluging.Any())
+                            MessageBox.Show("Attention, des plugings ont été supprimés {0}. Il est nécessaire de désintaller ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
                     }
-
-                    //Affichage du message des plugings à installer
-                    if (newPluging.Any())
-                        MessageBox.Show("Attention, des nouveaux plugings ont été ajoutés {0}. Il est nécessaire installer ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
-
-                    //Affichage du message des plugings à supprimer
-                    if (removePluging.Any())
-                        MessageBox.Show("Attention, des plugings ont été supprimés {0}. Il est nécessaire de désintaller ces plugings sur les machines '{0}'".FormatString(newPluging.Select(x => x.Name).Concat(",")), destinationGroupName);
                 }
 
                 //IMPORTATION DES PROJECTS
                 loadingControl.SetMessage("Importation des projets...");
+
+                ////Rangement des projets dans l'ordre des childspec
+                //var tools2 = new Tools.Tools();
+                //packageDistinctProjectDetailsList = tools2.OrderProjetByChildSpec(iSourceEnvironnement, packageDistinctProjectDetailsList);
 
                 foreach (var projectItem in packageDistinctProjectDetailsList.Enum())
                 {

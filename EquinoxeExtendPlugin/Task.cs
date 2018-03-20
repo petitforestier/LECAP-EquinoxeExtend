@@ -1414,7 +1414,7 @@ namespace EquinoxeExtendPlugin
             public string State { get; set; }
 
             [Name("FR", "Type")]
-            [WidthColumn(100)]
+            [WidthColumn(120)]
             public string Type { get; set; }
 
             [Name("FR", "Demandeur")]
@@ -1422,14 +1422,14 @@ namespace EquinoxeExtendPlugin
             public string CreatorName { get; set; }
 
             [Name("FR", "Date")]
-            [WidthColumn(100)]
+            [WidthColumn(120)]
             public string CreationDate { get; set; }
 
             [Name("FR", "Commentaires")]
             [WidthColumn(200)]
             public string Comments { get; set; }
 
-            [Name("FR", "Id Generation")]
+            [Name("FR", "Id Génération")]
             [WidthColumn(70)]
             public string GenerationId { get; set; }
 

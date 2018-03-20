@@ -14,6 +14,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.IO;
 
 namespace EquinoxeExtendPlugin
 {
@@ -72,8 +73,12 @@ namespace EquinoxeExtendPlugin
                                 if (ucCheckTaskOnStartupControl.RunCheckup())
                                     checkTaskOnStartupForm.ShowDialog();
 
-                                if (ucCheckTaskOnStartupControl.DialogResult != DialogResult.Yes)
+                                if (ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.NotAllowed)
                                     projectService.CloseProject();
+                                else if (ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.ReadOnly)
+                                    File.SetAttributes(activeProject.ProjectFilePath, FileAttributes.ReadOnly);
+                                else if(ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.Writable)
+                                    File.SetAttributes(activeProject.ProjectFilePath, File.GetAttributes(activeProject.ProjectFilePath) & ~FileAttributes.ReadOnly);    
                             }
                         }
                     }

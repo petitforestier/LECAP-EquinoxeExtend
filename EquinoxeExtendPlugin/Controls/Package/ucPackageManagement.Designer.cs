@@ -64,7 +64,6 @@
             this.cmdShowDescriptif = new System.Windows.Forms.ToolStripButton();
             this.dgvPackage = new System.Windows.Forms.DataGridView();
             this.fraPackage = new System.Windows.Forms.GroupBox();
-            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.fraMainTask = new System.Windows.Forms.GroupBox();
             this.dgvMainTask = new System.Windows.Forms.DataGridView();
             this.tlpRight = new System.Windows.Forms.TableLayoutPanel();
@@ -85,6 +84,7 @@
             this.cboDestinationEnvironment = new System.Windows.Forms.ComboBox();
             this.cmdDeployementSearch = new System.Windows.Forms.Button();
             this.lblDestinationEnvironment = new System.Windows.Forms.Label();
+            this.ucPackageEdit = new EquinoxeExtendPlugin.Controls.Package.ucPackageEdit();
             this.tlpMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splFooter)).BeginInit();
             this.splFooter.Panel1.SuspendLayout();
@@ -393,15 +393,6 @@
             this.fraPackage.TabStop = false;
             this.fraPackage.Text = "Package";
             // 
-            // ucPackageEdit
-            // 
-            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
-            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
-            this.ucPackageEdit.Name = "ucPackageEdit";
-            this.ucPackageEdit.Size = new System.Drawing.Size(255, 188);
-            this.ucPackageEdit.TabIndex = 5;
-            // 
             // fraMainTask
             // 
             this.fraMainTask.Controls.Add(this.dgvMainTask);
@@ -706,6 +697,15 @@
             this.lblDestinationEnvironment.TabIndex = 3;
             this.lblDestinationEnvironment.Text = "Environnement destination";
             this.lblDestinationEnvironment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // ucPackageEdit
+            // 
+            this.ucPackageEdit.BackColor = System.Drawing.SystemColors.Control;
+            this.ucPackageEdit.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ucPackageEdit.Location = new System.Drawing.Point(3, 16);
+            this.ucPackageEdit.Name = "ucPackageEdit";
+            this.ucPackageEdit.Size = new System.Drawing.Size(255, 188);
+            this.ucPackageEdit.TabIndex = 5;
             // 
             // ucPackageManagement
             // 

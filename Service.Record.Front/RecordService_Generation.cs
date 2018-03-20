@@ -18,7 +18,7 @@ namespace Service.Record.Front
 
         public long NewGeneration(EquinoxeExtend.Shared.Object.Record.Generation iNewGeneration)
         {
-            if (iNewGeneration.GenerationId!= -1 )
+            if (iNewGeneration.GenerationId < 1 )
                 throw new Exception("L'id de la génération est invalide");
 
             if (iNewGeneration.CreatorGUID == null)

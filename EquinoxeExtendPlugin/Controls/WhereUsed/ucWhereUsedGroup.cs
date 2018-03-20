@@ -1,8 +1,8 @@
 ﻿using DriveWorks;
 using DriveWorks.Applications;
 using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
-using EquinoxeExtend.Shared.Object.Release;
 using Library.Control.Datagridview;
 using Library.Control.UserControls;
 using Library.Tools.Attributes;
@@ -12,12 +12,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Text;
 using System.Windows.Forms;
-using DriveWorks.Helper.Manager;
 using Library.Tools.Tasks;
-using DriveWorks.Hosting;
 
 namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 {
@@ -47,7 +45,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 //Package
                 cboPackage.DisplayMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageIdStatusString);
                 cboPackage.ValueMember = PropertyObserver.GetPropertyName<EquinoxeExtend.Shared.Object.Release.Package>(x => x.PackageId);
-                cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All,PackageOrderByEnum.PackageId);
+                cboPackage.DataSource = releaseService.GetPackageList(PackageStatusSearchEnum.All, PackageOrderByEnum.PackageId);
                 cboPackage.SelectedIndex = -1;
             }
         }
@@ -122,7 +120,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
         #region Private METHODS
 
-        private List<TreeNode> GenerateProjetTableTreeNode(EquinoxeExtend.Shared.Object.Release.Package iPackage)
+        private List<TreeNode> GenerateProjetTableTreeNode(EnvironmentEnum iSourceEnvironment, EnvironmentEnum iDestinationEnvironment, EquinoxeExtend.Shared.Object.Release.Package iPackage)
         {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
             var projects = groupService.ActiveGroup.Projects.GetProjects();
@@ -148,7 +146,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             else
             {
                 var tools = new Tools.Tools();
-                tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
+                tupleTables = tools.GetImportedDataTableFromPackage(iSourceEnvironment, iDestinationEnvironment, iPackage);
             }
 
             var treeNodeCollection = new List<TreeNode>();
@@ -318,7 +316,6 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                                     trvGroupTable.Nodes.Add(item);
                             }
                         }
-                       
                     }
                 }
             }
@@ -334,9 +331,17 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
         }
 
         private void cmdRunWhereUsedProjectTableAnalyse_Click(object sender, EventArgs e)
-        {        
+        {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
             var activeEnvironment = groupService.ActiveGroup.GetEnvironment();
+
+            EnvironmentEnum destinationEnvironment;
+            if (activeEnvironment == EnvironmentEnum.Developpement)
+                destinationEnvironment = EnvironmentEnum.Staging;
+            else if (activeEnvironment == EnvironmentEnum.Staging)
+                destinationEnvironment = EnvironmentEnum.Production;
+            else
+                throw new Exception("Cette function ne support pas l'environnement actuel.");
 
             try
             {
@@ -363,7 +368,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                         }
                         //Vérification que tous les projets sont fermés
                         var openedProjectList = groupService.ActiveGroup.GetOpenedProjectList();
-                       
+
                         if (openedProjectList.IsNotNullAndNotEmpty())
                         {
                             MessageBox.Show("Certains projets du groupe sont ouverts. L'analyse n'est donc pas possible." + Environment.NewLine
@@ -384,14 +389,12 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                                 trvProjectTable.Nodes.Clear();
 
                                 var selectedPackage = (cboPackage.SelectedIndex != -1) ? (EquinoxeExtend.Shared.Object.Release.Package)cboPackage.SelectedItem : null;
-                                foreach (var item in GenerateProjetTableTreeNode(selectedPackage).Enum())
+                                foreach (var item in GenerateProjetTableTreeNode(activeEnvironment, destinationEnvironment, selectedPackage).Enum())
                                     trvProjectTable.Nodes.Add(item);
                             }
                         }
                         if (openedProjectName != null)
                             projectService.OpenProject(openedProjectName);
-
-                       
                     }
                 }
             }

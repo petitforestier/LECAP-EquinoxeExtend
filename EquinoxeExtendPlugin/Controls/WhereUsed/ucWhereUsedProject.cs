@@ -118,7 +118,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
 
         #region Private METHODS
 
-        private List<TreeNode> GenerateProjetTableTreeNode(EquinoxeExtend.Shared.Object.Release.Package iPackage)
+        private List<TreeNode> GenerateProjetTableTreeNode(EnvironmentEnum iSourceEnvironmenent, EnvironmentEnum iDestinationEnvironement, EquinoxeExtend.Shared.Object.Release.Package iPackage)
         {
             var groupService = _Application.ServiceManager.GetService<IGroupService>();
             var projects = groupService.ActiveGroup.Projects.GetProjects();
@@ -144,7 +144,7 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
             else
             {
                 var tools = new Tools.Tools();
-                tupleTables = tools.GetImportedDataTableFromPackage(_Application, iPackage);
+                tupleTables = tools.GetImportedDataTableFromPackage(iSourceEnvironmenent,iDestinationEnvironement, iPackage);
             }
 
             var treeNodeCollection = new List<TreeNode>();

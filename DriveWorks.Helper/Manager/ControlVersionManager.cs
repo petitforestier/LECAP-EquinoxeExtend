@@ -403,6 +403,28 @@ namespace DriveWorks.Helper.Manager
             return result;
         }
 
+        public static List<ChildSpecificationList> GetProjectChildSpecificationListLists(this Project iProject)
+        {
+            var result = new List<ChildSpecificationList>();
+            var formList = iProject.Navigation.GetForms(true, true);
+
+            //Bouclage sur les forms
+            foreach (var item in formList)
+            {
+                var formControlList = item.Form.Controls;
+
+                //Bouclage sur les controls
+                foreach (var controlItem in formControlList)
+                {
+                    //Ne garde que les childSpec
+                    if (controlItem.GetType() == typeof(ChildSpecificationList))
+                        result.Add((ChildSpecificationList)controlItem);
+                }
+            }
+
+            return result;
+        }
+
         #endregion
 
         #region Private FIELDS
