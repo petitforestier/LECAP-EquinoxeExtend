@@ -564,7 +564,10 @@ namespace EquinoxeExtendPlugin
                     if (theGeneration == null)
                         throw new Exception("La génération est introuvable");
 
-                    theGeneration.History = "Modification le '{0}', par '{1}'".FormatString(DateTime.Now.ToStringDMYHMS(), ctx.Group.CurrentUser.DisplayName);
+                    if (theGeneration.History.IsNotNullAndNotEmpty())
+                        theGeneration.History += Environment.NewLine;
+
+                    theGeneration.History += "Modification le '{0}', par '{1}'".FormatString(DateTime.Now.ToStringDMYHMS(), ctx.Group.CurrentUser.DisplayName);
                     theGeneration.State = (GenerationStatusEnum)StateProperty.Value; 
 
                     recordService.UpdageGeneration(theGeneration);
@@ -890,9 +893,9 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(80)]
             public string CreationDate { get; set; }
 
-            [Name("FR", "Verrou maquette")]
-            [WidthColumn(100)]
-            public string DrawingLock { get; set; }
+            //[Name("FR", "Verrou maquette")]
+            //[WidthColumn(100)]
+            //public string DrawingLock { get; set; }
 
             [Name("FR", "Verrou dossier")]
             [WidthColumn(100)]
@@ -917,7 +920,7 @@ namespace EquinoxeExtendPlugin
                 newView.CreatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID).DisplayName;
                 newView.CreationDate = firstSpecification.CreationDate.ToStringDMY();
                 newView.Lock = iObj.Lock != null ? iListUser.Single(x => x.Id == iObj.Lock.UserId).DisplayName : "Non";
-                newView.DrawingLock = iObj.IsCreateVersionOnGeneration ? "Oui" : "Non";
+                //newView.DrawingLock = iObj.IsCreateVersionOnGeneration ? "Oui" : "Non";
 
                 return newView;
             }
@@ -1405,6 +1408,10 @@ namespace EquinoxeExtendPlugin
         {
             #region Public PROPERTIES
 
+            [Name("FR", "Id Génération")]
+            [WidthColumn(70)]
+            public string GenerationId { get; set; }
+
             [Name("FR", "Nom spec.")]
             [WidthColumn(80)]
             public string SpecificationName { get; set; }
@@ -1427,11 +1434,7 @@ namespace EquinoxeExtendPlugin
 
             [Name("FR", "Commentaires")]
             [WidthColumn(200)]
-            public string Comments { get; set; }
-
-            [Name("FR", "Id Génération")]
-            [WidthColumn(70)]
-            public string GenerationId { get; set; }
+            public string Comments { get; set; }  
 
             #endregion
 

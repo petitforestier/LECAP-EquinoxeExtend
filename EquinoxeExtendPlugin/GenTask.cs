@@ -62,8 +62,10 @@ namespace EquinoxeExtendPlugin
                     var theGeneration = recordService.GetGenerationById(generationId);
                     if (theGeneration == null)
                         throw new Exception("La génération est introuvable");
+                    if (theGeneration.History.IsNotNullAndNotEmpty())
+                        theGeneration.History += Environment.NewLine;
 
-                    theGeneration.History = "Modification le '{0}', par '{1}', vers l'état {2}".FormatString(DateTime.Now.ToStringDMYHMS(), generationSettings.Group.CurrentUser.DisplayName, ((GenerationStatusEnum)stateId).GetName("FR"));
+                    theGeneration.History += "Modification le '{0}', par '{1}', vers l'état {2}".FormatString(DateTime.Now.ToStringDMYHMS(), generationSettings.Group.CurrentUser.DisplayName, ((GenerationStatusEnum)stateId).GetName("FR"));
                     theGeneration.State = (GenerationStatusEnum)stateId;
 
                     recordService.UpdageGeneration(theGeneration);
