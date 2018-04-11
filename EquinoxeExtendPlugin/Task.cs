@@ -603,11 +603,15 @@ namespace EquinoxeExtendPlugin
                 if (errorMessages.IsNotNullAndNotEmpty())
                 {
                     var messageList = new List<string>();
-                    messageList.Add("La spécification contient {0} erreur(s)".FormatString(errorMessages.Count()));
+                    messageList.Add("Le dossier contient {0} erreur(s)".FormatString(errorMessages.Count()));
                     messageList.AddRange(errorMessages);
-                    ctx.Project.AddMessage(messageList.Concat(Environment.NewLine));
+                    ctx.Project.SetMessage(messageList.Concat(Environment.NewLine));
 
                     ctx.Project.SetErrorConstant(true);
+                }
+                else
+                {
+                    ctx.Project.SetMessage("Le dossier ne contient pas d'erreur");
                 }
             }
             catch (Exception ex)
@@ -832,9 +836,9 @@ namespace EquinoxeExtendPlugin
                     //User
                     Guid? userId = null;
                     DriveWorks.Security.UserDetails userDetails = null;
-                    if (UserNameProperty.Value != null || UserNameProperty.Value != string.Empty)
+                    if (UserNameProperty.Value != null && UserNameProperty.Value != string.Empty)
                     {
-                        userDetails = userList.Enum().SingleOrDefault(x => x.LoginName == UserNameProperty.Value);
+                        userDetails = userList.Enum().SingleOrDefault(x => x.DisplayName == UserNameProperty.Value);
                         if (userDetails != null)
                             userId = userDetails.Id;
                     }

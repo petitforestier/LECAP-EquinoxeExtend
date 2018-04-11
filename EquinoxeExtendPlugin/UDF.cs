@@ -22,12 +22,12 @@ namespace EquinoxeExtendPlugin
         #region Public METHODS
 
         [Udf]
-        [FunctionInfo("Retourne la liste de tous les utilisateurs existant dans le groupe en cours.")]
+        [FunctionInfo("Retourne la liste de tous les utilisateurs 'DisplayName' existant dans le groupe en cours.")]
         public string UDFGetUserItems()
         {
             try
             {
-                return this.Project.Group.GetUserList().Enum().Select(x => x.DisplayName).Enum().Concat("|");
+                return this.Project.Group.GetUserList().Enum().Select(x => x.DisplayName).Enum().OrderBy(x=>x).Enum().Concat("|");
             }
             catch (Exception ex)
             {

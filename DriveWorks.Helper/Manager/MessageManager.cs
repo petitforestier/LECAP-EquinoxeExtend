@@ -27,14 +27,28 @@ namespace DriveWorks.Helper.Manager
 
         public static void AddMessage(this Project iProject, string iMessage)
         {
-            TextBox theControl = null;
-            iProject.Navigation.TryGetControl<TextBox>(iProject.GetProjectSettings().UserDebugControlName, ref theControl);
-            var message = theControl.Text;
+            var message = GetMessageControl(iProject).Text;
             if (message.IsNotNullAndNotEmpty())
                 message += Environment.NewLine;
             message += iMessage;
-            theControl.Text = message;
+            SetMessage(iProject,message);
         }
+
+        public static void SetMessage(this Project iProject, string iMessage)
+        {
+            TextBox theControl = null;
+            iProject.Navigation.TryGetControl<TextBox>(iProject.GetProjectSettings().UserDebugControlName, ref theControl);
+            var message = theControl.Text;
+            theControl.Text = iMessage;
+        }
+
+        private static TextBox GetMessageControl(this Project iProject)
+        {
+            TextBox theControl = null;
+            iProject.Navigation.TryGetControl<TextBox>(iProject.GetProjectSettings().UserDebugControlName, ref theControl);
+            return theControl;
+        }
+
 
         public static void SetErrorConstant(this Project iProject, bool iIsError)
         {
