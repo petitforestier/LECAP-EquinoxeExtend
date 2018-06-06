@@ -63,4 +63,18 @@
     <Property Name="ParentElementType" Value="SqlTable" />
     <Property Name="NewName" Value="[SubTaskId]" />
   </Operation>
+  <Operation Name="Rename Refactor" Key="d11fa37f-78b4-4f89-aff3-c0f57b62de77" ChangeDateTime="06/06/2018 13:17:49">
+    <Property Name="ElementName" Value="[S_Record].[T_E_Dossier].[StateRef]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Record].[T_E_Dossier]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StateCommercialRef]" />
+  </Operation>
+  <Operation Name="Rename Refactor" Key="d056ba6c-799a-4a0b-8f13-325760b746dd" ChangeDateTime="06/06/2018 13:25:32">
+    <Property Name="ElementName" Value="[S_Record].[T_E_Dossier].[StateDesign]" />
+    <Property Name="ElementType" Value="SqlSimpleColumn" />
+    <Property Name="ParentElementName" Value="[S_Record].[T_E_Dossier]" />
+    <Property Name="ParentElementType" Value="SqlTable" />
+    <Property Name="NewName" Value="[StateDesignRef]" />
+  </Operation>
 </Operations>

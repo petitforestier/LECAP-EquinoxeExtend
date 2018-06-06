@@ -15,7 +15,10 @@
           <Property Name="IsTemplate" Type="bit" Nullable="false" />
           <Property Name="TemplateDescription" Type="nvarchar" MaxLength="1000" />
           <Property Name="TemplateName" Type="nvarchar" MaxLength="259" />
-          <Property Name="StateRef" Type="int" Nullable="false" />
+          <Property Name="StateCommercialRef" Type="int" Nullable="false" />
+          <Property Name="StateDesignRef" Type="int" Nullable="false" />
+          <Property Name="DesignNameGUID" Type="uniqueidentifier" />
+          <Property Name="DesignDate" Type="datetime2" Precision="7" />
           <Property Name="IsCreateVersionOnGeneration" Type="bit" Nullable="false" />
         </EntityType>
         <EntityType Name="T_E_Generation">
@@ -125,7 +128,10 @@
           <Property Name="IsTemplate" Type="Boolean" Nullable="false" />
           <Property Name="TemplateDescription" Type="String" MaxLength="1000" FixedLength="false" Unicode="true" />
           <Property Name="TemplateName" Type="String" MaxLength="259" FixedLength="false" Unicode="true" />
-          <Property Name="StateRef" Type="Int32" Nullable="false" />
+          <Property Name="StateCommercialRef" Type="Int32" Nullable="false" />
+          <Property Name="StateDesignRef" Type="Int32" Nullable="false" />
+          <Property Name="DesignNameGUID" Type="Guid" />
+          <Property Name="DesignDate" Type="DateTime" Precision="7" />
           <Property Name="IsCreateVersionOnGeneration" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="T_E_Specification" Relationship="Self.FK_T_E_Dossier_DossierId" FromRole="T_E_Dossier" ToRole="T_E_Specification" />
           <NavigationProperty Name="T_E_Lock" Relationship="Self.FK_T_E_Lock_DossierId" FromRole="T_E_Dossier" ToRole="T_E_Lock" />
@@ -241,7 +247,10 @@
                 <ScalarProperty Name="IsTemplate" ColumnName="IsTemplate" />
                 <ScalarProperty Name="TemplateDescription" ColumnName="TemplateDescription" />
                 <ScalarProperty Name="TemplateName" ColumnName="TemplateName" />
-                <ScalarProperty Name="StateRef" ColumnName="StateRef" />
+                <ScalarProperty Name="StateCommercialRef" ColumnName="StateCommercialRef" />
+                <ScalarProperty Name="StateDesignRef" ColumnName="StateDesignRef" />
+                <ScalarProperty Name="DesignNameGUID" ColumnName="DesignNameGUID" />
+                <ScalarProperty Name="DesignDate" ColumnName="DesignDate" />
                 <ScalarProperty Name="IsCreateVersionOnGeneration" ColumnName="IsCreateVersionOnGeneration" />
               </MappingFragment>
             </EntityTypeMapping>

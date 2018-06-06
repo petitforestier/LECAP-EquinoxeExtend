@@ -163,7 +163,7 @@ namespace EquinoxeExtendPlugin
             IsTemplateProperty = Properties.RegisterBooleanProperty("Est un Modèle", "Est un Modèle");
             TemplateNameProperty = Properties.RegisterStringProperty("Nom du modèle", "Nom textuel d'affichage pour différentier les modèles autrement que le numéro du Dossier");
             SpecificationNameProperty = Properties.RegisterStringProperty("Nom Spécification", "Nom de la Spécification à Créer");
-            StateProperty = Properties.RegisterInt32Property("Etat du dossier", "10 pour brouillon, 20 pour terminé");
+            StateCommercialProperty = Properties.RegisterInt32Property("Etat du dossier commercial", "10 pour brouillon, 20 pour terminé");
         }
 
         #endregion
@@ -194,7 +194,10 @@ namespace EquinoxeExtendPlugin
                     newDossier.TemplateName = (TemplateNameProperty.Value.IsNullOrEmpty()) ? null : TemplateNameProperty.Value;
                     newDossier.ProjectName = ctx.Project.Name;
                     newDossier.IsCreateVersionOnGeneration = false;
-                    newDossier.State = (DossierStatusEnum)StateProperty.Value;
+                    newDossier.StateCommercial = (DossierCommercialStatusEnum)StateCommercialProperty.Value;
+                    newDossier.StateDesign = DossierDesignStatusEnum.None;
+                    newDossier.DesignDate = null;
+                    newDossier.DesignNameGUID = null;
 
                     //Creation de la Specification
                     newDossier.Specifications = new List<EquinoxeExtend.Shared.Object.Record.Specification>();
@@ -230,12 +233,11 @@ namespace EquinoxeExtendPlugin
         private FlowProperty<string> TemplateDescriptionProperty;
         private FlowProperty<bool> IsTemplateProperty;
         private FlowProperty<string> TemplateNameProperty;
-        private FlowProperty<Int32> StateProperty;
+        private FlowProperty<Int32> StateCommercialProperty;
         private FlowProperty<string> SpecificationNameProperty;
 
         #endregion
     }
-
 
     [Task("SPECMGT:CancelDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class CancelDossier : DriveWorks.Specification.Task
@@ -267,7 +269,7 @@ namespace EquinoxeExtendPlugin
                         throw new Exception("Erreur le dossier est verrouillé");
 
                     //Nouveau Statut
-                    theDossier.State = DossierStatusEnum.Canceled;
+                    theDossier.StateCommercial = DossierCommercialStatusEnum.Canceled;
                     dossierService.UpdateDossier(theDossier);
 
                     }
@@ -283,12 +285,6 @@ namespace EquinoxeExtendPlugin
         #region Private FIELDS
 
         private FlowProperty<string> DossierNameProperty;
-        private FlowProperty<bool> CheckErrorProperty;
-        private FlowProperty<string> TemplateDescriptionProperty;
-        private FlowProperty<bool> IsTemplateProperty;
-        private FlowProperty<string> TemplateNameProperty;
-        private FlowProperty<Int32> StateProperty;
-        private FlowProperty<string> SpecificationNameProperty;
 
         #endregion
     }
@@ -464,7 +460,7 @@ namespace EquinoxeExtendPlugin
                     using (var ts = new System.Transactions.TransactionScope())
                     {
                         //Modification dossier
-                        theDossier.State = (DossierStatusEnum)StateProperty.Value;
+                        theDossier.StateCommercial = (DossierCommercialStatusEnum)StateProperty.Value;
                         dossierService.UpdateDossier(theDossier);
 
                         //Creation de la Specification
@@ -507,6 +503,70 @@ namespace EquinoxeExtendPlugin
 
         #endregion
     }
+
+    [Task("SPECMGT:UpdateDesignStateDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class UpdateDesignStateDossier : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public UpdateDesignStateDossier()
+        {
+            DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier à modifier");
+            StateDesignProperty = Properties.RegisterInt32Property("Etat du dossier au BE", "20 pour Commencé");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                try
+                {
+                    // Vérification des erreurs
+                    if (DossierNameProperty.Value.IsNullOrEmpty())
+                        throw new Exception("Aucun nom de dossier n'a été renseigné");
+
+                    //Récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+
+                    //Vérification de la session
+                    if (theDossier.Lock != null)
+                        throw new Exception("Erreur le dossier est actuellement verrouillé");
+
+                    //Modification dossier
+                    theDossier.StateDesign = (DossierDesignStatusEnum)StateDesignProperty.Value;
+
+                    if (theDossier.StateDesign == DossierDesignStatusEnum.Started)
+                    {
+                        theDossier.DesignNameGUID = ctx.Group.CurrentUser.Id;
+                        theDossier.DesignDate = DateTime.Now;
+                    }
+                    else
+                        throw new Exception("L'enum DossierDesignStatusEnum n'est pas supporté");
+
+                    dossierService.UpdateDossier(theDossier);
+    
+                }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur lors de la mise à jour du dossier", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<string> DossierNameProperty;
+        private FlowProperty<Int32> StateDesignProperty;
+
+        #endregion
+    }
+
 
     [Task("SPECMGT:NewGeneration", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class NewGeneration : DriveWorks.Specification.Task
@@ -901,13 +961,13 @@ namespace EquinoxeExtendPlugin
                     }
 
                     //State
-                    DossierStatusEnum? state = null;
-                    if (StateNameProperty.Value == DossierStatusEnum.Completed.GetName("FR"))
-                        state = DossierStatusEnum.Completed;
-                    else if (StateNameProperty.Value == DossierStatusEnum.Drafting.GetName("FR"))
-                        state = DossierStatusEnum.Drafting;
-                    else if (StateNameProperty.Value == DossierStatusEnum.Canceled.GetName("FR"))
-                        state = DossierStatusEnum.Canceled;
+                    DossierCommercialStatusEnum? state = null;
+                    if (StateNameProperty.Value == DossierCommercialStatusEnum.Completed.GetName("FR"))
+                        state = DossierCommercialStatusEnum.Completed;
+                    else if (StateNameProperty.Value == DossierCommercialStatusEnum.Drafting.GetName("FR"))
+                        state = DossierCommercialStatusEnum.Drafting;
+                    else if (StateNameProperty.Value == DossierCommercialStatusEnum.Canceled.GetName("FR"))
+                        state = DossierCommercialStatusEnum.Canceled;
                     else
                         throw new Exception("Enum dossier statut inconnu");
 
@@ -948,7 +1008,7 @@ namespace EquinoxeExtendPlugin
 
             [Name("FR", "Statut commercial")]
             [WidthColumn(100)]
-            public string State { get; set; }
+            public string StateCommercial { get; set; }
 
             [Name("FR", "Créateur")]
             [WidthColumn(100)]
@@ -981,7 +1041,7 @@ namespace EquinoxeExtendPlugin
 
                 newView.DossierName = iObj.Name;
                 newView.ProjectName = iObj.ProjectName;
-                newView.State = iObj.State.GetName("FR");
+                newView.StateCommercial = iObj.StateCommercial.GetName("FR");
 
                 var creatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID);
                 newView.CreatorName = creatorName != null ? creatorName.DisplayName : "UTILISATEUR SUPPRIME" ;
@@ -1190,9 +1250,13 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(70)]
             public string DossierName { get; set; }
 
-            [Name("FR", "Statut")]
+            [Name("FR", "Statut commercial")]
             [WidthColumn(100)]
-            public string State { get; set; }
+            public string StateCommercial { get; set; }
+
+            [Name("FR", "Statut BE")]
+            [WidthColumn(100)]
+            public string StateDesign { get; set; }
 
             [Name("FR", "Configurateur")]
             [WidthColumn(100)]
@@ -1221,7 +1285,8 @@ namespace EquinoxeExtendPlugin
                 newView.DossierName = iObj.Name;
                 newView.Lock = iObj.Lock != null ? "Oui" : "Non";
                 newView.ProjectName = iObj.ProjectName;
-                newView.State = iObj.State.GetName("FR");
+                newView.StateCommercial = iObj.StateCommercial.GetName("FR");
+                newView.StateDesign = iObj.StateDesign.GetName("FR");
                 newView.TemplateName = iObj.TemplateName;
 
                 return newView;

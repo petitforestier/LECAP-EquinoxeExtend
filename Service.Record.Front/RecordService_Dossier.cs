@@ -196,7 +196,7 @@ namespace Service.Record.Front
             return theDossiers;
         }
 
-        public List<EquinoxeExtend.Shared.Object.Record.Dossier> GetDossiers(bool iIsNotTemplate, string iDossierName, Guid? iCreatorModificator, DossierStatusEnum? iDossierStatusEnum)
+        public List<EquinoxeExtend.Shared.Object.Record.Dossier> GetDossiers(bool iIsNotTemplate, string iDossierName, Guid? iCreatorModificator, DossierCommercialStatusEnum? iDossierStatusEnum)
         {
             var theQuery = DBRecordDataService.GetQuery<T_E_Dossier>(null);
 
@@ -214,7 +214,7 @@ namespace Service.Record.Front
 
             //Status
             if(iDossierStatusEnum !=null )
-                theQuery = theQuery.Where(x => x.StateRef == (short)iDossierStatusEnum);
+                theQuery = theQuery.Where(x => x.StateCommercialRef == (short)iDossierStatusEnum);
 
             var result = theQuery.ToList().Enum().Select(x=>x.Convert()).ToList();
           

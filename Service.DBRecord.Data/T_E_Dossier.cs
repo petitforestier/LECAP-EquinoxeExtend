@@ -27,7 +27,10 @@ namespace Service.DBRecord.Data
         public bool IsTemplate { get; set; }
         public string TemplateDescription { get; set; }
         public string TemplateName { get; set; }
-        public int StateRef { get; set; }
+        public int StateCommercialRef { get; set; }
+        public int StateDesignRef { get; set; }
+        public Nullable<System.Guid> DesignNameGUID { get; set; }
+        public Nullable<System.DateTime> DesignDate { get; set; }
         public bool IsCreateVersionOnGeneration { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

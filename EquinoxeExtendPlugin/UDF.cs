@@ -668,7 +668,7 @@ namespace EquinoxeExtendPlugin
                     //Récupération du dossier
                     var theGeneration = dossierService.GetGenerationById(Convert.ToInt64(iGenerationId));
                     if (theGeneration == null)
-                        throw new Exception("La génération '{0}' est inextant".FormatString(iGenerationId.ToString()));
+                        throw new Exception("La génération '{0}' est inexistante".FormatString(iGenerationId.ToString()));
 
                     return theGeneration.History;
                 }
@@ -678,6 +678,64 @@ namespace EquinoxeExtendPlugin
                 return ex.Message;
             }
         }
+
+        [Udf]
+        [FunctionInfo("Retourne l'état de BE d'un dossier")]
+        public string UDFGetDossierDesignState([ParamInfo("Nom de dossier", "Nom de dossier")]string iDossierName)
+        {
+            try
+            {
+                using (var dossierService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(iDossierName);
+                    if (theDossier == null)
+                        throw new Exception("Le dossier '{0}' est inexistant".FormatString(iDossierName));
+
+                    return ((int)theDossier.StateDesign).ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        [Udf]
+        [FunctionInfo("Retourne l'adresse email du dessinateur")]
+        public string UDFGetDossierDesignEmail([ParamInfo("Nom de dossier", "Nom de dossier")]string iDossierName)
+        {
+            try
+            {
+                using (var dossierService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(iDossierName);
+                    if (theDossier == null)
+                        throw new Exception("Le dossier '{0}' est inexistant".FormatString(iDossierName));
+
+                    if(theDossier.DesignNameGUID != null)
+                    {
+                        var userList = this.Project.Group.GetUserList();
+                        var userDetails = userList.Enum().SingleOrDefault(x => x.Id == theDossier.DesignNameGUID);
+
+                        if (userDetails == null)
+                            throw new Exception("L'utilisateur est inexistant");
+
+                        return userDetails.EmailAddress;
+                    }
+                    else
+                    {
+                        return string.Empty;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return ex.Message;
+            }
+        }
+
 
         #endregion
     }

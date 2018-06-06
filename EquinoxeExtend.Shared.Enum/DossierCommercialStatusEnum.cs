@@ -7,7 +7,7 @@ using Library.Tools.Attributes;
 
 namespace EquinoxeExtend.Shared.Enum
 {
-    public enum DossierStatusEnum
+    public enum DossierCommercialStatusEnum
     {
         [Name("FR", "Brouillon")]
         Drafting = 10,
