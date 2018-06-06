@@ -13,5 +13,7 @@ namespace EquinoxeExtend.Shared.Enum
         Drafting = 10,
         [Name("FR", "Terminé")]
         Completed = 20,
+        [Name("FR", "Annulé")]
+        Canceled = 30,
     };
 }

@@ -236,6 +236,63 @@ namespace EquinoxeExtendPlugin
         #endregion
     }
 
+
+    [Task("SPECMGT:CancelDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
+    public class CancelDossier : DriveWorks.Specification.Task
+    {
+        #region Public CONSTRUCTORS
+
+        public CancelDossier()
+        {
+            DossierNameProperty = Properties.RegisterStringProperty("Nom Dossier", "Nom du Dossier à annuler");
+        }
+
+        #endregion
+
+        #region Protected METHODS
+
+        protected override void Execute(SpecificationContext ctx)
+        {
+            using (var dossierService = new RecordService(ctx.Group.GetEnvironment().GetSQLExtendConnectionString()))
+            {
+                try
+                {
+                    //Vérification que le dossier existe
+                    var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
+                    if (theDossier == null)
+                        throw new Exception("Le Dossier '{0}' n'existe pas".FormatString(DossierNameProperty.Value));
+
+                    //Vérification que le dossier n'est pas verrouillé
+                    if (theDossier.Lock != null)
+                        throw new Exception("Erreur le dossier est verrouillé");
+
+                    //Nouveau Statut
+                    theDossier.State = DossierStatusEnum.Canceled;
+                    dossierService.UpdateDossier(theDossier);
+
+                    }
+                catch (Exception ex)
+                {
+                    ctx.Project.AddErrorMessage("Erreur lors de l'annulation du Dossier", ex);
+                }
+            }
+        }
+
+        #endregion
+
+        #region Private FIELDS
+
+        private FlowProperty<string> DossierNameProperty;
+        private FlowProperty<bool> CheckErrorProperty;
+        private FlowProperty<string> TemplateDescriptionProperty;
+        private FlowProperty<bool> IsTemplateProperty;
+        private FlowProperty<string> TemplateNameProperty;
+        private FlowProperty<Int32> StateProperty;
+        private FlowProperty<string> SpecificationNameProperty;
+
+        #endregion
+    }
+
     [Task("SPECMGT:LoadDossier", "embedded://MyExtensionLibrary.Puzzle-16x16.png", "SpecificationManagement")]
     public class LoadDossier : DriveWorks.Specification.Task
     {
