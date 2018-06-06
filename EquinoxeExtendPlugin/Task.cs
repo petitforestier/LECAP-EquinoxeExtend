@@ -885,7 +885,7 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(160)]
             public string ProjectName { get; set; }
 
-            [Name("FR", "Statut")]
+            [Name("FR", "Statut commercial")]
             [WidthColumn(100)]
             public string State { get; set; }
 
