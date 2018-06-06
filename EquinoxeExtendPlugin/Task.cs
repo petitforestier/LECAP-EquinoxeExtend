@@ -1047,7 +1047,7 @@ namespace EquinoxeExtendPlugin
 
                     //Récupération du dossier et des specifications
                     var theDossier = dossierService.GetDossierByName(DossierNameProperty.Value);
-                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId, true).Enum().OrderByDescending(x => x.CreationDate).Enum().ToList();
+                    var specificationList = dossierService.GetSpecificationsByDossierId(theDossier.DossierId, true).Enum().OrderBy(x => x.CreationDate).Enum().ToList();
 
                     //Convertion pour mise en forme
                     var viewList = specificationList.Enum().Select(x => SpecificationView.ConvertTo(x, userList)).Enum().ToList();
