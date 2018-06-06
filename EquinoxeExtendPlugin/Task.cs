@@ -906,6 +906,10 @@ namespace EquinoxeExtendPlugin
                         state = DossierStatusEnum.Completed;
                     else if (StateNameProperty.Value == DossierStatusEnum.Drafting.GetName("FR"))
                         state = DossierStatusEnum.Drafting;
+                    else if (StateNameProperty.Value == DossierStatusEnum.Canceled.GetName("FR"))
+                        state = DossierStatusEnum.Canceled;
+                    else
+                        throw new Exception("Enum dossier statut inconnu");
 
                     resultList = specificationService.GetDossiers(true, DossierNameProperty.Value, userId, state);
 
