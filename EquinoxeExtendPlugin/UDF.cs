@@ -498,7 +498,7 @@ namespace EquinoxeExtendPlugin
                 using (var poolService = new PoolService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
                 {
                     var shortCounter = poolService.GetPoolCursor(iPoolName);
-                    return shortCounter.PadLeft(7, '0');
+                    return shortCounter.PadLeft(Convert.ToInt32(iLenght), '0');
                 }
             }
             catch (Exception ex)

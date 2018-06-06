@@ -921,11 +921,21 @@ namespace EquinoxeExtendPlugin
                 newView.DossierName = iObj.Name;
                 newView.ProjectName = iObj.ProjectName;
                 newView.State = iObj.State.GetName("FR");
-                newView.CreatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID).DisplayName;
-                newView.CreationDate = firstSpecification.CreationDate.ToStringDMY();
-                newView.Lock = iObj.Lock != null ? iListUser.Single(x => x.Id == iObj.Lock.UserId).DisplayName : "Non";
-                //newView.DrawingLock = iObj.IsCreateVersionOnGeneration ? "Oui" : "Non";
 
+                var creatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID);
+                newView.CreatorName = creatorName != null ? creatorName.DisplayName : "UTILISATEUR SUPPRIME" ;
+
+                newView.CreationDate = firstSpecification.CreationDate.ToStringDMY();
+
+                if(iObj.Lock != null)
+                {
+                    var lockName = iListUser.Single(x => x.Id == iObj.Lock.UserId);
+                    newView.Lock = lockName != null ? lockName.DisplayName : "UTILISATEUR SUPPRIME";
+                }
+                else
+                {
+                    newView.Lock = "Non";
+                }
                 return newView;
             }
 
