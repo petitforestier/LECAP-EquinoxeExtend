@@ -1010,6 +1010,10 @@ namespace EquinoxeExtendPlugin
             [WidthColumn(100)]
             public string StateCommercial { get; set; }
 
+            [Name("FR", "Statut BE")]
+            [WidthColumn(100)]
+            public string StateDesign { get; set; }
+
             [Name("FR", "Créateur")]
             [WidthColumn(100)]
             public string CreatorName { get; set; }
@@ -1017,10 +1021,6 @@ namespace EquinoxeExtendPlugin
             [Name("FR", "Date création")]
             [WidthColumn(80)]
             public string CreationDate { get; set; }
-
-            //[Name("FR", "Verrou maquette")]
-            //[WidthColumn(100)]
-            //public string DrawingLock { get; set; }
 
             [Name("FR", "Verrou dossier")]
             [WidthColumn(100)]
@@ -1042,6 +1042,7 @@ namespace EquinoxeExtendPlugin
                 newView.DossierName = iObj.Name;
                 newView.ProjectName = iObj.ProjectName;
                 newView.StateCommercial = iObj.StateCommercial.GetName("FR");
+                newView.StateDesign = iObj.StateDesign.GetName("FR");
 
                 var creatorName = iListUser.Single(x => x.Id == firstSpecification.CreatorGUID);
                 newView.CreatorName = creatorName != null ? creatorName.DisplayName : "UTILISATEUR SUPPRIME" ;

@@ -134,6 +134,9 @@ namespace EquinoxeExtendPlugin.Controls.WhereUsedTable
                 foreach (var projectItem in projects.Enum())
                 {
                     var projectService = _Application.ServiceManager.GetService<IProjectService>();
+
+                    Library.Tools.Debug.MyDebug.PrintInformation(projectItem.Name);
+
                     projectService.OpenProject(projectItem.Name);
 
                     var project = projectService.ActiveProject;
