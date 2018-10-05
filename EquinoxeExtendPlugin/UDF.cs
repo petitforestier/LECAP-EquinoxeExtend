@@ -736,6 +736,27 @@ namespace EquinoxeExtendPlugin
             }
         }
 
+        [Udf]
+        [FunctionInfo("Retourne si le dossier est existant")]
+        public bool UDFIsDossierExists([ParamInfo("Nom de dossier", "Nom de dossier")]string iDossierName)
+        {
+            try
+            {
+                using (var dossierService = new RecordService(this.Project.Group.GetEnvironment().GetSQLExtendConnectionString()))
+                {
+                    //Récupération du dossier
+                    var theDossier = dossierService.GetDossierByName(iDossierName);
+                    if (theDossier == null)
+                        return false;
+                    else
+                        return true;
+                }
+            }
+            catch 
+            {
+                return false;
+            }
+        }
 
         #endregion
     }
