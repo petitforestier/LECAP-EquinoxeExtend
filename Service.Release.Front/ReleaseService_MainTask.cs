@@ -449,6 +449,11 @@ namespace Service.Release.Front
                 entities = theQuery.OrderByDescending(x => x.Priority.HasValue).ThenBy(x => x.Priority).Skip(iSkip).Take(iTake).ToList();
             else if (iOrderBy == MainTaskOrderByEnum.ProjectNumber)
                 entities = theQuery.OrderByDescending(x => x.T_E_ExternalProject.ProjectNumber).Skip(iSkip).Take(iTake).ToList();
+            else if (iOrderBy == MainTaskOrderByEnum.ProductionDeployementDate)
+            {
+                var environmentProductionShort = (short)EquinoxeExtend.Shared.Enum.EnvironmentEnum.Production;
+                entities = theQuery.OrderByDescending(x => x.T_E_Package.T_E_Deployement.Where(y => y.EnvironmentDestinationRef == environmentProductionShort).OrderByDescending(t => t.DeployementDate).FirstOrDefault().DeployementDate).Skip(iSkip).Take(iTake).ToList();
+            }              
             else
                 throw new NotSupportedException(iOrderBy.ToStringWithEnumName());
 

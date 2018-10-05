@@ -17,5 +17,7 @@ namespace EquinoxeExtend.Shared.Enum
         MainTaskId=30,
         [Name("FR", "N° Projet")]
         ProjectNumber = 40,
+        [Name("FR", "Date déploiement production")]
+        ProductionDeployementDate = 50,
     };
 }

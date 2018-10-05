@@ -446,7 +446,7 @@
             this.sptMain.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptMain.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptMain.Size = new System.Drawing.Size(1404, 858);
-            this.sptMain.SplitterDistance = 528;
+            this.sptMain.SplitterDistance = 522;
             this.sptMain.SplitterWidth = 10;
             this.sptMain.TabIndex = 9;
             // 
@@ -457,7 +457,7 @@
             this.fraMainTasks.Location = new System.Drawing.Point(0, 0);
             this.fraMainTasks.Name = "fraMainTasks";
             this.fraMainTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.fraMainTasks.Size = new System.Drawing.Size(1404, 528);
+            this.fraMainTasks.Size = new System.Drawing.Size(1404, 522);
             this.fraMainTasks.TabIndex = 5;
             this.fraMainTasks.TabStop = false;
             this.fraMainTasks.Text = "Tâches";
@@ -479,8 +479,8 @@
             this.sptTasks.Panel2.Controls.Add(this.fraMainTask);
             this.sptTasks.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.sptTasks.Size = new System.Drawing.Size(1398, 509);
-            this.sptTasks.SplitterDistance = 1028;
+            this.sptTasks.Size = new System.Drawing.Size(1398, 503);
+            this.sptTasks.SplitterDistance = 1022;
             this.sptTasks.SplitterWidth = 10;
             this.sptTasks.TabIndex = 0;
             // 
@@ -489,7 +489,7 @@
             this.ucMainTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucMainTaskManager.Location = new System.Drawing.Point(0, 0);
             this.ucMainTaskManager.Name = "ucMainTaskManager";
-            this.ucMainTaskManager.Size = new System.Drawing.Size(1028, 509);
+            this.ucMainTaskManager.Size = new System.Drawing.Size(1022, 503);
             this.ucMainTaskManager.TabIndex = 4;
             // 
             // fraMainTask
@@ -498,7 +498,7 @@
             this.fraMainTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraMainTask.Location = new System.Drawing.Point(0, 0);
             this.fraMainTask.Name = "fraMainTask";
-            this.fraMainTask.Size = new System.Drawing.Size(360, 509);
+            this.fraMainTask.Size = new System.Drawing.Size(366, 503);
             this.fraMainTask.TabIndex = 4;
             this.fraMainTask.TabStop = false;
             this.fraMainTask.Text = "Tâche";
@@ -508,7 +508,7 @@
             this.ucMainTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucMainTaskEdit.Location = new System.Drawing.Point(3, 16);
             this.ucMainTaskEdit.Name = "ucMainTaskEdit";
-            this.ucMainTaskEdit.Size = new System.Drawing.Size(354, 490);
+            this.ucMainTaskEdit.Size = new System.Drawing.Size(360, 484);
             this.ucMainTaskEdit.TabIndex = 3;
             // 
             // fraProjectTasks
@@ -517,7 +517,7 @@
             this.fraProjectTasks.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTasks.Location = new System.Drawing.Point(0, 0);
             this.fraProjectTasks.Name = "fraProjectTasks";
-            this.fraProjectTasks.Size = new System.Drawing.Size(1404, 320);
+            this.fraProjectTasks.Size = new System.Drawing.Size(1404, 326);
             this.fraProjectTasks.TabIndex = 6;
             this.fraProjectTasks.TabStop = false;
             this.fraProjectTasks.Text = "Sous tâches";
@@ -539,8 +539,8 @@
             this.sptSubTasks.Panel2.Controls.Add(this.fraProjectTask);
             this.sptSubTasks.Panel2.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.sptSubTasks.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.sptSubTasks.Size = new System.Drawing.Size(1398, 301);
-            this.sptSubTasks.SplitterDistance = 1027;
+            this.sptSubTasks.Size = new System.Drawing.Size(1398, 307);
+            this.sptSubTasks.SplitterDistance = 1021;
             this.sptSubTasks.SplitterWidth = 10;
             this.sptSubTasks.TabIndex = 0;
             // 
@@ -549,7 +549,7 @@
             this.ucSubTaskManager.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucSubTaskManager.Location = new System.Drawing.Point(0, 0);
             this.ucSubTaskManager.Name = "ucSubTaskManager";
-            this.ucSubTaskManager.Size = new System.Drawing.Size(1027, 301);
+            this.ucSubTaskManager.Size = new System.Drawing.Size(1021, 307);
             this.ucSubTaskManager.TabIndex = 3;
             // 
             // fraProjectTask
@@ -559,7 +559,7 @@
             this.fraProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTask.Location = new System.Drawing.Point(0, 0);
             this.fraProjectTask.Name = "fraProjectTask";
-            this.fraProjectTask.Size = new System.Drawing.Size(361, 301);
+            this.fraProjectTask.Size = new System.Drawing.Size(367, 307);
             this.fraProjectTask.TabIndex = 4;
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâche";
@@ -570,7 +570,7 @@
             this.ucSubTaskEdit.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ucSubTaskEdit.Location = new System.Drawing.Point(3, 16);
             this.ucSubTaskEdit.Name = "ucSubTaskEdit";
-            this.ucSubTaskEdit.Size = new System.Drawing.Size(355, 282);
+            this.ucSubTaskEdit.Size = new System.Drawing.Size(361, 288);
             this.ucSubTaskEdit.TabIndex = 4;
             // 
             // ucTaskManager
