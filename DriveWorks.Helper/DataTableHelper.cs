@@ -79,7 +79,7 @@ namespace DriveWorks.Helper
                 for (int columnIndex = 0; columnIndex <= tableData1.GetLength(1) - 1; columnIndex++)
                 {
                     var data1 = tableData1[rowIndex, columnIndex]!= null ? tableData1[rowIndex, columnIndex] : string.Empty;
-                    var data2 = tableData2[rowIndex, columnIndex] != null ? tableData1[rowIndex, columnIndex] : string.Empty;
+                    var data2 = tableData2[rowIndex, columnIndex] != null ? tableData2[rowIndex, columnIndex] : string.Empty;
 
                     if (data1.ToString() != data2.ToString())
                         return "La valeur : colonne {0}, ligne {1} est différente.".FormatString(columnIndex + 1, rowIndex + 1);
