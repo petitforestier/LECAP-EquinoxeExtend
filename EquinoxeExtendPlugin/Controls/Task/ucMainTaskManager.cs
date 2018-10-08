@@ -301,6 +301,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             public string Package { get; set; }
 
+            [Visible]
+            [Name("FR", "Dernier déploiement")]
+            [WidthColumn(110)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string LastDeploy { get; set; }
+
             public MainTask Object { get; set; }
 
             #endregion
@@ -372,6 +378,17 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 if (iObj.ExternalProject != null)
                     newView.ProjectNumber = iObj.ExternalProject.ProjectNumber;
+
+                //LastDeploy
+                if (iObj.Package != null)
+                {
+                    var deploys = iObj.Package.Deployements.Enum().OrderByDescending(x => x.DeployementDate);
+                    if (deploys.IsNotNullAndNotEmpty())
+                    {
+                        var lastDeploy = deploys.First();
+                        newView.LastDeploy = lastDeploy.DeployementDate.ToShortDateString();
+                    }
+                }
 
                 return newView;
             }

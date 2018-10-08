@@ -358,7 +358,7 @@ namespace Service.Release.Front
 
                 //Package
                 if (theMainTask.PackageId != null)
-                    theMainTask.Package = GetPackageById((long)theMainTask.PackageId, GranularityEnum.Nude);
+                    theMainTask.Package = GetPackageById((long)theMainTask.PackageId, GranularityEnum.Full);
 
                 //ProductLine
                 theMainTask.ProductLines = GetProductLineByMainTaskId(theMainTask.MainTaskId);
