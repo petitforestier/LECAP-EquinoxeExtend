@@ -258,12 +258,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             public string PackageId { get; set; }
 
             [Visible]
-            [Name("FR", "Release")]
-            [WidthColumn(65)]
-            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
-            public int? ReleaseNumber { get; set; }
-
-            [Visible]
             [Name("FR", "Avancement")]
             [WidthColumn(80)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
@@ -320,7 +314,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     throw new Exception(iObj.Status.ToStringWithEnumName());
 
                 newView.PackageId = iObj.PackageIdString;
-                newView.ReleaseNumber = iObj.ReleaseNumber;
 
                 //Progression
                 int progressionAverage = iObj.MainTasks.IsNotNullAndNotEmpty() ? (int)(Math.Truncate(iObj.MainTasks.Average(x => x.SubTasks.Any() ? x.SubTasks.Average(y => y.Progression) : 0))) : 0;
