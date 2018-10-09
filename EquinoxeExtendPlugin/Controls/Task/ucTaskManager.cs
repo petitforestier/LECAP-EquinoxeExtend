@@ -57,7 +57,7 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
 
                 //Order
                 cboOrderBy = cboOrderBy.FillByDictionary(new MainTaskOrderByEnum().ToDictionary("FR"));
-                cboOrderBy.SelectedValue = MainTaskOrderByEnum.Priority;
+                cboOrderBy.SelectedValue = MainTaskOrderByEnum.TaskPriority;
 
                 //Project
                 cboProject.DisplayMember = PropertyObserver.GetPropertyName<ProjectDetails>(x => x.Name);

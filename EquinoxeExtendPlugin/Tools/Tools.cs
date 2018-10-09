@@ -143,57 +143,57 @@ namespace EquinoxeExtendPlugin.Tools
         {
             var result = new List<ProjectDetails>();
 
-            var host = new EngineHost(HostEnvironment.CreateDefaultEnvironment(false));
-            var sourceGroupManager = host.CreateGroupManager();
-            var sourceGroup = sourceGroupManager.OpenGroup(iSourceEnvironment);
+            //var host = new EngineHost(HostEnvironment.CreateDefaultEnvironment(false));
+            //var sourceGroupManager = host.CreateGroupManager();
+            //var sourceGroup = sourceGroupManager.OpenGroup(iSourceEnvironment);
             
-            //Réagencement des projets par les enfants d'abord
-            var sourceProjectManager = host.CreateProjectManager();
-            var noOrderProjetChildSpecList = new List<KeyValuePair<ProjectDetails, List<ChildSpecificationList>>>();
-            foreach (var projectItem in iOriginalProjectDetailsList.Enum())
-            {
-                sourceProjectManager.OpenProject(sourceGroup, projectItem);
-                noOrderProjetChildSpecList.Add(new KeyValuePair<ProjectDetails, List<ChildSpecificationList>>(projectItem, DriveWorks.Helper.Manager.ControlVersionManager.GetProjectChildSpecificationListLists(sourceProjectManager.Project)));
-                sourceProjectManager.CloseProject(false);
-            }
+            ////Réagencement des projets par les enfants d'abord
+            //var sourceProjectManager = host.CreateProjectManager();
+            //var noOrderProjetChildSpecList = new List<KeyValuePair<ProjectDetails, List<ChildSpecificationList>>>();
+            //foreach (var projectItem in iOriginalProjectDetailsList.Enum())
+            //{
+            //    sourceProjectManager.OpenProject(sourceGroup, projectItem);
+            //    noOrderProjetChildSpecList.Add(new KeyValuePair<ProjectDetails, List<ChildSpecificationList>>(projectItem, DriveWorks.Helper.Manager.ControlVersionManager.GetProjectChildSpecificationListLists(sourceProjectManager.Project)));
+            //    sourceProjectManager.CloseProject(false);
+            //}
             
-            var previousProjetChildSpecListCount = 0;
-            var orderProject = new List<ProjectDetails>();
-            //todo revoir
-            while (iOriginalProjectDetailsList.Count != orderProject.Count)
-            {
-                foreach (var projectItem in iOriginalProjectDetailsList.Enum())
-                {
-                    //Si pas encore présent dans la liste
-                    if (!noOrderProjetChildSpecList.Any(x => x.Key.Id == projectItem.Id))
-                    {
-                        var pairProject = noOrderProjetChildSpecList.Single(x => x.Key.Id == projectItem.Id);
+            //var previousProjetChildSpecListCount = 0;
+            //var orderProject = new List<ProjectDetails>();
+            ////todo revoir
+            //while (iOriginalProjectDetailsList.Count != orderProject.Count)
+            //{
+            //    foreach (var projectItem in iOriginalProjectDetailsList.Enum())
+            //    {
+            //        //Si pas encore présent dans la liste
+            //        if (!noOrderProjetChildSpecList.Any(x => x.Key.Id == projectItem.Id))
+            //        {
+            //            var pairProject = noOrderProjetChildSpecList.Single(x => x.Key.Id == projectItem.Id);
 
-                        //Bouclage sur toutes les child
-                        foreach (var childListItem in pairProject.Value.Enum())
-                        {
-                            //Bouclage sur les projets de la child
-                            foreach (var projectChildItem in childListItem.SelectedItem.ItemValues)
-                            {
-                                var test = "ergerlfk";
-                            }
-                           }
-
-
-
-
-                    }
+            //            //Bouclage sur toutes les child
+            //            foreach (var childListItem in pairProject.Value.Enum())
+            //            {
+            //                //Bouclage sur les projets de la child
+            //                foreach (var projectChildItem in childListItem.SelectedItem.ItemValues)
+            //                {
+            //                    var test = "ergerlfk";
+            //                }
+            //               }
 
 
 
-                }
+
+            //        }
+
+
+
+            //    }
 
                 ////Vérification qu'il y a bien une progression pour éviter boucle infinit si référence circulaire
                 //if (previousProjetChildSpecListCount == projetChildSpecList.Count)
                 //    throw new Exception("Impossible de ranger les projets dans l'ordre des childspec, il y a surment une référence circulaire avec les childspec");
 
                 //previousProjetChildSpecListCount = projetChildSpecList.Count;
-            }
+            //}
             return result;
         }
 

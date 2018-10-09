@@ -210,12 +210,14 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     return null;
 
                 var newView = new SubTaskView();
-
-                //projet
+            
                 newView.Object = iObj;
+
+                //Developper
                 if (iObj.DevelopperGUID != null)
                     newView.Developper = iGroup.GetUserById((Guid)iObj.DevelopperGUID).DisplayName;
 
+                //projet
                 if (iObj.ProjectGUID != null)
                 {
                     var theProjectDetails = iGroup.GetProjectFromGUID((Guid)iObj.ProjectGUID);

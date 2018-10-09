@@ -9,8 +9,10 @@ namespace EquinoxeExtend.Shared.Enum
 {
     public enum MainTaskOrderByEnum
     {
-        [Name("FR", "Priorité")]
-        Priority=10,
+        [Name("FR", "Priorité tâche")]
+        TaskPriority=10,
+        [Name("FR", "Priorité package")]
+        PackagePriority = 15,
         [Name("FR", "Date objectif")]
         DateObjectif=20,
         [Name("FR", "N° tâche")]
@@ -19,5 +21,7 @@ namespace EquinoxeExtend.Shared.Enum
         ProjectNumber = 40,
         [Name("FR", "Date déploiement production")]
         ProductionDeployementDate = 50,
+        [Name("FR", "Date création")]
+        CreationDate = 60,
     };
 }

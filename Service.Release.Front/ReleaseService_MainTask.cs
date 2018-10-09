@@ -445,10 +445,14 @@ namespace Service.Release.Front
                 entities = theQuery.OrderBy(x => x.MainTaskId).Skip(iSkip).Take(iTake).ToList();
             else if (iOrderBy == MainTaskOrderByEnum.DateObjectif)
                 entities = theQuery.OrderByDescending(x => x.ObjectifCloseDate.HasValue).ThenBy(x => x.ObjectifCloseDate).Skip(iSkip).Take(iTake).ToList();
-            else if (iOrderBy == MainTaskOrderByEnum.Priority)
+            else if (iOrderBy == MainTaskOrderByEnum.TaskPriority)
                 entities = theQuery.OrderByDescending(x => x.Priority.HasValue).ThenBy(x => x.Priority).Skip(iSkip).Take(iTake).ToList();
+            else if (iOrderBy == MainTaskOrderByEnum.PackagePriority)
+                entities = theQuery.OrderByDescending(x => x.T_E_Package.Priority.HasValue).ThenBy(x => x.T_E_Package.Priority).Skip(iSkip).Take(iTake).ToList();
             else if (iOrderBy == MainTaskOrderByEnum.ProjectNumber)
                 entities = theQuery.OrderByDescending(x => x.T_E_ExternalProject.ProjectNumber).Skip(iSkip).Take(iTake).ToList();
+            else if (iOrderBy == MainTaskOrderByEnum.CreationDate)
+                entities = theQuery.OrderByDescending(x => x.CreationDate).Skip(iSkip).Take(iTake).ToList();
             else if (iOrderBy == MainTaskOrderByEnum.ProductionDeployementDate)
             {
                 var environmentProductionShort = (short)EquinoxeExtend.Shared.Enum.EnvironmentEnum.Production;

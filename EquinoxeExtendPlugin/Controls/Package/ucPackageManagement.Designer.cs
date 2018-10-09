@@ -449,7 +449,7 @@
             // tlpRight
             // 
             this.tlpRight.ColumnCount = 1;
-            this.tlpRight.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tlpRight.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tlpRight.Controls.Add(this.fraProjectTask, 0, 1);
             this.tlpRight.Controls.Add(this.fraDeployement, 0, 0);
             this.tlpRight.Dock = System.Windows.Forms.DockStyle.Fill;
