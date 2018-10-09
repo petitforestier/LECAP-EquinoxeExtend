@@ -169,10 +169,16 @@ namespace EquinoxeExtendPlugin.Controls.Task
             #region Public PROPERTIES
 
             [Visible]
-            [Name("FR", "Action")]
+            [Name("FR", "Projet DW")]
+            [WidthColumn(150)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
+            public string DWProject { get; set; }
+
+            [Visible]
+            [Name("FR", "Désignation")]
             [WidthColumn(250)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
-            public string Action { get; set; }
+            public string Designation { get; set; }
 
             [Visible]
             [Name("FR", "Développeur")]
@@ -205,6 +211,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
                 var newView = new SubTaskView();
 
+                //projet
                 newView.Object = iObj;
                 if (iObj.DevelopperGUID != null)
                     newView.Developper = iGroup.GetUserById((Guid)iObj.DevelopperGUID).DisplayName;
@@ -213,12 +220,13 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 {
                     var theProjectDetails = iGroup.GetProjectFromGUID((Guid)iObj.ProjectGUID);
                     if (theProjectDetails == null)
-                        newView.Action = "!!! Le projet a été supprimé !!!";
+                        newView.DWProject = "!!! Le projet a été supprimé !!!";
                     else
-                        newView.Action = "Modifier le projet : " + theProjectDetails.Name;
+                        newView.DWProject = theProjectDetails.Name;
                 }
-                else
-                    newView.Action = iObj.Designation;
+
+                //Designation
+                newView.Designation = iObj.Designation;
 
                 //Progression
                 var imageWidth = (int)typeof(SubTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<SubTaskView>(x => x.Progression));
