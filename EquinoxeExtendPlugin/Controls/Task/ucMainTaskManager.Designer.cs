@@ -36,6 +36,7 @@
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.cmdAddMainTask = new System.Windows.Forms.ToolStripButton();
             this.cmdUpdateMainTask = new System.Windows.Forms.ToolStripButton();
+            this.cmdCancelTask = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdImportFromProjectExcelFile = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
@@ -43,9 +44,9 @@
             this.cmdDownPriority = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdAcceptRequestMainTask = new System.Windows.Forms.ToolStripButton();
-            this.cmdCancelTask = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.dgvMain = new System.Windows.Forms.DataGridView();
+            this.cmdSetTaskPriority = new System.Windows.Forms.ToolStripButton();
             this.tlpMain.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.tlpHeader.SuspendLayout();
@@ -83,7 +84,7 @@
             // lblMessage
             // 
             this.lblMessage.Name = "lblMessage";
-            this.lblMessage.Size = new System.Drawing.Size(17, 15);
+            this.lblMessage.Size = new System.Drawing.Size(13, 15);
             this.lblMessage.Text = "--";
             // 
             // tlpHeader
@@ -125,6 +126,7 @@
             this.toolStripSeparator1,
             this.cmdUpPriority,
             this.cmdDownPriority,
+            this.cmdSetTaskPriority,
             this.toolStripSeparator2,
             this.cmdAcceptRequestMainTask,
             this.toolStripSeparator3});
@@ -154,6 +156,16 @@
             this.cmdUpdateMainTask.Text = "toolStripButton2";
             this.cmdUpdateMainTask.ToolTipText = "Modifier tâche";
             this.cmdUpdateMainTask.Click += new System.EventHandler(this.cmdUpdateMainTask_Click);
+            // 
+            // cmdCancelTask
+            // 
+            this.cmdCancelTask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdCancelTask.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
+            this.cmdCancelTask.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdCancelTask.Name = "cmdCancelTask";
+            this.cmdCancelTask.Size = new System.Drawing.Size(33, 27);
+            this.cmdCancelTask.Text = "Annuler la tâche";
+            this.cmdCancelTask.Click += new System.EventHandler(this.cmdCancelTask_Click);
             // 
             // toolStripSeparator4
             // 
@@ -211,16 +223,6 @@
             this.cmdAcceptRequestMainTask.ToolTipText = "Valider la demande de tâche et la mettre en attente";
             this.cmdAcceptRequestMainTask.Click += new System.EventHandler(this.cmdValidateMainTask_Click);
             // 
-            // cmdCancelTask
-            // 
-            this.cmdCancelTask.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.cmdCancelTask.Image = global::EquinoxeExtendPlugin.Properties.Resources.delete_icone;
-            this.cmdCancelTask.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.cmdCancelTask.Name = "cmdCancelTask";
-            this.cmdCancelTask.Size = new System.Drawing.Size(33, 27);
-            this.cmdCancelTask.Text = "Annuler la tâche";
-            this.cmdCancelTask.Click += new System.EventHandler(this.cmdCancelTask_Click);
-            // 
             // toolStripSeparator3
             // 
             this.toolStripSeparator3.Name = "toolStripSeparator3";
@@ -236,6 +238,16 @@
             this.dgvMain.TabIndex = 2;
             this.dgvMain.SelectionChanged += new System.EventHandler(this.dgvMain_SelectionChanged);
             this.dgvMain.DoubleClick += new System.EventHandler(this.dgvMain_DoubleClick);
+            // 
+            // cmdSetTaskPriority
+            // 
+            this.cmdSetTaskPriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdSetTaskPriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.priority24;
+            this.cmdSetTaskPriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdSetTaskPriority.Name = "cmdSetTaskPriority";
+            this.cmdSetTaskPriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdSetTaskPriority.Text = "Saisir la priorité de la tâche";
+            this.cmdSetTaskPriority.Click += new System.EventHandler(this.cmdSetTaskPriority_Click);
             // 
             // ucMainTaskManager
             // 
@@ -277,5 +289,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
         private System.Windows.Forms.ToolStripButton cmdImportFromProjectExcelFile;
+        private System.Windows.Forms.ToolStripButton cmdSetTaskPriority;
     }
 }

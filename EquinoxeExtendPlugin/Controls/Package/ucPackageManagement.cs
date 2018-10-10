@@ -942,7 +942,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     //if (MessageBox.Show("Confirmation", "Etes-sûr de vouloir déployer ce package vers l'environnement de production ?", MessageBoxButtons.YesNo) != DialogResult.Yes)
                     //    return;
 
-                    ////todo droits
                     //using (var releaseService = new Service.Release.Front.ReleaseService(_Project.Group.GetGroupSettings().ExtendDataBaseConnectionString))
                     //{
                     //}
@@ -1000,6 +999,43 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
                     {
                         releaseService.MoveDownPackagePriority(selectedPackage);
+                    }
+                }
+                LoadPackageDataGridView(selectedPackage.PackageId);
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void cmdSetPriority_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var selectedPackage = GetSelectedPackage();
+
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
+
+                    if (selectedPackage == null)
+                        return;
+
+                    var priorityInputBoxUC = new Library.Control.UserControls.ucInputBox("Saisir la nouvelle priorité : ", InputTypeAllowEnum.Numeric);
+
+                    using (var inProgressForm = new frmUserControl(priorityInputBoxUC, "Priorité", false, false))
+                    {
+                        inProgressForm.ShowDialog();
+
+                        if (priorityInputBoxUC.DialogResult != DialogResult.OK)
+                            return;
+
+                        using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                        {
+                            releaseService.SetPackagePriority(selectedPackage, priorityInputBoxUC.AnswerString.ToInt32());
+                        }
                     }
                 }
                 LoadPackageDataGridView(selectedPackage.PackageId);
@@ -1320,5 +1356,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
+
+       
     }
 }

@@ -8,10 +8,4 @@
 	[DeployementObjectifDate]	DATETIME2		NULL,
 )
 GO
-
-CREATE UNIQUE NONCLUSTERED INDEX [IX.T_E_Package.Priority.IsUnique]
-ON[S_Release].[T_E_Package]([Priority])
-WHERE [Priority] IS NOT NULL;
-
-GO
  

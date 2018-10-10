@@ -260,7 +260,6 @@ namespace Service.Release.Front
 
             using (var ts = new TransactionScope())
             {
-                //3 actions car contrainte d'unicité en base de données
                 var theTask = DBReleaseDataService.GetMainTaskById(iMainTask.MainTaskId);
 
                 int? thePriority = 1;
@@ -281,7 +280,7 @@ namespace Service.Release.Front
                         MoveDownMainTaskPriority(taskPriority);
                 }
 
-                theTask.Priority = null;
+                theTask.Priority = thePriority;
                 DBReleaseDataService.Update(theTask);
 
                 if (previousTask != null)
@@ -289,9 +288,6 @@ namespace Service.Release.Front
                     previousTask.Priority += 1;
                     DBReleaseDataService.Update(previousTask);
                 }
-
-                theTask.Priority = thePriority;
-                DBReleaseDataService.Update(theTask);
 
                 ts.Complete();
             }
@@ -326,7 +322,7 @@ namespace Service.Release.Front
                         thePriority = lastPriority + 1;
                 }
 
-                theTask.Priority = null;
+                theTask.Priority = thePriority;
                 DBReleaseDataService.Update(theTask);
 
                 if (followingTask != null)
@@ -335,9 +331,71 @@ namespace Service.Release.Front
                     DBReleaseDataService.Update(followingTask);
                 }
 
-                theTask.Priority = thePriority;
+                ts.Complete();
+            }
+        }
+
+        public void SetTaskPriority(MainTask iMainTask, int iNewPriority)
+        {
+            if (iMainTask == null)
+                throw new Exception("La tâche est nulle");
+
+            if (iMainTask.Priority < 0)
+                throw new Exception("La priorité doit être positive");
+
+            if (iMainTask.Priority == iNewPriority)
+                return;
+
+            using (var ts = new TransactionScope())
+            {
+                var theTask = DBReleaseDataService.GetMainTaskById(iMainTask.MainTaskId);
+
+                List<T_E_MainTask> upPriorityTasks = null;
+                if (iNewPriority < theTask.Priority)
+                    upPriorityTasks = DBReleaseDataService.GetList<T_E_MainTask>(null).Where(x => x.Priority >= iNewPriority).ToList();
+                else
+                    upPriorityTasks = DBReleaseDataService.GetList<T_E_MainTask>(null).Where(x => x.Priority > iNewPriority).ToList();
+
+                //enleve le package concerné si présent
+                upPriorityTasks.RemoveAll(x => x.MainTaskId == theTask.MainTaskId);
+
+                //incrémente toutes les priorités
+                foreach (var item in upPriorityTasks)
+                {
+                    item.Priority = item.Priority + 1;
+                    DBReleaseDataService.Update(item);
+                }
+
+                //the package
+                theTask.Priority = iNewPriority;
                 DBReleaseDataService.Update(theTask);
 
+                //Nettoyage des trous
+                FillGapTaskPriority();
+
+                ts.Complete();
+            }
+        }
+
+        public void FillGapTaskPriority()
+        {
+            var taskList = DBReleaseDataService.GetQuery<T_E_MainTask>(null).Where(x => x.Priority != null).ToList().Enum().OrderBy(x => x.Priority).Enum().ToList();
+
+            var priorityCounter = 1;
+
+            using (var ts = new TransactionScope())
+            {
+                //boucle sur chaque tâche pour attribuer la bonne priorité
+                foreach (var item in taskList.Enum())
+                {
+                    if (item.Priority != priorityCounter)
+                    {
+                        item.Priority = priorityCounter;
+                        DBReleaseDataService.Update(item);
+                    }
+
+                    priorityCounter++;
+                }
                 ts.Complete();
             }
         }

@@ -159,7 +159,7 @@ namespace EquinoxeExtendPlugin.Tools
             
             //var previousProjetChildSpecListCount = 0;
             //var orderProject = new List<ProjectDetails>();
-            ////todo revoir
+
             //while (iOriginalProjectDetailsList.Count != orderProject.Count)
             //{
             //    foreach (var projectItem in iOriginalProjectDetailsList.Enum())

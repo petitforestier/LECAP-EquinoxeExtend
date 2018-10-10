@@ -145,14 +145,15 @@ namespace Service.Release.Front
             var thePackage = GetPackageById(iPackage.PackageId, GranularityEnum.Full);
             using (var ts = new System.Transactions.TransactionScope())
             {
-                //todo enlever la priorité du package une fois en production
-
                 //UpdatePackageStatus
                 UpdatePackageStatus(thePackage, PackageStatusEnum.Production);
 
-                //Passage en staging des tâches
+                //Passage en production des tâches
                 foreach (var mainTaskItem in thePackage.MainTasks)
                     MoveMainTaskToProduction(mainTaskItem.MainTaskId);
+
+                //Nettoyage des priorités de projets tâches
+                FillGapTaskPriority();
 
                 //Création de la trace de déploiement
                 var newDeployement = new EquinoxeExtend.Shared.Object.Release.Deployement();
@@ -161,6 +162,9 @@ namespace Service.Release.Front
                 newDeployement.EnvironmentDestination = EnvironmentEnum.Production;
                 newDeployement.PackageId = thePackage.PackageId;
                 AddDeployement(newDeployement);
+
+                //Nettoyage priorités des packages
+                FillGapPackagePriority();
 
                 ts.Complete();
             }
@@ -182,7 +186,6 @@ namespace Service.Release.Front
 
             using (var ts = new TransactionScope())
             {
-                //3 actions car contrainte d'unicité en base de données
                 var thePackage = DBReleaseDataService.GetPackageById(iPackage.PackageId);
 
                 int? thePriority = 1;
@@ -190,8 +193,14 @@ namespace Service.Release.Front
 
                 if (thePackage.Priority != null)
                 {
+                    //package
                     thePriority = thePackage.Priority - 1;
+
+
+                    //package précédent
                     previousPackage = DBReleaseDataService.GetSingleOrDefault<T_E_Package>(x => x.Priority == iPackage.Priority - 1);
+                    previousPackage.Priority++;
+                    DBReleaseDataService.Update(previousPackage);
                 }
                 else
                 {
@@ -201,15 +210,6 @@ namespace Service.Release.Front
 
                     foreach (var packagePriority in packageWithPriority.Enum())
                         MoveDownPackagePriority(packagePriority);
-                }
-
-                thePackage.Priority = null;
-                DBReleaseDataService.Update(thePackage);
-
-                if (previousPackage != null)
-                {
-                    previousPackage.Priority += 1;
-                    DBReleaseDataService.Update(previousPackage);
                 }
 
                 thePackage.Priority = thePriority;
@@ -248,7 +248,7 @@ namespace Service.Release.Front
                         thePriority = lastPriority + 1;
                 }
 
-                thePackage.Priority = null;
+                thePackage.Priority = thePriority;
                 DBReleaseDataService.Update(thePackage);
 
                 if (followingPackage != null)
@@ -257,11 +257,50 @@ namespace Service.Release.Front
                     DBReleaseDataService.Update(followingPackage);
                 }
 
-                thePackage.Priority = thePriority;
-                DBReleaseDataService.Update(thePackage);
-
                 ts.Complete();
             }
+        }
+
+        public void SetPackagePriority(Package iPackage, int iNewPriority)
+        {
+            if (iPackage == null)
+                throw new Exception("Le package est nulle");
+
+            if (iPackage.Priority < 0)
+                throw new Exception("La priorité doit être positive");
+
+            if (iPackage.Priority == iNewPriority)
+                return;
+
+            using (var ts = new TransactionScope())
+            {
+                var thePackage = DBReleaseDataService.GetPackageById(iPackage.PackageId);
+
+                List<T_E_Package> upPriorityPackages = null;
+                if (iNewPriority < thePackage.Priority)
+                    upPriorityPackages = DBReleaseDataService.GetList<T_E_Package>(null).Where(x => x.Priority >= iNewPriority).ToList();
+                else
+                    upPriorityPackages = DBReleaseDataService.GetList<T_E_Package>(null).Where(x => x.Priority > iNewPriority).ToList();
+
+                //enleve le package concerné si présent
+                upPriorityPackages.RemoveAll(x => x.PackageId == thePackage.PackageId);
+
+                //incrémente toutes les priorités
+                foreach (var item in upPriorityPackages)
+                {
+                    item.Priority = item.Priority + 1;
+                    DBReleaseDataService.Update(item);
+                }
+
+                //the package
+                thePackage.Priority = iNewPriority;
+                DBReleaseDataService.Update(thePackage);
+
+                //Nettoyage des trous
+                FillGapPackagePriority();
+
+                ts.Complete();
+            }            
         }
 
         public Package GetPackageById(long iPackageId, GranularityEnum iGranularity)
@@ -523,6 +562,29 @@ namespace Service.Release.Front
             return true;
         }
 
+        public void FillGapPackagePriority()
+        {
+            var packageList = DBReleaseDataService.GetQuery<T_E_Package>(null).Where(x => x.Priority != null).ToList().Enum().OrderBy(x => x.Priority).Enum().ToList();
+
+            var priorityCounter = 1;
+
+            using (var ts = new TransactionScope())
+            {
+                //boucle sur chaque package pour attribuer la bonne priorité
+                foreach (var item in packageList.Enum())
+                {
+                    if (item.Priority != priorityCounter)
+                    {
+                        item.Priority = priorityCounter;
+                        DBReleaseDataService.Update(item);
+                    }
+
+                    priorityCounter++;
+                }
+                ts.Complete();
+            }
+        }
+
         #endregion
 
         #region Private METHODS
@@ -578,6 +640,7 @@ namespace Service.Release.Front
             var entity = new T_E_Package();
             originalPackage.Status = iNewPackageStatus;
             originalPackage.IsLocked = true;
+            originalPackage.Priority = null;
             entity.Merge(originalPackage);
             DBReleaseDataService.UpdatePackage(entity);
         }

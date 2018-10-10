@@ -223,6 +223,16 @@ namespace EquinoxeExtendPlugin.Properties {
         /// <summary>
         ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap priority24 {
+            get {
+                object obj = ResourceManager.GetObject("priority24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une ressource localisée de type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap save_as_icon {
             get {
                 object obj = ResourceManager.GetObject("save_as_icon", resourceCulture);

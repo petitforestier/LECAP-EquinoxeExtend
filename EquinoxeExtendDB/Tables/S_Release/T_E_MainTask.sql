@@ -20,8 +20,3 @@
 	[ExternalProjectId]		BIGINT				NULL		CONSTRAINT[FK.T_E_MainTask.ExternalProjectId] FOREIGN KEY REFERENCES [S_Release].T_E_ExternalProject,
 )
 Go
-
-CREATE UNIQUE NONCLUSTERED INDEX [IX.T_E_MainTask.Priority.IsUnique]
-ON[S_Release].[T_E_MainTask]([Priority])
-WHERE [Priority] IS NOT NULL;
-GO

@@ -47,7 +47,6 @@ namespace EquinoxeExtendPlugin.Controls.ReleaseManagement
                 this.ucMainTaskEdit.Initialize(_Group);
                 this.ucMainTaskEdit.Close += MainTaskEditClosed;
 
-                //todo revoir temsp chargement
                 using (var timer = new Library.Tools.Debug.MyTimer(true, "status"))
                 {
                     //Status

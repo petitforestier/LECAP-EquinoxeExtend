@@ -742,5 +742,42 @@ namespace EquinoxeExtendPlugin.Controls.Task
         }
 
         #endregion
+
+        private void cmdSetTaskPriority_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var selectedTask= GetSelectedMainTask();
+
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    Tools.Tools.ThrowExceptionIfCurrentUserIsNotAdmin(_Group);
+
+                    if (selectedTask == null)
+                        return;
+
+                    var priorityInputBoxUC = new Library.Control.UserControls.ucInputBox("Saisir la nouvelle priorité : ", InputTypeAllowEnum.Numeric);
+
+                    using (var inProgressForm = new frmUserControl(priorityInputBoxUC, "Priorité", false, false))
+                    {
+                        inProgressForm.ShowDialog();
+
+                        if (priorityInputBoxUC.DialogResult != DialogResult.OK)
+                            return;
+
+                        using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                        {
+                            releaseService.SetTaskPriority(selectedTask, priorityInputBoxUC.AnswerString.ToInt32());
+                        }
+                    }
+                }
+                InternalReLoadControl();
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
     }
 }

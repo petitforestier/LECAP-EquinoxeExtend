@@ -53,6 +53,7 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdUpPackagePriority = new System.Windows.Forms.ToolStripButton();
             this.cmdDownPackagePriority = new System.Windows.Forms.ToolStripButton();
+            this.cmdSetPriority = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.cmdDeployToDev = new System.Windows.Forms.ToolStripButton();
             this.cmdDeployToStaging = new System.Windows.Forms.ToolStripButton();
@@ -140,7 +141,7 @@
             // 
             this.splFooter.Panel2.Controls.Add(this.tlpRight);
             this.splFooter.Size = new System.Drawing.Size(1173, 478);
-            this.splFooter.SplitterDistance = 725;
+            this.splFooter.SplitterDistance = 755;
             this.splFooter.TabIndex = 3;
             // 
             // tlpLeft
@@ -155,7 +156,7 @@
             this.tlpLeft.RowCount = 2;
             this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpLeft.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpLeft.Size = new System.Drawing.Size(723, 476);
+            this.tlpLeft.Size = new System.Drawing.Size(753, 476);
             this.tlpLeft.TabIndex = 0;
             // 
             // fraPackages
@@ -164,7 +165,7 @@
             this.fraPackages.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraPackages.Location = new System.Drawing.Point(3, 3);
             this.fraPackages.Name = "fraPackages";
-            this.fraPackages.Size = new System.Drawing.Size(717, 232);
+            this.fraPackages.Size = new System.Drawing.Size(747, 232);
             this.fraPackages.TabIndex = 1;
             this.fraPackages.TabStop = false;
             this.fraPackages.Text = "Packages";
@@ -183,7 +184,7 @@
             this.tlpPackage.RowCount = 2;
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.tlpPackage.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tlpPackage.Size = new System.Drawing.Size(711, 213);
+            this.tlpPackage.Size = new System.Drawing.Size(741, 213);
             this.tlpPackage.TabIndex = 0;
             // 
             // tlsPackage
@@ -197,6 +198,7 @@
             this.toolStripSeparator1,
             this.cmdUpPackagePriority,
             this.cmdDownPackagePriority,
+            this.cmdSetPriority,
             this.toolStripSeparator3,
             this.cmdDeployToDev,
             this.cmdDeployToStaging,
@@ -208,7 +210,7 @@
             this.cmdShowDescriptif});
             this.tlsPackage.Location = new System.Drawing.Point(0, 0);
             this.tlsPackage.Name = "tlsPackage";
-            this.tlsPackage.Size = new System.Drawing.Size(444, 30);
+            this.tlsPackage.Size = new System.Drawing.Size(474, 30);
             this.tlsPackage.TabIndex = 0;
             this.tlsPackage.Text = "toolStrip1";
             // 
@@ -268,6 +270,17 @@
             this.cmdDownPackagePriority.Size = new System.Drawing.Size(33, 27);
             this.cmdDownPackagePriority.Text = "Descendre la priorité";
             this.cmdDownPackagePriority.Click += new System.EventHandler(this.cmdDownPackagePriority_Click);
+            // 
+            // cmdSetPriority
+            // 
+            this.cmdSetPriority.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdSetPriority.Image = global::EquinoxeExtendPlugin.Properties.Resources.priority24;
+            this.cmdSetPriority.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdSetPriority.Name = "cmdSetPriority";
+            this.cmdSetPriority.Size = new System.Drawing.Size(33, 27);
+            this.cmdSetPriority.Text = "toolStripButton1";
+            this.cmdSetPriority.ToolTipText = "Saisir la priorité directement";
+            this.cmdSetPriority.Click += new System.EventHandler(this.cmdSetPriority_Click);
             // 
             // toolStripSeparator3
             // 
@@ -376,7 +389,7 @@
             dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvPackage.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
-            this.dgvPackage.Size = new System.Drawing.Size(438, 177);
+            this.dgvPackage.Size = new System.Drawing.Size(468, 177);
             this.dgvPackage.TabIndex = 4;
             this.dgvPackage.SelectionChanged += new System.EventHandler(this.dgvPackage_SelectionChanged);
             this.dgvPackage.DoubleClick += new System.EventHandler(this.dgvPackage_DoubleClick);
@@ -385,7 +398,7 @@
             // 
             this.fraPackage.Controls.Add(this.ucPackageEdit);
             this.fraPackage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.fraPackage.Location = new System.Drawing.Point(447, 3);
+            this.fraPackage.Location = new System.Drawing.Point(477, 3);
             this.fraPackage.Name = "fraPackage";
             this.tlpPackage.SetRowSpan(this.fraPackage, 2);
             this.fraPackage.Size = new System.Drawing.Size(261, 207);
@@ -408,7 +421,7 @@
             this.fraMainTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraMainTask.Location = new System.Drawing.Point(3, 241);
             this.fraMainTask.Name = "fraMainTask";
-            this.fraMainTask.Size = new System.Drawing.Size(717, 232);
+            this.fraMainTask.Size = new System.Drawing.Size(747, 232);
             this.fraMainTask.TabIndex = 1;
             this.fraMainTask.TabStop = false;
             this.fraMainTask.Text = "Tâches";
@@ -443,7 +456,7 @@
             dataGridViewCellStyle6.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle6.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvMainTask.RowHeadersDefaultCellStyle = dataGridViewCellStyle6;
-            this.dgvMainTask.Size = new System.Drawing.Size(711, 213);
+            this.dgvMainTask.Size = new System.Drawing.Size(741, 213);
             this.dgvMainTask.TabIndex = 5;
             // 
             // tlpRight
@@ -458,7 +471,7 @@
             this.tlpRight.RowCount = 2;
             this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tlpRight.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tlpRight.Size = new System.Drawing.Size(442, 476);
+            this.tlpRight.Size = new System.Drawing.Size(412, 476);
             this.tlpRight.TabIndex = 0;
             // 
             // fraProjectTask
@@ -467,7 +480,7 @@
             this.fraProjectTask.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraProjectTask.Location = new System.Drawing.Point(3, 241);
             this.fraProjectTask.Name = "fraProjectTask";
-            this.fraProjectTask.Size = new System.Drawing.Size(436, 232);
+            this.fraProjectTask.Size = new System.Drawing.Size(406, 232);
             this.fraProjectTask.TabIndex = 2;
             this.fraProjectTask.TabStop = false;
             this.fraProjectTask.Text = "Sous tâches";
@@ -502,7 +515,7 @@
             dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvSubTask.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
-            this.dgvSubTask.Size = new System.Drawing.Size(430, 213);
+            this.dgvSubTask.Size = new System.Drawing.Size(400, 213);
             this.dgvSubTask.TabIndex = 6;
             // 
             // fraDeployement
@@ -511,7 +524,7 @@
             this.fraDeployement.Dock = System.Windows.Forms.DockStyle.Fill;
             this.fraDeployement.Location = new System.Drawing.Point(3, 3);
             this.fraDeployement.Name = "fraDeployement";
-            this.fraDeployement.Size = new System.Drawing.Size(436, 232);
+            this.fraDeployement.Size = new System.Drawing.Size(406, 232);
             this.fraDeployement.TabIndex = 1;
             this.fraDeployement.TabStop = false;
             this.fraDeployement.Text = "Déploiements";
@@ -546,7 +559,7 @@
             dataGridViewCellStyle12.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle12.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgvDeployement.RowHeadersDefaultCellStyle = dataGridViewCellStyle12;
-            this.dgvDeployement.Size = new System.Drawing.Size(430, 213);
+            this.dgvDeployement.Size = new System.Drawing.Size(400, 213);
             this.dgvDeployement.TabIndex = 7;
             // 
             // tlpHeader
@@ -791,5 +804,6 @@
         private System.Windows.Forms.Button cmdDeployementSearch;
         private System.Windows.Forms.Label lblDestinationEnvironment;
         private System.Windows.Forms.ToolStripButton cmdShowDescriptif;
+        private System.Windows.Forms.ToolStripButton cmdSetPriority;
     }
 }
