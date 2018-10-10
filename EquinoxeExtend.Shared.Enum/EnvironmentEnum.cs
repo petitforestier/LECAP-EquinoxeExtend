@@ -34,9 +34,9 @@ namespace EquinoxeExtend.Shared.Enum
         Developpement = 20,
 
         [LoginPassword("Admin", "DWAequinoxe")]
-        [DWConnectionString("Provider=RemoteGroupProvider;Server=S2SQL01;Name=Equinoxe_Preprod")]
-        [SQLConnectionString("Server = S2SQL01; Database = Equinoxe_Preprod;User Id=sa;password=SQLequinoxe")]
-        [SQLExtendConnectionString("Server = S2SQL01; Database = Equinoxe_Preprod_Extend;User Id=sa;password=SQLequinoxe")]
+        [DWConnectionString("Provider=RemoteGroupProvider;Server=S2SQL01;Name=Equinoxe_PreProd")]
+        [SQLConnectionString("Server = S2SQL01; Database = Equinoxe_PreProd;User Id=sa;password=SQLequinoxe")]
+        [SQLExtendConnectionString("Server = S2SQL01; Database = Equinoxe_PreProd_Extend;User Id=sa;password=SQLequinoxe")]
         [SpecificationPrefix("7")]
         [DevelopperTeam("temRole_Developpeurs")]
         [Name("FR", "Equinoxe_PreProd")]

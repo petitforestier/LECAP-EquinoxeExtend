@@ -904,13 +904,13 @@ namespace EquinoxeExtendPlugin.Controls.Task
                         {
                             DriveWorks.Security.TeamDetails mailingListTeam = null;
                             _Group.Security.TryGetTeam(Consts.Consts.MailingListTeamName, ref mailingListTeam);
-                            var userList = _Group.Security.GetUsersInTeam(mailingListTeam).Enum().Where(x => x.EmailAddress.IsNotNullAndNotEmpty()).Enum().Select(x => x.EmailAddress).Enum().ToList();
+                            var userEmailList = _Group.Security.GetUsersInTeam(mailingListTeam).Enum().Where(x => x.EmailAddress.IsNotNullAndNotEmpty()).Enum().Select(x => x.EmailAddress).Enum().ToList();
 
                             var message = GetPackageDescriptif(packageToDeploy);
 
-                            var mailTools = new Library.Mail.MailTools(Consts.Consts.SMTPHOST, Consts.Consts.SMTPPORT, "Equinoxe");
+                            var mailTools = new Library.Mail.MailTools(Consts.Consts.SMTPHOST, Consts.Consts.SMTPPORT, "Equinoxe_NoReply@lecapitaine.fr");
 
-                            mailTools.SendMail(userList, null, "Nouveau package Equinoxe '{0}' déploié".FormatString(packageToDeploy.PackageIdString), message, null);
+                            mailTools.SendMail(userEmailList, null, "Nouveau package Equinoxe '{0}' déployé".FormatString(packageToDeploy.PackageIdString), message, null);
                         }
                     }
 
@@ -1199,7 +1199,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     sourceGroup.RemoveProjectPermissionsToTeam(_Group.Security.GetTeams().Single(x => x.DisplayName == iSourceEnvironnement.GetDevelopperTeam()), packageDistinctProjectGUIDList.Select(x => (Guid)x).ToList());
 
                 //PLUGING
-                var isPlugingFolderSame = Tools.Tools.IsPlugingFolderSame(iSourceEnvironnement, iDestinationEnvironnement); 
+                var isPlugingFolderSame = Tools.Tools.IsPlugingFolderSame(iSourceEnvironnement, iDestinationEnvironnement);
 
                 if (!isPlugingFolderSame)
                 {
