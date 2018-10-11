@@ -58,6 +58,7 @@
     <Compile Include="Record\Dossier.cs" />
     <Compile Include="Release1\Deployement.cs" />
     <Compile Include="Release1\ExternalProject.cs" />
+    <Compile Include="Release1\SubTaskGroup.cs" />
     <Compile Include="Release1\SubTask.cs" />
     <Compile Include="Release1\Package.cs" />
     <Compile Include="Release1\MainTask.cs" />

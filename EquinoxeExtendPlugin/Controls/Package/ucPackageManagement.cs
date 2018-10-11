@@ -437,6 +437,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
             public Image Progression { get; set; }
 
             [Visible]
+            [Name("FR", "Charge ( jrs ) ")]
+            [WidthColumn(75)]
+            [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
+            public string Duration { get; set; }
+
+            [Visible]
             [Name("FR", "Projet DW")]
             [WidthColumn(180)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleLeft)]
@@ -460,7 +466,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
             #region Public METHODS
 
-            public static SubTaskView ConvertTo(SubTask iObj, Group iGroup)
+            public static SubTaskView ConvertTo(SubTaskGroup iObj, Group iGroup)
             {
                 if (iObj == null)
                     return null;
@@ -485,12 +491,18 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 var imageWidth = (int)typeof(SubTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<SubTaskView>(x => x.Progression));
                 newView.Progression = Library.Control.Datagridview.ImageHelper.GetProgressionBarImage(iObj.Progression, DATAGRIDVIEWROWHEIGTH, imageWidth, true);
 
+                //Duration
+                int durationSum = iObj.DurationSum;
+                int doneDuration = iObj.DoneDuration;
+                if (durationSum != 0 || doneDuration != 0)
+                    newView.Duration = doneDuration + "/" + durationSum;
+
                 //Developpeur
                 if (iObj.DevelopperGUID != null)
                     newView.Developper = iGroup.GetUserById((Guid)iObj.DevelopperGUID).DisplayName;
 
                 //Tasks
-                newView.Tasks = iObj.Comments;
+                newView.Tasks = iObj.SubTasks.Select(x => x.ProjectTaskIdString).Enum().Concat(";"); ;
 
                 return newView;
             }
@@ -652,16 +664,17 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 bdsMainTask.DataSource = seletedPackage.MainTasks.Enum().Select(x => MainTaskView.ConvertTo(x)).Enum().ToList();
                 var projectTaskGroup = seletedPackage.SubTasks.Enum().GroupBy(x => new { x.ProjectGUID, x.DevelopperGUID });
 
-                var projectList = new List<SubTask>();
+                var projectList = new List<SubTaskGroup>();
                 foreach (var groupItem in projectTaskGroup.Enum())
                 {
                     if (groupItem.First().ProjectGUID != null)
                     {
-                        var newProjectTask = new SubTask();
+                        var newProjectTask = new SubTaskGroup();
                         newProjectTask.Progression = (int)Math.Round(groupItem.Average(x => x.Progression));
                         newProjectTask.ProjectGUID = groupItem.First().ProjectGUID;
                         newProjectTask.DevelopperGUID = groupItem.First().DevelopperGUID;
-                        newProjectTask.Comments = groupItem.Select(x => x.ProjectTaskIdString).Enum().Concat(";");
+                        newProjectTask.Duration = (int)groupItem.Sum(x => x.Duration);
+                        newProjectTask.SubTasks = groupItem.ToList();
                         projectList.Add(newProjectTask);
                     }
                 }
