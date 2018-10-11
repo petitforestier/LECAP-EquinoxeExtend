@@ -86,6 +86,7 @@
             this.cboDestinationEnvironment = new System.Windows.Forms.ComboBox();
             this.cmdDeployementSearch = new System.Windows.Forms.Button();
             this.lblDestinationEnvironment = new System.Windows.Forms.Label();
+            this.cmdMoveToWaitingStatus = new System.Windows.Forms.ToolStripButton();
             this.tlpMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splFooter)).BeginInit();
             this.splFooter.Panel1.SuspendLayout();
@@ -200,6 +201,7 @@
             this.cmdDownPackagePriority,
             this.cmdSetPriority,
             this.toolStripSeparator3,
+            this.cmdMoveToWaitingStatus,
             this.cmdDeployToDev,
             this.cmdDeployToStaging,
             this.cmdDeployToProduction,
@@ -355,7 +357,7 @@
             this.cmdShowDescriptif.Image = global::EquinoxeExtendPlugin.Properties.Resources.if_th_list_216422;
             this.cmdShowDescriptif.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.cmdShowDescriptif.Name = "cmdShowDescriptif";
-            this.cmdShowDescriptif.Size = new System.Drawing.Size(33, 27);
+            this.cmdShowDescriptif.Size = new System.Drawing.Size(33, 33);
             this.cmdShowDescriptif.Text = "Affiche le descriptif du package";
             this.cmdShowDescriptif.Click += new System.EventHandler(this.cmdShowDescriptif_Click);
             // 
@@ -720,6 +722,16 @@
             this.lblDestinationEnvironment.Text = "Environnement destination";
             this.lblDestinationEnvironment.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // cmdMoveToWaitingStatus
+            // 
+            this.cmdMoveToWaitingStatus.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.cmdMoveToWaitingStatus.Image = global::EquinoxeExtendPlugin.Properties.Resources.hourglass_icon24;
+            this.cmdMoveToWaitingStatus.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.cmdMoveToWaitingStatus.Name = "cmdMoveToWaitingStatus";
+            this.cmdMoveToWaitingStatus.Size = new System.Drawing.Size(33, 27);
+            this.cmdMoveToWaitingStatus.Text = "Basculer le package en attente";
+            this.cmdMoveToWaitingStatus.Click += new System.EventHandler(this.cmdMoveToWaitingStatus_Click);
+            // 
             // ucPackageManagement
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -805,5 +817,6 @@
         private System.Windows.Forms.Label lblDestinationEnvironment;
         private System.Windows.Forms.ToolStripButton cmdShowDescriptif;
         private System.Windows.Forms.ToolStripButton cmdSetPriority;
+        private System.Windows.Forms.ToolStripButton cmdMoveToWaitingStatus;
     }
 }

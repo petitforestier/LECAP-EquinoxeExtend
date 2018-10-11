@@ -21,7 +21,7 @@ namespace Service.Release.Front
             var newPackage = new Package();
             newPackage.PackageId = -1;
             newPackage.ReleaseNumber = null;
-            newPackage.IsLocked = true;
+            newPackage.IsLocked = false;
             newPackage.Status = PackageStatusEnum.Waiting;
             newPackage.Priority = null;
             newPackage.DeployementDateObjectif = null;
@@ -69,6 +69,37 @@ namespace Service.Release.Front
             DBReleaseDataService.DeletePackage(originalPackage.PackageId);
         }
 
+        public void MovePackageToWaiting (Package iPackage)
+        {
+            if (iPackage == null)
+                throw new Exception("Le package est null");
+
+            var originalPackage = GetPackageById(iPackage.PackageId, GranularityEnum.Full);
+            if (originalPackage == null)
+                throw new Exception("Le package est null");
+
+            if (iPackage.Status != originalPackage.Status)
+                throw new Exception("La fonction n'est pas supportée pour le changement de statut");
+
+            if (iPackage.Status != PackageStatusEnum.Developpement)
+                throw new Exception("Le statut du package ne permet pas son retour en attente");
+
+            if (originalPackage.MainTasks.Exists(x=>x.SubTasks.Exists(y=>y.Progression!=0)))
+                throw new Exception("Le package doit avoir une progression égale à 0, pour revnir en attente");
+
+            using (var ts = new System.Transactions.TransactionScope())
+            {
+                //Changement sur le package
+                UpdatePackageStatus(originalPackage, PackageStatusEnum.Waiting);
+
+                //Ouverture des tâches associées
+                foreach (var mainTaskItem in originalPackage.MainTasks.Enum())
+                    UpdateMainTaskStatus(mainTaskItem, MainTaskStatusEnum.Waiting);
+
+                ts.Complete();
+            }
+        }
+            
         public void MovePackageToDev(Package iPackage)
         {
             if (iPackage == null)
@@ -608,6 +639,7 @@ namespace Service.Release.Front
                 throw new Exception("Ce changement de statut n'est pas permis");
             else if (iPackage.Status == PackageStatusEnum.Developpement
                 && iNewPackageStatus != PackageStatusEnum.Staging
+                && iNewPackageStatus != PackageStatusEnum.Waiting
                  && iNewPackageStatus != PackageStatusEnum.Canceled)
                 throw new Exception("Ce changement de statut n'est pas permis");
             else if (iPackage.Status == PackageStatusEnum.Staging
@@ -617,21 +649,27 @@ namespace Service.Release.Front
                 throw new Exception("Ce changement de statut n'est pas permis");
 
             //Condition  de changement
+            bool isLocked = false;
+            int? priority = null;
             if (iNewPackageStatus == PackageStatusEnum.Waiting)
             {
-                throw new Exception("Ce changementde statut n'est pas possible");
+                isLocked = originalPackage.IsLocked;
+                priority = originalPackage.Priority;
             }
             else if (iNewPackageStatus == PackageStatusEnum.Developpement)
             {
-                //Rien à faire
+                isLocked = true;
+                priority = originalPackage.Priority;
             }
             else if (iNewPackageStatus == PackageStatusEnum.Staging)
             {
-                //Rien à faire
+                isLocked = true;
+                priority = originalPackage.Priority;
             }
             else if (iNewPackageStatus == PackageStatusEnum.Production)
             {
-                //Rien à faire
+                isLocked = true;
+                priority = null;
             }
             else
                 throw new NotSupportedException(iPackage.Status.ToStringWithEnumName());
@@ -639,8 +677,8 @@ namespace Service.Release.Front
             //Modification du status
             var entity = new T_E_Package();
             originalPackage.Status = iNewPackageStatus;
-            originalPackage.IsLocked = true;
-            originalPackage.Priority = null;
+            originalPackage.IsLocked = isLocked;
+            originalPackage.Priority = priority;
             entity.Merge(originalPackage);
             DBReleaseDataService.UpdatePackage(entity);
         }

@@ -165,9 +165,16 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 cmdDeployToStaging.Enabled = false;
                 cmdDeployToProduction.Enabled = false;
                 cmdLockUnlock.Enabled = false;
+                cmdMoveToWaitingStatus.Enabled = false;
             }
             else
             {
+                //WaitingPackage
+                if (thePackage.Status == PackageStatusEnum.Developpement)
+                    cmdMoveToWaitingStatus.Enabled = true;
+                else
+                    cmdMoveToWaitingStatus.Enabled = false;
+
                 //DeletePackage
                 if ((thePackage.Status == PackageStatusEnum.Waiting || thePackage.Status == PackageStatusEnum.Developpement))
                     cmdDeletePackage.Enabled = true;
@@ -789,7 +796,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     if (selectedPackage == null)
                         return;
 
-                    if (MessageBox.Show("Etes-vous sûr de remettre le package '{0}' en developpement ?".FormatString(selectedPackage.PackageIdString), "Changement d'environnement", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    if (MessageBox.Show("Etes-vous sûr de passer le package '{0}' en developpement ?".FormatString(selectedPackage.PackageIdString), "Changement d'environnement", MessageBoxButtons.YesNo) != DialogResult.Yes)
                         return;
 
                     //Admin obligatoire
@@ -1370,6 +1377,41 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         #endregion
 
-       
+        private void cmdMoveToWaitingStatus_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (_IsLoading.Value) return;
+                using (var locker = new BoolLocker(ref _IsLoading))
+                {
+                    var selectedPackage = GetSelectedPackage();
+                    if (selectedPackage == null)
+                        return;
+
+                    if (MessageBox.Show("Etes-vous sûr de remettre le package '{0}' en attente ?".FormatString(selectedPackage.PackageIdString), "Changement d'environnement", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        return;
+
+                    using (var releaseService = new Service.Release.Front.ReleaseService(_Group.GetEnvironment().GetSQLExtendConnectionString()))
+                    {
+                        var thePackage = releaseService.GetPackageById(selectedPackage.PackageId, Library.Tools.Enums.GranularityEnum.Full);
+
+                        if (thePackage.Status == PackageStatusEnum.Waiting)
+                            throw new Exception("Le package est déjà en attente");
+
+                        if (thePackage.Status != PackageStatusEnum.Developpement)
+                            throw new Exception("Le status du package ne permet pas le passage en attente");
+
+                        releaseService.MovePackageToWaiting(thePackage);
+                    }
+
+                    //Rechargement de l'ensemble
+                    LoadPackageDataGridView(null);
+                }
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
     }
 }

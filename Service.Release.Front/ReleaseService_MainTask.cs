@@ -585,30 +585,30 @@ namespace Service.Release.Front
             if (originalMainTask.Status == MainTaskStatusEnum.Requested
                 && iNewStatus != MainTaskStatusEnum.Waiting && iNewStatus != MainTaskStatusEnum.Canceled)
             {
-                throw new Exception("Le changement de status n'est pas permis");
+                throw new Exception("Le changement de status de la tâche n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Waiting
                 && iNewStatus != MainTaskStatusEnum.Dev && iNewStatus != MainTaskStatusEnum.Canceled)
             {
-                throw new Exception("Le changement de status n'est pas permis");
+                throw new Exception("Le changement de status de la tâche n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Dev
-               && iNewStatus != MainTaskStatusEnum.Staging && iNewStatus != MainTaskStatusEnum.Completed && iNewStatus != MainTaskStatusEnum.Canceled)
+               && iNewStatus != MainTaskStatusEnum.Waiting  && iNewStatus != MainTaskStatusEnum.Staging && iNewStatus != MainTaskStatusEnum.Completed && iNewStatus != MainTaskStatusEnum.Canceled)
             {
-                throw new Exception("Le changement de status n'est pas permis");
+                throw new Exception("Le changement de status de la tâche n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Staging
               && iNewStatus != MainTaskStatusEnum.Dev && iNewStatus != MainTaskStatusEnum.Completed && iNewStatus != MainTaskStatusEnum.Canceled)
             {
-                throw new Exception("Le changement de status n'est pas permis");
+                throw new Exception("Le changement de status de la tâche n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Completed)
             {
-                throw new Exception("Le changement de status n'est pas permis");
+                throw new Exception("Le changement de status de la tâche n'est pas permis");
             }
             else if (originalMainTask.Status == MainTaskStatusEnum.Canceled && iNewStatus != MainTaskStatusEnum.Waiting)
             {
-                throw new Exception("Le changement de status n'est pas permis pour les tâches annulées");
+                throw new Exception("Le changement de status de la tâche n'est pas permis pour les tâches annulées");
             }
 
             //CONDITION DE CHANGEMENT DE STATUS
@@ -659,6 +659,14 @@ namespace Service.Release.Front
                 var sumProgression = decimal.Divide(originalMainTask.SubTasks.Enum().Sum(x => x.Progression), originalMainTask.SubTasks.Count);
                 if (sumProgression != 100)
                     throw new Exception("Toutes les tâches doivent être terminées à 100%");
+            }
+            //Waiting
+            else if (iNewStatus == MainTaskStatusEnum.Staging)
+            {
+                //Progression de toutes les sous-tâches doivent être à 0%
+                var sumProgression = decimal.Divide(originalMainTask.SubTasks.Enum().Sum(x => x.Progression), originalMainTask.SubTasks.Count);
+                if (originalMainTask.SubTasks.Exists(x=>x.Progression !=0))
+                    throw new Exception("Toutes les tâches doivent être à avancement de 0%");
             }
 
             //Modification
