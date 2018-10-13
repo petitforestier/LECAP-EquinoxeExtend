@@ -17,6 +17,8 @@ namespace DriveWorks.Helper.Object
         public string UserDebugControlName { get; set; }
         public string ErrorConstantName { get; set; }        
         public string ProjectName { get; set; }
+        public string EPDMVaultName { get; set; }
+        public string EPDMMasterVersionPrefixe { get; set; }
 
         #endregion
     }

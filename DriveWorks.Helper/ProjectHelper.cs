@@ -73,6 +73,51 @@ namespace DriveWorks.Helper
             return result;
         }
 
+        public static List<List<string>> GetComponentsFilePathList(this Project iProject)
+        {
+            var result = new List<List<string>>();
+            var componentSetList = iProject.ComponentSets;
+
+            foreach (var componentItem in componentSetList.Enum())
+            {
+                var componentList = new List<string>();
+
+                if (!componentItem.LoadComponent())
+                    throw new Exception("Erreur lors du chargement du composant set'{0}'".FormatString(componentItem.Name));
+
+                RecursiveComponenFilePath(componentItem.Component, ref componentList);
+
+                result.Add(componentList);
+            }
+            return result;
+        }
+
+        private static void RecursiveComponenFilePath(Components.ProjectComponent iComponent, ref List<string> iPathList)
+        {
+            if (iComponent.GetType() == typeof(DriveWorks.SolidWorks.Components.ProjectAssembly))
+            {
+                var capturedComponent = (DriveWorks.SolidWorks.Components.ProjectAssembly)iComponent;
+                iPathList.Add(capturedComponent.MasterPath);
+
+                //bouclage sur les enfantes
+                foreach (var item in capturedComponent.Children.Enum())
+                    RecursiveComponenFilePath(item, ref iPathList);
+            }
+            else if (iComponent.GetType() == typeof(DriveWorks.SolidWorks.Components.ProjectPart))
+            {
+                var capturedComponent = (DriveWorks.SolidWorks.Components.ProjectPart)iComponent;
+                iPathList.Add(capturedComponent.MasterPath);
+            }
+            else if (iComponent.GetType() == typeof(DriveWorks.SolidWorks.Components.ProjectDrawing))
+            {
+                var capturedComponent = (DriveWorks.SolidWorks.Components.ProjectDrawing)iComponent;
+                iPathList.Add(capturedComponent.MasterPath);
+            }
+            else
+                throw new Exception("Ce type de composant n'est pas supporté {0}".FormatString(iComponent.GetType().ToString()));
+        }
+        
+
         #endregion
     }
 }

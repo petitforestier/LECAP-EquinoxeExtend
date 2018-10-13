@@ -43,6 +43,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\DriveWorksReferenceAssemblies\DriveWorks.Scripting.API.dll</HintPath>
     </Reference>
+    <Reference Include="DriveWorks.SolidWorks">
+      <HintPath>..\DriveWorksReferenceAssemblies\DriveWorks.SolidWorks.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Entity" />
@@ -63,8 +66,10 @@
     <Compile Include="GroupHelper.cs" />
     <Compile Include="DataTableHelper.cs" />
     <Compile Include="Manager\EnvironmentManager.cs" />
+    <Compile Include="Manager\EPDMVersionManager.cs" />
     <Compile Include="Manager\MessageManager.cs" />
     <Compile Include="Manager\SettingsManager.cs" />
+    <Compile Include="Object\EPDMVersion.cs" />
     <Compile Include="Object\Specification.cs" />
     <Compile Include="Object\AddedConstantManaged.cs" />
     <Compile Include="Object\AddedControlManaged.cs" />

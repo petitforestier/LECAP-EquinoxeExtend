@@ -61,6 +61,14 @@ namespace DriveWorks.Helper.Manager
             tableDic.TryGetValue(ERRORCONSTANTNAME, out errorConstantName);
             result.ErrorConstantName = errorConstantName;
 
+            string epdmMasterVersionPrefixe;
+            tableDic.TryGetValue(EPDMMASTERVERSIONPREFIXE, out epdmMasterVersionPrefixe);
+            result.EPDMMasterVersionPrefixe = epdmMasterVersionPrefixe;
+
+            string epdmVaultName;
+            tableDic.TryGetValue(EPDMVAULTNAME, out epdmVaultName);
+            result.EPDMVaultName = epdmVaultName;
+
             result.ProjectName = iProject.Name;
 
             return result;
@@ -148,6 +156,8 @@ namespace DriveWorks.Helper.Manager
         private const string NOERRORCOLORNAME = "NoErrorColorName";
         private const string USERDEBUGCONTROLNAME = "UserDebugControlName";
         private const string ERRORCONSTANTNAME = "ErrorConstantName";
+        private const string EPDMVAULTNAME = "EPDMVaultName";
+        private const string EPDMMASTERVERSIONPREFIXE = "EPDMMasterVersionPrefixe";
 
         #endregion
 

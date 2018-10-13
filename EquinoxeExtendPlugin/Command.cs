@@ -14,10 +14,11 @@ using System.Text;
 using System.Linq;
 using System.Collections.Generic;
 using System.IO;
-
-using System.Linq;
-
 using System.Windows.Forms;
+using DriveWorks.Helper.Manager;
+using System.Xml.Serialization;
+using System.Xml;
+using DriveWorks.Helper;
 
 namespace EquinoxeExtendPlugin
 {
@@ -170,8 +171,8 @@ namespace EquinoxeExtendPlugin
                 controlVersionCommand.Invoking += ControlVersion_Invoking;
 
                 //Gestion des versions de PDM
-                var pdmVersionTableCommand = formNavigationEnvironment.CommandManager.RegisterCommand("SetPDMVersionTable", StateFilter.Empty, "Définition des versions PDM", null);
-                var pdmVersionTableUi = formNavigationEnvironmentUIGroup.AddCommandButton(pdmVersionTableCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
+                var pdmVersionTableCommand = settingsEnvironment.CommandManager.RegisterCommand("SetPDMVersionTable", StateFilter.Empty, "Définition des versions PDM", null);
+                var pdmVersionTableUi = groupTablesEnvironmentUIGroup.AddCommandButton(pdmVersionTableCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
                 pdmVersionTableCommand.Invoking += SetPDMVersionTable_Invoking;
             }
             catch (Exception ex)
@@ -281,7 +282,6 @@ namespace EquinoxeExtendPlugin
                     releaseForm.Parent = Control.FromHandle(_Application.MainWindowHandle);
                     releaseForm.StartPosition = FormStartPosition.CenterParent;
                     releaseForm.WindowState = FormWindowState.Normal;
-                    //releaseForm.WindowState = FormWindowState.Maximized;
                     releaseForm.Width = 1550;
                     releaseForm.Height = 950;
 
@@ -300,7 +300,110 @@ namespace EquinoxeExtendPlugin
         {
             try
             {
-                // var newPD
+                var inProgressUserControl = new ucMessageBox("Traitement en cours");
+                using (var inProgressForm = new frmUserControl(inProgressUserControl, "MAJ du versionning PDM", false, false))
+                {
+                    inProgressForm.TopMost = true;
+                    inProgressForm.Show();
+                    inProgressForm.Refresh();
+
+                    //ProjectTable
+                    inProgressUserControl.SetMessage("Démarrage...");
+                    inProgressForm.Refresh();
+
+                    var groupService = _Application.ServiceManager.GetService<IGroupService>();
+                    var activeGroup = groupService.ActiveGroup;
+
+                    var projectService = _Application.ServiceManager.GetService<IProjectService>();
+                    var activeProject = projectService.ActiveProject;
+
+                    //Récupération des settings
+                    var projectSettings = DriveWorks.Helper.Manager.SettingsManager.GetProjectSettings(activeProject);
+                    if (projectSettings.EPDMVaultName.IsNullOrEmpty())
+                        throw new Exception("Le nom du coffre PDM n'est pas renseigné dans les settings");
+
+                    inProgressUserControl.SetMessage("Récupération des components set.");
+                    inProgressForm.Refresh();
+
+                    //Récupération des chemins de component Sets du projet complet
+                    var dwComponentSetsPathList = activeProject.GetComponentsFilePathList();
+
+                    //Récupération des références
+                    var pdmComponentSetsList = new List<List<EPDM.Helper.Object.FileResult>>();
+
+                    inProgressUserControl.SetMessage("Récupération des références PDM");
+                    inProgressForm.Refresh();
+
+                    var epdmService = new EPDM.Helper.EPDMAPIService(projectSettings.EPDMVaultName, 0, Library.Tools.Enums.DebugModeEnum.Minimal);
+                    foreach (var dwComponentPathItem in dwComponentSetsPathList.Enum())
+                    {
+                        //Suppression des doublons
+                        var dwComponentPathItemWithoutDuplicate = dwComponentPathItem.GroupBy(x => x).Select(x => x.First()).ToList();
+
+                        inProgressUserControl.SetMessage("Récupération du components set '{0}'".FormatString(dwComponentPathItemWithoutDuplicate.First()));
+                        inProgressForm.Refresh();
+
+                        var pdmComponentSet = epdmService.GetReferenceListFromFile(dwComponentPathItemWithoutDuplicate.First(), 0);
+
+                        //Suppression des doublons
+                        pdmComponentSet = pdmComponentSet.GroupBy(x => x.FileName + x.Version).Select(x => x.First()).ToList();
+
+                        //Vérification que les versions de fichiers identiques sont bien identiques
+                        var pdmComponentSetGroup = pdmComponentSet.GroupBy(x => x.Path);
+                        var versionDifference = new List<string>();
+                        foreach (var groupItem in pdmComponentSetGroup.Enum())
+                        {
+                            if (groupItem.Exists2(x => x.Version != groupItem.First().Version))
+                                versionDifference.Add(groupItem.Select(x => x.ParentReferencePath + "\\" + x.FileName + "=>" + x.Version).Concat(Environment.NewLine));
+                        }
+
+                        if (versionDifference.IsNotNullAndNotEmpty())
+                            throw new Exception("Des fichiers identiques ont des versions différentes : " + Environment.NewLine + versionDifference.Concat(Environment.NewLine + Environment.NewLine));
+
+                        //Comparaison des chemins de fichier
+                        var comparator = new Library.Tools.Comparator.ListComparator<string, EPDM.Helper.Object.FileResult>(dwComponentPathItemWithoutDuplicate, x => x, pdmComponentSet, y => y.Path);
+
+                        if (comparator.RemovedList.IsNotNullAndNotEmpty())
+                            throw new Exception("Incohérence sur le component set '{0}' et le modèle 3d".FormatString(dwComponentPathItemWithoutDuplicate.First()));
+
+                        pdmComponentSetsList.Add(pdmComponentSet);
+                    }
+
+                    //Création ou écrasement de la table
+                    foreach (var componentItem in pdmComponentSetsList.Enum())
+                    {
+                        inProgressUserControl.SetMessage("MAJ des tables '{0}'".FormatString(componentItem.First().FileName));
+                        inProgressForm.Refresh();
+
+                        var fileGroupList = componentItem.GroupBy(x => x.DocumentCode);
+
+                        //création table formaté
+                        var epdmVersionList = new List<DriveWorks.Helper.Object.EPDMVersion>();
+                        foreach (var itemGroup in fileGroupList.Enum())
+                        {
+                            //Groupement des fichiers du même nom pour ranger 2d, 3d
+                            var newRow = new DriveWorks.Helper.Object.EPDMVersion();
+                            if (itemGroup.Count() > 2)
+                                throw new Exception("Plus de 2 fichiers sont nommés identiquement {0}".FormatString(itemGroup.First().FileName));
+
+                            newRow.CodeDocument = itemGroup.First().DocumentCode;
+                            foreach (var itemFile in itemGroup)
+                            {
+                                if (itemFile.TypeDocument == "SLDPRT" || itemFile.TypeDocument == "SLDASM")
+                                    newRow.Version3D = itemFile.Version;
+                                else if (itemFile.TypeDocument == "SLDDRW")
+                                    newRow.Version2D = itemFile.Version;
+                                else
+                                    throw new Exception("Type de fichier non supporté {0}".FormatString(itemFile.TypeDocument));
+                            }
+                            epdmVersionList.Add(newRow);
+                        }
+                        DriveWorks.Helper.Manager.EPDMVersionManager.UpdateOrCreateEPDMVersionDataTable(activeProject, componentItem.First().DocumentCode, epdmVersionList);
+                    } 
+                }
+
+                MessageBox.Show("MAJ table de versionning PDM terminée");
+
             }
             catch (Exception ex)
             {

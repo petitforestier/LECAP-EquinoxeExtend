@@ -78,7 +78,6 @@
     <Compile Include="Controls\Package\ucPackageEdit.Designer.cs">
       <DependentUpon>ucPackageEdit.cs</DependentUpon>
     </Compile>
-    <Compile Include="Services\PDMVersionTable\PDMVersionTableServices.cs" />
     <Compile Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.cs">
       <SubType>UserControl</SubType>
     </Compile>
