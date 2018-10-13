@@ -78,6 +78,7 @@
     <Compile Include="Controls\Package\ucPackageEdit.Designer.cs">
       <DependentUpon>ucPackageEdit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Services\PDMVersionTable\PDMVersionTableServices.cs" />
     <Compile Include="Controls\ReleaseManagement\ucCheckTaskOnStartup.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -157,6 +158,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\LECAP-EPDMHelper\EDPM.Helper\EPDM.Helper.csproj">
+      <Project>{72f37009-a983-4c91-a5e7-dc791b8e225e}</Project>
+      <Name>EPDM.Helper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\LECAP-Library\Library.Control\Library.Control.csproj">
       <Project>{26813b7a-de40-455e-9bd3-544e976f3ace}</Project>
       <Name>Library.Control</Name>

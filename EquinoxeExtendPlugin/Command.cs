@@ -9,12 +9,15 @@ using Library.Control.UserControls;
 using Library.Tools.Attributes;
 using Library.Tools.Extensions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 using System.IO;
+
+using System.Linq;
+
+using System.Windows.Forms;
 
 namespace EquinoxeExtendPlugin
 {
@@ -77,8 +80,8 @@ namespace EquinoxeExtendPlugin
                                     projectService.CloseProject();
                                 else if (ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.ReadOnly)
                                     File.SetAttributes(activeProject.ProjectFilePath, FileAttributes.ReadOnly);
-                                else if(ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.Writable)
-                                    File.SetAttributes(activeProject.ProjectFilePath, File.GetAttributes(activeProject.ProjectFilePath) & ~FileAttributes.ReadOnly);    
+                                else if (ucCheckTaskOnStartupControl.DialogResult == ucCheckTaskOnStartup.OpenModeEnum.Writable)
+                                    File.SetAttributes(activeProject.ProjectFilePath, File.GetAttributes(activeProject.ProjectFilePath) & ~FileAttributes.ReadOnly);
                             }
                         }
                     }
@@ -165,6 +168,11 @@ namespace EquinoxeExtendPlugin
                 var controlVersionCommand = formNavigationEnvironment.CommandManager.RegisterCommand("ControlVersion", StateFilter.Empty, "Gestion control de version", null);
                 var controlVersionButtonUi = formNavigationEnvironmentUIGroup.AddCommandButton(controlVersionCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
                 controlVersionCommand.Invoking += ControlVersion_Invoking;
+
+                //Gestion des versions de PDM
+                var pdmVersionTableCommand = formNavigationEnvironment.CommandManager.RegisterCommand("SetPDMVersionTable", StateFilter.Empty, "Définition des versions PDM", null);
+                var pdmVersionTableUi = formNavigationEnvironmentUIGroup.AddCommandButton(pdmVersionTableCommand.Name, null, CommandBarDisplayHint.LargeAndText, CommandUnavailableBehavior.Disable);
+                pdmVersionTableCommand.Invoking += SetPDMVersionTable_Invoking;
             }
             catch (Exception ex)
             {
@@ -242,7 +250,7 @@ namespace EquinoxeExtendPlugin
                     controlVersionForm.ShowDialog();
 
                     if (ucControlVersionControl.SaveNeeded)
-                        MessageBox.Show("Veuillez sauvegarder le projet pour conserver les modifications sur les contrôles");                       
+                        MessageBox.Show("Veuillez sauvegarder le projet pour conserver les modifications sur les contrôles");
                 }
             }
             catch (Exception ex)
@@ -259,29 +267,40 @@ namespace EquinoxeExtendPlugin
                 var activeGroup = groupService.ActiveGroup;
 
                 var releaseUserControl = new ucRelease();
-                using (var releaseForm = new frmUserControl(releaseUserControl, "Gestion des releases", true, false))
+                var releaseForm = new frmUserControl(releaseUserControl, "Gestion des releases", true, false);
+
+                var loadingControl = new ucMessageBox("Chargement en cours...");
+                using (var loadingForm = new frmUserControl(loadingControl, "Gestion des releases", true, false))
                 {
-                    var loadingControl = new ucMessageBox("Chargement en cours...");
-                    using (var loadingForm = new frmUserControl(loadingControl, "Gestion des releases", true, false))
-                    {
-                        loadingForm.Show();
-                        loadingForm.Refresh();
+                    loadingForm.Show();
+                    loadingForm.Refresh();
 
-                        //Init
-                        releaseUserControl.Initialize(_Application, activeGroup);
-                        releaseUserControl.Close += (s, d) => releaseForm.Close();
-                        releaseForm.Parent = Control.FromHandle(_Application.MainWindowHandle);
-                        releaseForm.StartPosition = FormStartPosition.CenterParent;
-                        releaseForm.WindowState = FormWindowState.Normal;
-                        //releaseForm.WindowState = FormWindowState.Maximized;
-                        releaseForm.Width = 1550;
-                        releaseForm.Height = 950;
+                    //Init
+                    releaseUserControl.Initialize(_Application, activeGroup);
+                    releaseUserControl.Close += (s, d) => releaseForm.Close();
+                    releaseForm.Parent = Control.FromHandle(_Application.MainWindowHandle);
+                    releaseForm.StartPosition = FormStartPosition.CenterParent;
+                    releaseForm.WindowState = FormWindowState.Normal;
+                    //releaseForm.WindowState = FormWindowState.Maximized;
+                    releaseForm.Width = 1550;
+                    releaseForm.Height = 950;
 
-                        loadingForm.Hide();
-
-                        releaseForm.ShowDialog();
-                    }
+                    loadingForm.Hide();
                 }
+
+                releaseForm.Show();
+            }
+            catch (Exception ex)
+            {
+                ex.ShowInMessageBox();
+            }
+        }
+
+        private void SetPDMVersionTable_Invoking(object sender, CommandInvokeEventArgs e)
+        {
+            try
+            {
+                // var newPD
             }
             catch (Exception ex)
             {
