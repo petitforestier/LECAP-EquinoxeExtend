@@ -14,8 +14,7 @@ namespace DriveWorks.Helper.Manager
 
         public static ProjectSettings GetProjectSettings(this Project iProject)
         {
-            var result = new ProjectSettings();
-
+ 
             var tableDic = new Dictionary<string, string>();
             var projectTable = iProject.DataTables.SingleOrDefault(x => x.DisplayName == PROJECTSETTINGSDATATABLENAME);
             if (projectTable == null)
@@ -36,7 +35,7 @@ namespace DriveWorks.Helper.Manager
                 tableDic.Add(key, value);
             }
 
-            result = new ProjectSettings();
+            var result = new ProjectSettings();
             string projectVersion;
             tableDic.TryGetValue(PROJECTVERSION, out projectVersion);
             result.ProjectVersion = projectVersion.IsNotNullAndNotEmpty() ? Convert.ToDecimal(projectVersion) : 0;
@@ -61,6 +60,35 @@ namespace DriveWorks.Helper.Manager
             tableDic.TryGetValue(ERRORCONSTANTNAME, out errorConstantName);
             result.ErrorConstantName = errorConstantName;
 
+            result.ProjectName = iProject.Name;
+
+            return result;
+        }
+
+        public static GroupSettings GetGroupSettings(this Group iGroup)
+        {
+            var tableDic = new Dictionary<string, string>();
+            var groupTable = iGroup.DataTables.SingleOrDefault(x => x.Name == GROUPSETTINGSDATATABLENAME);
+            if (groupTable == null)
+                throw new Exception("La table de groupe : " + GROUPSETTINGSDATATABLENAME + " est inexistante");
+
+            var groupTableDataArray = groupTable.GetTableData().ToArray();
+
+            for (int rowIndex = 0; rowIndex <= groupTableDataArray.GetLength(0) - 1; rowIndex++)
+            {
+                string key = groupTableDataArray[rowIndex, 0].ToString();
+                if (key.IsNullOrEmpty())
+                    throw new Exception("La table de groupe : " + GROUPSETTINGSDATATABLENAME + " possède une clé vide à la ligne '{0}'".FormatString(rowIndex));
+
+                string value = groupTableDataArray[rowIndex, 1].ToString();
+                if (key.IsNullOrEmpty())
+                    throw new Exception("La table de groupe : " + GROUPSETTINGSDATATABLENAME + " possède une valeur de paramètre vide à la ligne '{0}'".FormatString(rowIndex));
+
+                tableDic.Add(key, value);
+            }
+
+            var result = new GroupSettings();
+            
             string epdmMasterVersionPrefixe;
             tableDic.TryGetValue(EPDMMASTERVERSIONPREFIXE, out epdmMasterVersionPrefixe);
             result.EPDMMasterVersionPrefixe = epdmMasterVersionPrefixe;
@@ -68,8 +96,6 @@ namespace DriveWorks.Helper.Manager
             string epdmVaultName;
             tableDic.TryGetValue(EPDMVAULTNAME, out epdmVaultName);
             result.EPDMVaultName = epdmVaultName;
-
-            result.ProjectName = iProject.Name;
 
             return result;
         }
@@ -150,6 +176,7 @@ namespace DriveWorks.Helper.Manager
 
         private const string PROJECTALIASFILENAME = "LiveProjectAlias.txt";
         private const string PROJECTSETTINGSDATATABLENAME = "PrjSettings";
+        private const string GROUPSETTINGSDATATABLENAME = "GrpSettings";
         private const string PROJECTVERSION = "ProjectVersion";
         private const string TAGIGNORE = "IgnoreTag";
         private const string ERRORCOLORNAME = "ErrorColorName";

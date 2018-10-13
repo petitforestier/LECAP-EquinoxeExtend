@@ -318,9 +318,12 @@ namespace EquinoxeExtendPlugin
                     var activeProject = projectService.ActiveProject;
 
                     //Récupération des settings
-                    var projectSettings = DriveWorks.Helper.Manager.SettingsManager.GetProjectSettings(activeProject);
-                    if (projectSettings.EPDMVaultName.IsNullOrEmpty())
+                    var groupSettings = DriveWorks.Helper.Manager.SettingsManager.GetGroupSettings(activeGroup);
+                    if (groupSettings.EPDMVaultName.IsNullOrEmpty())
                         throw new Exception("Le nom du coffre PDM n'est pas renseigné dans les settings");
+                    if (groupSettings.EPDMMasterVersionPrefixe.IsNullOrEmpty())
+                        throw new Exception("Le préfixe de table de versionning n'est pas renseigné dans les settings");
+                    var tablePrefixeName = groupSettings.EPDMMasterVersionPrefixe;
 
                     inProgressUserControl.SetMessage("Récupération des components set.");
                     inProgressForm.Refresh();
@@ -334,7 +337,7 @@ namespace EquinoxeExtendPlugin
                     inProgressUserControl.SetMessage("Récupération des références PDM");
                     inProgressForm.Refresh();
 
-                    var epdmService = new EPDM.Helper.EPDMAPIService(projectSettings.EPDMVaultName, 0, Library.Tools.Enums.DebugModeEnum.Minimal);
+                    var epdmService = new EPDM.Helper.EPDMAPIService(groupSettings.EPDMVaultName, 0, Library.Tools.Enums.DebugModeEnum.Minimal);
                     foreach (var dwComponentPathItem in dwComponentSetsPathList.Enum())
                     {
                         //Suppression des doublons
@@ -398,7 +401,7 @@ namespace EquinoxeExtendPlugin
                             }
                             epdmVersionList.Add(newRow);
                         }
-                        DriveWorks.Helper.Manager.EPDMVersionManager.UpdateOrCreateEPDMVersionDataTable(activeProject, componentItem.First().DocumentCode, epdmVersionList);
+                        DriveWorks.Helper.Manager.EPDMVersionManager.UpdateOrCreateEPDMVersionDataTable(activeProject, tablePrefixeName,componentItem.First().DocumentCode, epdmVersionList);
                     } 
                 }
 

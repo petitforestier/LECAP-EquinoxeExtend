@@ -70,6 +70,7 @@
     <Compile Include="Manager\MessageManager.cs" />
     <Compile Include="Manager\SettingsManager.cs" />
     <Compile Include="Object\EPDMVersion.cs" />
+    <Compile Include="Object\GroupSettings.cs" />
     <Compile Include="Object\Specification.cs" />
     <Compile Include="Object\AddedConstantManaged.cs" />
     <Compile Include="Object\AddedControlManaged.cs" />

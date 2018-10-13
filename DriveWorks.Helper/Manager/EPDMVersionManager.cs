@@ -12,7 +12,7 @@ namespace DriveWorks.Helper.Manager
     {
         #region Public METHODS
 
-        public static void UpdateOrCreateEPDMVersionDataTable(this Project iProject, string iComponentName ,List<EPDMVersion> iEPDMVersionList)
+        public static void UpdateOrCreateEPDMVersionDataTable(this Project iProject, string iTablePrefixeName, string iComponentName, List<EPDMVersion> iEPDMVersionList)
         {
             if (iEPDMVersionList.IsNullOrEmpty())
                 throw new Exception("La liste des versions EPDM est invalide");
@@ -23,10 +23,14 @@ namespace DriveWorks.Helper.Manager
             if (iComponentName.IsNullOrEmpty())
                 throw new Exception("Le nom du composant est vide");
 
+            var tableName = iTablePrefixeName;
+            if (tableName.IsNullOrEmpty())
+                throw new Exception("Le préfixe de table de version est vide");
+
             var flattenList = new List<List<string>>();
 
             var headerList = new List<string>();
-            
+
             //Attention ordre important
             headerList.Add("CodeDocument");
             headerList.Add("Version2D");
@@ -47,19 +51,16 @@ namespace DriveWorks.Helper.Manager
                 flattenList.Add(newList);
             }
 
-            var tableName = DriveWorks.Helper.Manager.SettingsManager.GetProjectSettings(iProject).EPDMMasterVersionPrefixe;
-            if (tableName.IsNullOrEmpty())
-                throw new Exception("Le préfixe de table de version est vide");
             tableName = tableName + iComponentName;
 
             var projectTable = iProject.DataTables.SingleOrDefault(x => x.DisplayName == tableName);
 
             DriveWorks.SimpleDataTable simpleDataTable;
             if (projectTable == null)
-                simpleDataTable = (DriveWorks.SimpleDataTable)iProject.DataTables.CreateDataTable(typeof(DriveWorks.SimpleDataTable), tableName);   
+                simpleDataTable = (DriveWorks.SimpleDataTable)iProject.DataTables.CreateDataTable(typeof(DriveWorks.SimpleDataTable), tableName);
             else
                 simpleDataTable = (DriveWorks.SimpleDataTable)projectTable;
-                
+
             DataTableHelper.ReplaceCompleteDataToSimpleDateTable(simpleDataTable, flattenList);
         }
 
