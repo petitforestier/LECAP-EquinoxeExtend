@@ -289,6 +289,7 @@ namespace EquinoxeExtendPlugin
                 }
 
                 releaseForm.Show();
+                releaseForm.TopMost = true;
             }
             catch (Exception ex)
             {

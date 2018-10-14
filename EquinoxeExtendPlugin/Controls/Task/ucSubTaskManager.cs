@@ -234,7 +234,16 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 var imageWidth = (int)typeof(SubTaskView).GetWidthColumn(Library.Tools.Misc.PropertyObserver.GetPropertyName<SubTaskView>(x => x.Progression));
                 newView.Progression = Library.Control.Datagridview.ImageHelper.GetProgressionBarImage(iObj.Progression, DATAGRIDVIEWROWHEIGHT, imageWidth, true);
 
-                newView.Duration = iObj.Duration + " j";
+                //Duration
+                if(iObj.Duration > Consts.Consts.WORKINGHOURSADAY)
+                {
+                    newView.Duration = Math.Round((decimal)((decimal)iObj.Duration / (decimal)Consts.Consts.WORKINGHOURSADAY),1) + " j";
+                }
+                else
+                {
+                    newView.Duration = iObj.Duration + " h";
+                }
+               
                 return newView;
             }
 

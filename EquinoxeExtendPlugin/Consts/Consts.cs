@@ -15,6 +15,7 @@ namespace EquinoxeExtendPlugin.Consts
         public const string MailingListTeamName = "temListeDiffusion_DeploiementProduct";
         public const string SMTPHOST = "smtp-relay.lecapitaine.fr";
         public const int SMTPPORT = 25;
+        public const int WORKINGHOURSADAY = 8;
     }
  
 }

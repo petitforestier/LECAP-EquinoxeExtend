@@ -1,4 +1,5 @@
 ﻿using DriveWorks.Helper;
+using DriveWorks.Helper.Manager;
 using EquinoxeExtend.Shared.Enum;
 using EquinoxeExtend.Shared.Object.Release;
 using Library.Tools.Enums;
@@ -8,10 +9,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using System.Text;
 using System.Windows.Forms;
-using DriveWorks.Helper.Manager;
 
 namespace EquinoxeExtendPlugin.Controls.Task
 {
@@ -107,6 +107,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
             numDuration.Value = 0;
             txtComments.Text = null;
             txtDesignation.Text = null;
+            optDurationHours.Checked = true;
 
             if (_SubTask != null)
             {
@@ -119,7 +120,21 @@ namespace EquinoxeExtendPlugin.Controls.Task
                     cboDevelopper.SelectedValue = _SubTask.DevelopperGUID;
                 numProgression.Value = _SubTask.Progression;
                 if (_SubTask.Duration != null)
+                {
+                    if (((int)_SubTask.Duration).IsDivisible(Consts.Consts.WORKINGHOURSADAY) && _SubTask.Duration != 0)
+                    {
+                        optDurationDays.Checked = true;
+                        numDuration.Value = (int)_SubTask.Duration / Consts.Consts.WORKINGHOURSADAY;
+                    }
+                    else
+                    {
+                        optDurationHours.Checked = true;
+                        numDuration.Value = (int)_SubTask.Duration;
+                    }
+
                     numDuration.Value = (int)_SubTask.Duration;
+                }
+
                 txtComments.Text = _SubTask.Comments;
             }
         }
@@ -149,7 +164,12 @@ namespace EquinoxeExtendPlugin.Controls.Task
             if (cboDevelopper.SelectedIndex != -1)
                 subTaks.DevelopperGUID = (Guid)cboDevelopper.SelectedValue;
             subTaks.Progression = (int)numProgression.Value;
-            subTaks.Duration = (int)numDuration.Value;
+
+            if (optDurationDays.Checked && numDuration.Value != 0)
+                subTaks.Duration = (int)numDuration.Value * Consts.Consts.WORKINGHOURSADAY;
+            else
+                subTaks.Duration = (int)numDuration.Value;
+
             subTaks.Comments = txtComments.Text;
             return subTaks;
         }
@@ -172,12 +192,6 @@ namespace EquinoxeExtendPlugin.Controls.Task
             }
 
             return result;
-        }
-
-        protected void CommandEnableManagement()
-        {
-
-
         }
 
         protected void ValidateEdit()
@@ -219,6 +233,7 @@ namespace EquinoxeExtendPlugin.Controls.Task
 
         #region Private FIELDS
 
+      
         private BoolLock _IsLoading = new BoolLock();
 
         private StatusEnum _StatusEnum;

@@ -35,7 +35,6 @@
             this.lblProgression = new System.Windows.Forms.Label();
             this.numProgression = new Library.Control.UserControls.ucNumericUpDown();
             this.lblDuration = new System.Windows.Forms.Label();
-            this.numDuration = new Library.Control.UserControls.ucNumericUpDown();
             this.lblComments = new System.Windows.Forms.Label();
             this.txtComments = new System.Windows.Forms.RichTextBox();
             this.tlpFooter = new System.Windows.Forms.TableLayoutPanel();
@@ -47,12 +46,17 @@
             this.cmdDeleteProject = new System.Windows.Forms.Button();
             this.cboProject = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.tlpDuration = new System.Windows.Forms.TableLayoutPanel();
+            this.optDurationDays = new System.Windows.Forms.RadioButton();
+            this.numDuration = new Library.Control.UserControls.ucNumericUpDown();
+            this.optDurationHours = new System.Windows.Forms.RadioButton();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.tlpMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numProgression)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numDuration)).BeginInit();
             this.tlpFooter.SuspendLayout();
             this.tlpProject.SuspendLayout();
+            this.tlpDuration.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numDuration)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.SuspendLayout();
             // 
@@ -67,7 +71,6 @@
             this.tlpMain.Controls.Add(this.lblProgression, 0, 3);
             this.tlpMain.Controls.Add(this.numProgression, 1, 3);
             this.tlpMain.Controls.Add(this.lblDuration, 0, 4);
-            this.tlpMain.Controls.Add(this.numDuration, 1, 4);
             this.tlpMain.Controls.Add(this.lblComments, 0, 5);
             this.tlpMain.Controls.Add(this.txtComments, 0, 6);
             this.tlpMain.Controls.Add(this.tlpFooter, 0, 7);
@@ -75,6 +78,7 @@
             this.tlpMain.Controls.Add(this.lblProject, 0, 1);
             this.tlpMain.Controls.Add(this.tlpProject, 1, 1);
             this.tlpMain.Controls.Add(this.label1, 0, 0);
+            this.tlpMain.Controls.Add(this.tlpDuration, 1, 4);
             this.tlpMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tlpMain.Location = new System.Drawing.Point(0, 0);
             this.tlpMain.Name = "tlpMain";
@@ -145,23 +149,8 @@
             this.lblDuration.Name = "lblDuration";
             this.lblDuration.Size = new System.Drawing.Size(104, 25);
             this.lblDuration.TabIndex = 2;
-            this.lblDuration.Text = "Charge (jours)";
+            this.lblDuration.Text = "Charge";
             this.lblDuration.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // numDuration
-            // 
-            this.numDuration.Location = new System.Drawing.Point(113, 103);
-            this.numDuration.Maximum = new decimal(new int[] {
-            1000000,
-            0,
-            0,
-            0});
-            this.numDuration.Name = "numDuration";
-            this.numDuration.Size = new System.Drawing.Size(120, 20);
-            this.numDuration.TabIndex = 3;
-            this.numDuration.ThousandsSeparator = true;
-            this.numDuration.ValueType = Library.Control.UserControls.ucNumericUpDown.NumericUpDownTypeEnum.IntegerPositiveOnly;
-            this.numDuration.KeyDown += new System.Windows.Forms.KeyEventHandler(this.numDuration_KeyDown);
             // 
             // lblComments
             // 
@@ -290,6 +279,61 @@
             this.label1.Text = "Désignation";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // tlpDuration
+            // 
+            this.tlpDuration.ColumnCount = 3;
+            this.tlpDuration.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpDuration.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tlpDuration.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 65F));
+            this.tlpDuration.Controls.Add(this.optDurationDays, 2, 0);
+            this.tlpDuration.Controls.Add(this.numDuration, 0, 0);
+            this.tlpDuration.Controls.Add(this.optDurationHours, 1, 0);
+            this.tlpDuration.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpDuration.Location = new System.Drawing.Point(110, 100);
+            this.tlpDuration.Margin = new System.Windows.Forms.Padding(0);
+            this.tlpDuration.Name = "tlpDuration";
+            this.tlpDuration.RowCount = 1;
+            this.tlpDuration.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpDuration.Size = new System.Drawing.Size(258, 25);
+            this.tlpDuration.TabIndex = 16;
+            // 
+            // optDurationDays
+            // 
+            this.optDurationDays.AutoSize = true;
+            this.optDurationDays.Location = new System.Drawing.Point(196, 3);
+            this.optDurationDays.Name = "optDurationDays";
+            this.optDurationDays.Size = new System.Drawing.Size(50, 17);
+            this.optDurationDays.TabIndex = 5;
+            this.optDurationDays.TabStop = true;
+            this.optDurationDays.Text = "Jours";
+            this.optDurationDays.UseVisualStyleBackColor = true;
+            // 
+            // numDuration
+            // 
+            this.numDuration.Location = new System.Drawing.Point(3, 3);
+            this.numDuration.Maximum = new decimal(new int[] {
+            1000000,
+            0,
+            0,
+            0});
+            this.numDuration.Name = "numDuration";
+            this.numDuration.Size = new System.Drawing.Size(120, 20);
+            this.numDuration.TabIndex = 3;
+            this.numDuration.ThousandsSeparator = true;
+            this.numDuration.ValueType = Library.Control.UserControls.ucNumericUpDown.NumericUpDownTypeEnum.IntegerPositiveOnly;
+            this.numDuration.KeyDown += new System.Windows.Forms.KeyEventHandler(this.numDuration_KeyDown);
+            // 
+            // optDurationHours
+            // 
+            this.optDurationHours.AutoSize = true;
+            this.optDurationHours.Location = new System.Drawing.Point(131, 3);
+            this.optDurationHours.Name = "optDurationHours";
+            this.optDurationHours.Size = new System.Drawing.Size(59, 17);
+            this.optDurationHours.TabIndex = 4;
+            this.optDurationHours.TabStop = true;
+            this.optDurationHours.Text = "Heures";
+            this.optDurationHours.UseVisualStyleBackColor = true;
+            // 
             // errorProvider
             // 
             this.errorProvider.ContainerControl = this;
@@ -305,9 +349,11 @@
             this.tlpMain.ResumeLayout(false);
             this.tlpMain.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numProgression)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numDuration)).EndInit();
             this.tlpFooter.ResumeLayout(false);
             this.tlpProject.ResumeLayout(false);
+            this.tlpDuration.ResumeLayout(false);
+            this.tlpDuration.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numDuration)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.ResumeLayout(false);
 
@@ -334,5 +380,8 @@
         private System.Windows.Forms.TableLayoutPanel tlpProject;
         private System.Windows.Forms.Button cmdDeleteProject;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TableLayoutPanel tlpDuration;
+        private System.Windows.Forms.RadioButton optDurationDays;
+        private System.Windows.Forms.RadioButton optDurationHours;
     }
 }

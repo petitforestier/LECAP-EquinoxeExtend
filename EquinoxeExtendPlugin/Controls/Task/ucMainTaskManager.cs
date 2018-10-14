@@ -284,8 +284,8 @@ namespace EquinoxeExtendPlugin.Controls.Task
             public Image Progression { get; set; }
 
             [Visible]
-            [Name("FR", "Charge ( jrs ) ")]
-            [WidthColumn(75)]
+            [Name("FR", "Charge")]
+            [WidthColumn(70)]
             [ContentAlignment(DataGridViewContentAlignment.MiddleCenter)]
             public string Duration { get; set; }
 
@@ -355,9 +355,26 @@ namespace EquinoxeExtendPlugin.Controls.Task
                 int durationSum = iObj.DurationSum;
                 int doneDuration = iObj.DoneDuration;
                 if (durationSum != 0 || doneDuration != 0)
-                    newView.Duration = doneDuration + "/" + durationSum;
+                {
+                    //Jours
+                    if (iObj.DurationSum > Consts.Consts.WORKINGHOURSADAY)
+                    {
+                        var durationSumFormated = Math.Round((decimal)((decimal)iObj.DurationSum / (decimal)Consts.Consts.WORKINGHOURSADAY), 1);
+                        var doneDurationSumFormated = Math.Round((decimal)((decimal)iObj.DoneDuration / (decimal)Consts.Consts.WORKINGHOURSADAY), 1);
+
+                        newView.Duration = doneDurationSumFormated + "/" + durationSumFormated + " j";
+                    }
+                    //Heures
+                    else
+                    {
+                        newView.Duration = doneDuration + "/" + durationSum + " h";
+                    }
+                }
                 else
+                {
                     newView.Duration = null;
+                }
+                   
 
                 //SubTasks
                 if (iObj.SubTasks.Any())
